@@ -57,6 +57,9 @@ label.fld{display:block;font-size:13px;font-weight:700;color:var(--t2);margin:14
 input.in,select.in,textarea.in{width:100%;border:1.6px solid var(--bdr);border-radius:14px;padding:13px 15px;font-size:15px;font-family:inherit;color:var(--t1);background:#fff;transition:.15s}
 input.in:focus,select.in:focus,textarea.in:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 4px rgba(0,201,167,.12)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mchips{display:flex;gap:6px;margin-top:8px}
+.mchips button{flex:1;padding:8px 0;border-radius:10px;background:var(--cream);border:1px solid var(--bdr);font-size:12px;font-weight:700;color:var(--t2);transition:.15s}
+.mchips button:hover{border-color:var(--g);color:var(--g2);background:var(--g3)}
 
 /* ===== 학생 헤더 ===== */
 .s-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);border-radius:var(--r3);padding:26px 24px 24px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh2);margin-bottom:18px}
@@ -299,14 +302,17 @@ audio{width:100%;margin-top:10px;border-radius:50px}
               <option value="왕초보">왕초보</option>
               <option value="초급">초급</option>
               <option value="중급">중급</option>
+              <option value="고급">고급</option>
             </select>
           </div>
           <div>
-            <label class="fld">수강권</label>
-            <select class="in" id="fMonths">
-              <option value="3">3개월</option>
-              <option value="6">6개월</option>
-            </select>
+            <label class="fld">수강권 (개월 수)</label>
+            <input class="in" id="fMonths" type="number" min="1" max="36" value="3" inputmode="numeric">
+            <div class="mchips">
+              <button type="button" onclick="setMonths(3)">3개월</button>
+              <button type="button" onclick="setMonths(6)">6개월</button>
+              <button type="button" onclick="setMonths(12)">12개월</button>
+            </div>
           </div>
         </div>
         <label class="fld">시작일</label>
@@ -330,6 +336,7 @@ audio{width:100%;margin-top:10px;border-radius:50px}
           <option value="왕초보">왕초보</option>
           <option value="초급">초급</option>
           <option value="중급">중급</option>
+          <option value="고급">고급</option>
         </select>
         <div id="cardList" style="margin-top:14px"></div>
       </div>
@@ -382,11 +389,22 @@ audio{width:100%;margin-top:10px;border-radius:50px}
       <div class="card">
         <div class="t-head"><h2>미리보기</h2></div>
         <p class="muted" style="margin-bottom:12px">학생 화면이 어떻게 보이는지 직접 확인해 보세요.</p>
-        <button class="btn ghost" onclick="loadDemo()">샘플 학생으로 미리보기 →</button>
+        <button class="btn ghost" onclick="previewDemo()">샘플 학생으로 미리보기 (새 탭) →</button>
       </div>
     </div>
   </div>
 
+</div>
+
+<!-- 입장 환영 모달 -->
+<div class="modal-bg" id="welcomeModal">
+  <div class="modal">
+    <div class="emoji" id="wEmoji">🎉</div>
+    <h2 id="wTitle"></h2>
+    <p id="wText"></p>
+    <button class="btn" id="wPrimary"></button>
+    <button class="btn ghost hidden" id="wSecondary"></button>
+  </div>
 </div>
 
 <!-- 격려 토스트 -->
@@ -418,28 +436,146 @@ const DAY=86400000;
 /* ---------- 기본 패턴 라이브러리 (레벨별) ---------- */
 const BASE_LIB={
 "왕초보":[
- {tag:"I want to ___",ko:"~하고 싶어요",sent:"I want to rest.",trans:"쉬고 싶어요.",tips:["want to는 '워너'처럼 자연스럽게 연음","강세는 REST에 꽉"],exp:["I want to rest.","I want to rest now.","I want to rest at home.","I want to rest at home today."]},
- {tag:"I'm going to ___",ko:"~할 거예요",sent:"I'm going to study.",trans:"공부할 거예요.",tips:["going to는 '거너'로 줄여도 OK","I'm은 약하게, STUDY를 강하게"],exp:["I'm going to study.","I'm going to study English.","I'm going to study English tonight.","I'm going to study English tonight with you."]},
- {tag:"Can you ___?",ko:"~해줄 수 있어요?",sent:"Can you help me?",trans:"도와줄 수 있어요?",tips:["Can you는 '캐뉴'로 연음","문장 끝을 살짝 올려요"],exp:["Can you help me?","Can you help me now?","Can you help me with this?","Can you help me with this right now?"]},
- {tag:"I like ___",ko:"~을 좋아해요",sent:"I like coffee.",trans:"커피를 좋아해요.",tips:["like의 끝 'k'를 살짝만","강세는 COF-fee 앞에"],exp:["I like coffee.","I like hot coffee.","I like hot coffee in the morning.","I like hot coffee in the morning before work."]},
- {tag:"There is ___",ko:"~가 있어요",sent:"There is a problem.",trans:"문제가 있어요.",tips:["There is a는 '데어리저'로 한 덩어리","is는 약하게"],exp:["There is a problem.","There is a small problem.","There is a small problem here.","There is a small problem here today."]},
- {tag:"I need to ___",ko:"~해야 해요",sent:"I need to go.",trans:"가야 해요.",tips:["need to는 '니투'로 빠르게","GO를 분명하게"],exp:["I need to go.","I need to go now.","I need to go home now.","I need to go home right now, sorry."]},
- {tag:"Do you have ___?",ko:"~ 있어요?",sent:"Do you have time?",trans:"시간 있어요?",tips:["Do you have는 '두유햅'으로 부드럽게","TIME에 강세"],exp:["Do you have time?","Do you have time now?","Do you have time later today?","Do you have time later today for a quick call?"]},
- {tag:"Let's ___",ko:"~하자",sent:"Let's start.",trans:"시작하자.",tips:["Let's는 '렛츠'로 짧게","START를 힘있게"],exp:["Let's start.","Let's start now.","Let's start now together.","Let's start now together, okay?"]}
+ {tag:"I want to ___",ko:"~하고 싶어요",sent:"I want to rest.",trans:"쉬고 싶어요.",tips:["want to는 '워너'처럼 연음","강세는 REST"],exp:["I want to rest.","I want to rest now.","I want to rest at home.","I want to rest at home today."]},
+ {tag:"I'm going to ___",ko:"~할 거예요",sent:"I'm going to study.",trans:"공부할 거예요.",tips:["going to는 '거너'","STUDY를 강하게"],exp:["I'm going to study.","I'm going to study English.","I'm going to study English tonight.","I'm going to study English tonight with you."]},
+ {tag:"Can you ___?",ko:"~해줄 수 있어요?",sent:"Can you help me?",trans:"도와줄 수 있어요?",tips:["Can you는 '캐뉴'","끝을 올려요"],exp:["Can you help me?","Can you help me now?","Can you help me with this?","Can you help me with this right now?"]},
+ {tag:"I like ___",ko:"~을 좋아해요",sent:"I like coffee.",trans:"커피를 좋아해요.",tips:["like의 'k'는 살짝","COF-fee 앞강세"],exp:["I like coffee.","I like hot coffee.","I like hot coffee in the morning.","I like hot coffee in the morning before work."]},
+ {tag:"There is ___",ko:"~가 있어요",sent:"There is a problem.",trans:"문제가 있어요.",tips:["There is a는 '데어리저'","is는 약하게"],exp:["There is a problem.","There is a small problem.","There is a small problem here.","There is a small problem here today."]},
+ {tag:"I need to ___",ko:"~해야 해요",sent:"I need to go.",trans:"가야 해요.",tips:["need to는 '니투'","GO를 분명히"],exp:["I need to go.","I need to go now.","I need to go home now.","I need to go home right now, sorry."]},
+ {tag:"Do you have ___?",ko:"~ 있어요?",sent:"Do you have time?",trans:"시간 있어요?",tips:["Do you have는 '두유햅'","TIME에 강세"],exp:["Do you have time?","Do you have time now?","Do you have time later today?","Do you have time later today for a quick call?"]},
+ {tag:"Let's ___",ko:"~하자",sent:"Let's start.",trans:"시작하자.",tips:["Let's는 '렛츠'","START를 힘있게"],exp:["Let's start.","Let's start now.","Let's start now together.","Let's start now together, okay?"]},
+ {tag:"I have to ___",ko:"~해야만 해요",sent:"I have to leave.",trans:"가봐야 해요.",tips:["have to는 '햅투'","LEAVE를 강하게"],exp:["I have to leave.","I have to leave soon.","I have to leave in five minutes.","Sorry, I have to leave in five minutes."]},
+ {tag:"Can I ___?",ko:"~해도 될까요?",sent:"Can I sit here?",trans:"여기 앉아도 될까요?",tips:["Can I는 '캐나이'","끝을 올려요"],exp:["Can I sit here?","Can I sit here, please?","Excuse me, can I sit here?","Excuse me, can I sit here next to you?"]},
+ {tag:"I'm looking for ___",ko:"~을 찾고 있어요",sent:"I'm looking for the station.",trans:"역을 찾고 있어요.",tips:["looking for는 '루킹퍼'","station 앞강세"],exp:["I'm looking for the station.","I'm looking for the subway station.","Excuse me, I'm looking for the subway station.","Excuse me, I'm looking for the nearest subway station."]},
+ {tag:"How much is ___?",ko:"~ 얼마예요?",sent:"How much is this?",trans:"이거 얼마예요?",tips:["How much is는 '하우머치즈'","this를 분명히"],exp:["How much is this?","How much is this one?","How much is this in total?","Excuse me, how much is this one in total?"]},
+ {tag:"I don't ___",ko:"~하지 않아요",sent:"I don't understand.",trans:"이해가 안 돼요.",tips:["don't는 '돈'으로 짧게","under-STAND 끝강세"],exp:["I don't understand.","I don't understand this.","Sorry, I don't understand this part.","Sorry, I don't really understand this part."]},
+ {tag:"Where is ___?",ko:"~ 어디예요?",sent:"Where is the bathroom?",trans:"화장실 어디예요?",tips:["Where is the는 '웨어리저'","BATH-room 앞강세"],exp:["Where is the bathroom?","Where is the nearest bathroom?","Excuse me, where is the bathroom?","Excuse me, where is the nearest bathroom?"]},
+ {tag:"I think ___",ko:"~인 것 같아요",sent:"I think it's good.",trans:"좋은 것 같아요.",tips:["think it's는 '띵킷츠'","GOOD을 강하게"],exp:["I think it's good.","I think it's really good.","I think it's a good idea.","I think it's a really good idea."]},
+ {tag:"Could you ___?",ko:"~해 주시겠어요?",sent:"Could you say that again?",trans:"다시 말해 주시겠어요?",tips:["Could you는 '쿠쥬'","a-GAIN 끝강세"],exp:["Could you say that again?","Could you say that again, please?","Sorry, could you say that again?","Sorry, could you say that one more time, please?"]},
+ {tag:"I'd like ___",ko:"~로 주세요",sent:"I'd like a coffee.",trans:"커피 한 잔 주세요.",tips:["I'd like는 '아이들라잌'","a는 약하게"],exp:["I'd like a coffee.","I'd like a hot coffee.","I'd like a hot coffee, please.","I'd like a hot coffee with no sugar, please."]},
+ {tag:"Are you ___?",ko:"~예요?",sent:"Are you okay?",trans:"괜찮아요?",tips:["Are you는 '아유'","o-KAY 끝강세"],exp:["Are you okay?","Are you really okay?","Hey, are you okay?","Hey, are you okay with this?"]},
+ {tag:"I'm trying to ___",ko:"~하려고 해요",sent:"I'm trying to learn.",trans:"배우려고 해요.",tips:["trying to는 '트라이너'","LEARN을 강하게"],exp:["I'm trying to learn.","I'm trying to learn English.","I'm trying to learn English every day.","I'm trying to learn English a little every day."]},
+ {tag:"It's too ___",ko:"너무 ~해요",sent:"It's too expensive.",trans:"너무 비싸요.",tips:["It's too는 '잇츠투'","ex-PEN-sive 가운데강세"],exp:["It's expensive.","It's too expensive.","It's a little too expensive.","Honestly, it's a little too expensive for me."]},
+ {tag:"Do you want to ___?",ko:"~할래요?",sent:"Do you want to eat?",trans:"먹을래요?",tips:["Do you want to는 '두유워너'","EAT를 분명히"],exp:["Do you want to eat?","Do you want to eat now?","Do you want to eat something?","Do you want to eat something now?"]},
+ {tag:"I can't ___",ko:"~할 수 없어요",sent:"I can't hear you.",trans:"안 들려요.",tips:["can't는 '캔트'로 짧게","HEAR를 강하게"],exp:["I can't hear you.","I can't hear you well.","Sorry, I can't hear you.","Sorry, I can't hear you very well."]},
+ {tag:"Let me ___",ko:"제가 ~할게요",sent:"Let me check.",trans:"제가 확인해 볼게요.",tips:["Let me는 '렛미'","CHECK를 강하게"],exp:["Let me check.","Let me check it.","Let me check it now.","Wait, let me check it real quick."]},
+ {tag:"I forgot to ___",ko:"~하는 걸 깜빡했어요",sent:"I forgot to call.",trans:"전화하는 걸 깜빡했어요.",tips:["forgot to는 '퍼갓투'","CALL을 강하게"],exp:["I forgot to call.","I forgot to call you.","Sorry, I forgot to call you.","I'm so sorry, I forgot to call you back."]},
+ {tag:"Thank you for ___",ko:"~해줘서 고마워요",sent:"Thank you for waiting.",trans:"기다려줘서 고마워요.",tips:["Thank you for는 '땡큐퍼'","WAIT-ing 앞강세"],exp:["Thank you for waiting.","Thank you for waiting for me.","Thank you so much for waiting.","Thank you so much for waiting for me."]},
+ {tag:"I'm sorry for ___",ko:"~해서 미안해요",sent:"I'm sorry for being late.",trans:"늦어서 미안해요.",tips:["sorry for는 '쏘리퍼'","LATE를 강하게"],exp:["I'm sorry for being late.","I'm really sorry for being late.","I'm so sorry for being late today.","I'm so sorry for being a little late today."]},
+ {tag:"What time ___?",ko:"몇 시에 ~?",sent:"What time do we start?",trans:"우리 몇 시에 시작해요?",tips:["What time은 '왓타임'","START 끝강세"],exp:["What time do we start?","What time do we start today?","What time do we start the class?","What time do we start the class tomorrow?"]},
+ {tag:"Why don't we ___?",ko:"우리 ~하는 게 어때요?",sent:"Why don't we take a break?",trans:"우리 좀 쉬는 게 어때요?",tips:["Why don't we는 '와이돈위'","BREAK를 강하게"],exp:["Why don't we take a break?","Why don't we take a short break?","Why don't we take a short break now?","Why don't we take a short break and continue later?"]},
+ {tag:"I hope ___",ko:"~하길 바라요",sent:"I hope you feel better.",trans:"빨리 낫길 바라요.",tips:["hope you는 '호퓨'","BET-ter 앞강세, tt는 'ㄹ'"],exp:["I hope you feel better.","I hope you feel better soon.","I really hope you feel better soon.","I really hope you feel much better soon."]},
+ {tag:"I'm not ___",ko:"나는 ~가 아니에요",sent:"I'm not sure.",trans:"잘 모르겠어요.",tips:["I'm not은 '아임낫'","SURE를 길게"],exp:["I'm not sure.","I'm not so sure.","I'm not really sure.","Honestly, I'm not really sure about that."]},
+ {tag:"May I ___?",ko:"~해도 될까요?(정중)",sent:"May I come in?",trans:"들어가도 될까요?",tips:["May I는 '메아이'","come IN 끝강세"],exp:["May I come in?","May I come in now?","Excuse me, may I come in?","Excuse me, may I come in for a second?"]},
+ {tag:"I usually ___",ko:"보통 ~해요",sent:"I usually wake up early.",trans:"보통 일찍 일어나요.",tips:["usually는 '유주얼리'","wake up은 '웨이컵' 연음"],exp:["I usually wake up early.","I usually wake up early on weekdays.","I usually wake up pretty early.","I usually wake up pretty early on weekdays."]},
+ {tag:"I'm here to ___",ko:"~하러 왔어요",sent:"I'm here to see a doctor.",trans:"진료 받으러 왔어요.",tips:["here to는 '히어투'","DOC-tor 앞강세"],exp:["I'm here to see a doctor.","I'm here to see the doctor.","Hi, I'm here to see a doctor.","Hi, I'm here to see Dr. Kim."]},
+ {tag:"Can we ___?",ko:"우리 ~할 수 있을까요?",sent:"Can we meet tomorrow?",trans:"우리 내일 만날 수 있을까요?",tips:["Can we는 '캔위'","to-MOR-row 가운데강세"],exp:["Can we meet tomorrow?","Can we meet up tomorrow?","Can we meet tomorrow afternoon?","Can we meet up tomorrow afternoon instead?"]},
+ {tag:"I feel ___",ko:"~한 기분이에요",sent:"I feel tired.",trans:"피곤해요.",tips:["feel은 '피이얼' 길게","TIRED를 강하게"],exp:["I feel tired.","I feel so tired.","I feel really tired today.","I feel really tired today, sorry."]},
+ {tag:"Is it okay to ___?",ko:"~해도 괜찮아요?",sent:"Is it okay to park here?",trans:"여기 주차해도 돼요?",tips:["Is it okay는 '이짓오케이' 연음","PARK를 강하게"],exp:["Is it okay to park here?","Is it okay to park right here?","Excuse me, is it okay to park here?","Excuse me, is it okay to park here for a minute?"]},
+ {tag:"I just ___",ko:"방금 ~했어요",sent:"I just arrived.",trans:"방금 도착했어요.",tips:["just는 '저스트' 짧게","ar-RIVED 끝강세"],exp:["I just arrived.","I just got here.","I just arrived now.","Don't worry, I just arrived too."]},
+ {tag:"Please ___",ko:"~해 주세요",sent:"Please wait here.",trans:"여기서 기다려 주세요.",tips:["Please는 '플리즈' 부드럽게","WAIT를 강하게"],exp:["Please wait here.","Please wait right here.","Please wait here for a moment.","Please wait here for just a moment."]}
 ],
 "초급":[
- {tag:"I've been ___ing",ko:"~해오고 있어요",sent:"I've been waiting.",trans:"기다리고 있었어요.",tips:["I've been은 '아입빈'으로 약하게","waiting의 t는 부드럽게"],exp:["I've been waiting.","I've been waiting for you.","I've been waiting for you for an hour.","I've been waiting for you for an hour outside."]},
- {tag:"I was going to ___",ko:"~하려고 했어요",sent:"I was going to call.",trans:"전화하려고 했어요.",tips:["was going to는 '워즈거너'","call의 'l' 끝을 살려요"],exp:["I was going to call.","I was going to call you.","I was going to call you tonight.","I was going to call you tonight after dinner."]},
- {tag:"Would you mind ___ing?",ko:"~해주실래요?",sent:"Would you mind waiting?",trans:"기다려주실래요?",tips:["Would you는 '우쥬'로 연음","mind의 d는 거의 안 들리게"],exp:["Would you mind waiting?","Would you mind waiting here?","Would you mind waiting here a moment?","Would you mind waiting here a moment for me?"]},
- {tag:"The more ~, the more ~",ko:"~할수록 더 ~",sent:"The more I practice, the better I get.",trans:"연습할수록 더 나아져요.",tips:["the more는 '더모어'","better의 tt는 'ㄹ'(베러)"],exp:["The more I practice, the better I get.","The more I practice English, the better I get.","The more I practice English daily, the better I get.","The more I practice English daily, the better I get at speaking."]},
- {tag:"I'm not sure if ___",ko:"~인지 잘 모르겠어요",sent:"I'm not sure if it's right.",trans:"맞는지 잘 모르겠어요.",tips:["not sure는 '낫슈어'","if it's는 '이핏츠'로 연음"],exp:["I'm not sure if it's right.","I'm not sure if it's the right way.","I'm not sure if it's the right way to do it.","I'm not sure if it's the right way to do it here."]},
- {tag:"It depends on ___",ko:"~에 따라 달라요",sent:"It depends on the time.",trans:"시간에 따라 달라요.",tips:["depends on은 '디펜전'으로 연음","끝의 ds는 약하게"],exp:["It depends on the time.","It depends on the time of day.","It depends on the time of day and place.","It depends on the time of day and the weather."]}
+ {tag:"I've been ___ing",ko:"~해오고 있어요",sent:"I've been waiting.",trans:"기다리고 있었어요.",tips:["I've been은 '아입빈'","WAIT-ing 앞강세"],exp:["I've been waiting.","I've been waiting for you.","I've been waiting for you for an hour.","I've been waiting for you for an hour outside."]},
+ {tag:"I was going to ___",ko:"~하려고 했어요",sent:"I was going to call.",trans:"전화하려고 했어요.",tips:["was going to는 '워즈거너'","CALL의 l 살리기"],exp:["I was going to call.","I was going to call you.","I was going to call you tonight.","I was going to call you tonight after dinner."]},
+ {tag:"Would you mind ___ing?",ko:"~해주실래요?",sent:"Would you mind waiting?",trans:"기다려주실래요?",tips:["Would you는 '우쥬'","mind의 d는 약하게"],exp:["Would you mind waiting?","Would you mind waiting here?","Would you mind waiting here a moment?","Would you mind waiting here a moment for me?"]},
+ {tag:"The more ~, the more ~",ko:"~할수록 더 ~",sent:"The more I practice, the better I get.",trans:"연습할수록 더 나아져요.",tips:["the more는 '더모어'","better의 tt는 'ㄹ'"],exp:["The more I practice, the better I get.","The more I practice English, the better I get.","The more I practice English daily, the better I get.","The more I practice English daily, the better I get at speaking."]},
+ {tag:"I'm not sure if ___",ko:"~인지 잘 모르겠어요",sent:"I'm not sure if it's right.",trans:"맞는지 잘 모르겠어요.",tips:["not sure는 '낫슈어'","if it's는 '이핏츠'"],exp:["I'm not sure if it's right.","I'm not sure if it's the right way.","I'm not sure if it's the right way to do it.","I'm not sure if it's the right way to do it here."]},
+ {tag:"It depends on ___",ko:"~에 따라 달라요",sent:"It depends on the time.",trans:"시간에 따라 달라요.",tips:["depends on은 '디펜전'","끝의 ds는 약하게"],exp:["It depends on the time.","It depends on the time of day.","It depends on the time of day and place.","It depends on the time of day and the weather."]},
+ {tag:"I used to ___",ko:"예전에 ~하곤 했어요",sent:"I used to live in Busan.",trans:"예전에 부산에 살았어요.",tips:["used to는 '유스투'","live in은 '리빈' 연음"],exp:["I used to live in Busan.","I used to live in Busan as a kid.","I used to live in Busan when I was young.","I used to live in Busan when I was a little kid."]},
+ {tag:"I'm thinking about ___ing",ko:"~할까 생각 중이에요",sent:"I'm thinking about moving.",trans:"이사할까 생각 중이에요.",tips:["thinking about은 '띵킹어바웃'","MOV-ing 앞강세"],exp:["I'm thinking about moving.","I'm thinking about moving soon.","I'm thinking about moving to Seoul.","I'm thinking about moving to Seoul next year."]},
+ {tag:"You should ___",ko:"~해보는 게 좋아요",sent:"You should try this.",trans:"이거 한번 해봐요.",tips:["should는 '슈드' 약하게","TRY를 강하게"],exp:["You should try this.","You should really try this.","You should try this place.","You should really try this place sometime."]},
+ {tag:"It looks like ___",ko:"~할 것 같아요",sent:"It looks like rain.",trans:"비 올 것 같아요.",tips:["looks like는 '룩슬라잌'","RAIN을 강하게"],exp:["It looks like rain.","It looks like it'll rain.","It looks like it's going to rain.","It looks like it's going to rain all day."]},
+ {tag:"I'd rather ___",ko:"차라리 ~할래요",sent:"I'd rather stay home.",trans:"차라리 집에 있을래요.",tips:["I'd rather는 '아이드래더'","HOME을 강하게"],exp:["I'd rather stay home.","I'd rather just stay home.","I'd rather stay home tonight.","I'd rather just stay home and relax tonight."]},
+ {tag:"As soon as ___",ko:"~하자마자",sent:"I'll call you as soon as I arrive.",trans:"도착하자마자 전화할게요.",tips:["as soon as는 '애즈수너즈'","ar-RIVE 끝강세"],exp:["I'll call as soon as I arrive.","I'll call you as soon as I arrive.","I'll call you as soon as I get there.","I'll call you as soon as I get there, I promise."]},
+ {tag:"Even though ___",ko:"~인데도",sent:"Even though it's hard, I enjoy it.",trans:"힘든데도 즐거워요.",tips:["though는 '도우'","en-JOY 끝강세"],exp:["Even though it's hard, I enjoy it.","Even though it's hard, I really enjoy it.","Even though it's really hard, I enjoy it.","Even though it's really hard, I enjoy it a lot."]},
+ {tag:"I'm supposed to ___",ko:"~하기로 되어 있어요",sent:"I'm supposed to meet her.",trans:"그녀를 만나기로 되어 있어요.",tips:["supposed to는 '서포즈투'","MEET을 강하게"],exp:["I'm supposed to meet her.","I'm supposed to meet her today.","I'm supposed to meet her at noon.","I'm supposed to meet her at noon downtown."]},
+ {tag:"Make sure to ___",ko:"꼭 ~하세요",sent:"Make sure to lock the door.",trans:"꼭 문 잠그세요.",tips:["Make sure는 '메잌슈어'","LOCK을 강하게"],exp:["Make sure to lock the door.","Make sure to lock the front door.","Make sure to lock the door before you leave.","Make sure to lock the front door before you leave."]},
+ {tag:"It takes ___ to ___",ko:"~하는 데 ~ 걸려요",sent:"It takes an hour to get there.",trans:"거기 가는 데 한 시간 걸려요.",tips:["takes an은 '테잌선' 연음","HOUR의 h는 묵음"],exp:["It takes an hour to get there.","It takes about an hour to get there.","It takes about an hour to get to work.","It usually takes about an hour to get to work."]},
+ {tag:"I can't wait to ___",ko:"빨리 ~하고 싶어요",sent:"I can't wait to see you.",trans:"빨리 보고 싶어요.",tips:["can't wait는 '캔웨잇'","SEE를 강하게"],exp:["I can't wait to see you.","I can't wait to see you again.","I really can't wait to see you.","I really can't wait to see you again soon."]},
+ {tag:"No matter how ___",ko:"아무리 ~해도",sent:"No matter how hard it is, don't give up.",trans:"아무리 힘들어도 포기하지 마요.",tips:["No matter는 '노매러'","give up은 '기법' 연음"],exp:["No matter how hard it is, don't give up.","No matter how hard it gets, don't give up.","No matter how hard it gets, never give up.","No matter how hard it gets, never give up on your dream."]},
+ {tag:"I'm getting used to ___",ko:"~에 익숙해지고 있어요",sent:"I'm getting used to the weather.",trans:"날씨에 익숙해지고 있어요.",tips:["getting used to는 '게링유스투'","WEA-ther 앞강세"],exp:["I'm getting used to the weather.","I'm getting used to the cold weather.","I'm slowly getting used to the weather.","I'm slowly getting used to the cold weather here."]},
+ {tag:"There's no point in ___ing",ko:"~해봐야 소용없어요",sent:"There's no point in worrying.",trans:"걱정해봐야 소용없어요.",tips:["no point in은 '노포인틴'","WOR-rying 앞강세"],exp:["There's no point in worrying.","There's no point in worrying now.","There's no point in worrying about it.","There's really no point in worrying about it now."]},
+ {tag:"I'd appreciate it if ___",ko:"~해주시면 감사하겠어요",sent:"I'd appreciate it if you could help.",trans:"도와주시면 감사하겠어요.",tips:["appreciate it은 '어프리쉬에이릿'","HELP을 강하게"],exp:["I'd appreciate it if you could help.","I'd appreciate it if you could help me.","I'd really appreciate it if you could help.","I'd really appreciate it if you could help me out."]},
+ {tag:"Let me know if ___",ko:"~하면 알려줘요",sent:"Let me know if you need anything.",trans:"필요한 거 있으면 알려줘요.",tips:["Let me know는 '렛미노우'","need anything 연음"],exp:["Let me know if you need anything.","Let me know if you need something.","Just let me know if you need anything.","Just let me know if you need anything at all."]},
+ {tag:"I have no idea ___",ko:"~인지 전혀 모르겠어요",sent:"I have no idea what to do.",trans:"뭘 해야 할지 모르겠어요.",tips:["no idea는 '노아이디어'","what to는 '왓투'"],exp:["I have no idea what to do.","I have no idea what to do now.","Honestly, I have no idea what to do.","Honestly, I have no idea what to do about it."]},
+ {tag:"It's worth ___ing",ko:"~할 만해요",sent:"It's worth trying.",trans:"해볼 만해요.",tips:["worth는 '워쓰'","TRY-ing 앞강세"],exp:["It's worth trying.","It's worth a try.","It's definitely worth trying.","It's definitely worth trying at least once."]},
+ {tag:"I ended up ___ing",ko:"결국 ~하게 됐어요",sent:"I ended up staying late.",trans:"결국 늦게까지 있었어요.",tips:["ended up은 '엔디덥' 연음","STAY-ing 앞강세"],exp:["I ended up staying late.","I ended up staying up late.","I ended up staying late at work.","I ended up staying late at work again."]},
+ {tag:"By the time ___",ko:"~할 때쯤이면",sent:"By the time I got there, it was closed.",trans:"내가 도착했을 땐 이미 닫혀 있었어요.",tips:["By the time은 '바이더타임'","CLOSED를 강하게"],exp:["By the time I got there, it was closed.","By the time I arrived, it was closed.","By the time I got there, it was already closed.","By the time I finally got there, it was already closed."]},
+ {tag:"I'm in the middle of ___",ko:"~하는 중이에요",sent:"I'm in the middle of something.",trans:"지금 뭐 하는 중이에요.",tips:["middle of는 '미를업' 연음","SOME-thing 앞강세"],exp:["I'm in the middle of something.","I'm in the middle of work.","I'm right in the middle of something.","I'm right in the middle of something important."]},
+ {tag:"That's why ___",ko:"그래서 ~예요",sent:"That's why I called you.",trans:"그래서 전화한 거예요.",tips:["That's why는 '댓츠와이'","CALLED를 강하게"],exp:["That's why I called you.","That's why I called you earlier.","That's exactly why I called you.","That's exactly why I called you this morning."]},
+ {tag:"I feel like ___ing",ko:"~하고 싶은 기분이에요",sent:"I feel like taking a walk.",trans:"산책하고 싶어요.",tips:["feel like는 '필라잌'","WALK을 강하게"],exp:["I feel like taking a walk.","I feel like going for a walk.","I feel like taking a short walk.","I feel like taking a short walk outside."]},
+ {tag:"I'm about to ___",ko:"막 ~하려던 참이에요",sent:"I'm about to leave.",trans:"지금 막 나가려던 참이에요.",tips:["about to는 '어바우루' 연음","LEAVE를 강하게"],exp:["I'm about to leave.","I'm just about to leave.","I'm about to leave the office.","I'm just about to leave the office now."]},
+ {tag:"You'd better ___",ko:"~하는 게 좋을 거예요",sent:"You'd better hurry.",trans:"서두르는 게 좋을 거예요.",tips:["You'd better는 '유베러'","HUR-ry 앞강세"],exp:["You'd better hurry.","You'd better hurry up.","You'd better hurry up now.","You'd better hurry up or we'll be late."]},
+ {tag:"Chances are ___",ko:"아마 ~일 거예요",sent:"Chances are he forgot.",trans:"아마 그가 깜빡했을 거예요.",tips:["Chances are는 '챈시저'","for-GOT 끝강세"],exp:["Chances are he forgot.","Chances are he just forgot.","Chances are he simply forgot.","Chances are he simply forgot about it."]},
+ {tag:"I can't help ___ing",ko:"~하지 않을 수 없어요",sent:"I can't help laughing.",trans:"웃음을 참을 수가 없어요.",tips:["can't help는 '캔트헬프'","LAUGH-ing 앞강세"],exp:["I can't help laughing.","I can't help but laugh.","I just can't help laughing.","I just can't help laughing every time."]},
+ {tag:"It's been a while since ___",ko:"~한 지 오래됐어요",sent:"It's been a while since we met.",trans:"우리 만난 지 오래됐네요.",tips:["been a while은 '비너와일'","MET을 강하게"],exp:["It's been a while since we met.","It's been a while since we last met.","It's been quite a while since we met.","It's been quite a while since we last met up."]},
+ {tag:"Now that ___",ko:"이제 ~하니까",sent:"Now that you're here, let's start.",trans:"이제 왔으니까 시작하자.",tips:["Now that은 '나우댓'","you're here는 '유어히어'"],exp:["Now that you're here, let's start.","Now that you're here, let's begin.","Now that everyone's here, let's start.","Now that everyone's here, let's get started."]},
+ {tag:"What if ___?",ko:"~하면 어떡하지?",sent:"What if it rains?",trans:"비 오면 어떡하지?",tips:["What if는 '와립' 연음","RAINS를 강하게"],exp:["What if it rains?","What if it rains tomorrow?","What if it rains during the trip?","What if it rains during the whole trip?"]}
 ],
 "중급":[
- {tag:"If I were you, I would ___",ko:"나라면 ~할 거예요",sent:"If I were you, I would wait.",trans:"나라면 기다릴 거예요.",tips:["would는 '우드' 약하게","wait의 t로 끊어 마무리"],exp:["If I were you, I would wait.","If I were you, I would wait a little.","If I were you, I would wait a little longer.","If I were you, I would wait a little longer before deciding."]},
- {tag:"I should have ___",ko:"~했어야 했어요",sent:"I should have known.",trans:"알았어야 했어요.",tips:["should have는 '슈러브'로 한 덩어리","known의 n을 살려요"],exp:["I should have known.","I should have known better.","I should have known better than that.","I should have known better than to wait so long."]},
- {tag:"What I'm trying to say is ___",ko:"제 말은 ~라는 거예요",sent:"What I'm trying to say is it matters.",trans:"제 말은 그게 중요하다는 거예요.",tips:["trying to는 '트라이너'","matters의 tt는 'ㄹ'(매러스)"],exp:["What I'm trying to say is it matters.","What I'm trying to say is it really matters.","What I'm trying to say is it really matters to me.","What I'm trying to say is it really matters to me a lot."]},
- {tag:"As far as I know, ___",ko:"제가 아는 한 ~",sent:"As far as I know, it's free.",trans:"제가 아는 한 무료예요.",tips:["As far as는 '애즈파라즈'로 흘려요","know의 끝을 부드럽게"],exp:["As far as I know, it's free.","As far as I know, it's completely free.","As far as I know, it's completely free for now.","As far as I know, it's completely free for new members."]}
+ {tag:"If I were you, I would ___",ko:"나라면 ~할 거예요",sent:"If I were you, I would wait.",trans:"나라면 기다릴 거예요.",tips:["would는 '우드' 약하게","wait의 t로 끊기"],exp:["If I were you, I would wait.","If I were you, I would wait a little.","If I were you, I would wait a little longer.","If I were you, I would wait a little longer before deciding."]},
+ {tag:"I should have ___",ko:"~했어야 했어요",sent:"I should have known.",trans:"알았어야 했어요.",tips:["should have는 '슈러브'","known의 n 살리기"],exp:["I should have known.","I should have known better.","I should have known better than that.","I should have known better than to wait so long."]},
+ {tag:"What I'm trying to say is ___",ko:"제 말은 ~라는 거예요",sent:"What I'm trying to say is it matters.",trans:"제 말은 그게 중요하다는 거예요.",tips:["trying to는 '트라이너'","matters의 tt는 'ㄹ'"],exp:["What I'm trying to say is it matters.","What I'm trying to say is it really matters.","What I'm trying to say is it really matters to me.","What I'm trying to say is it really matters to me a lot."]},
+ {tag:"As far as I know, ___",ko:"제가 아는 한 ~",sent:"As far as I know, it's free.",trans:"제가 아는 한 무료예요.",tips:["As far as는 '애즈파라즈'","know 끝 부드럽게"],exp:["As far as I know, it's free.","As far as I know, it's completely free.","As far as I know, it's completely free for now.","As far as I know, it's completely free for new members."]},
+ {tag:"I can't believe ___",ko:"~라니 믿기지 않아요",sent:"I can't believe it's over.",trans:"끝났다니 믿기지 않아요.",tips:["can't believe는 '캔빌리브'","it's over는 '잇츠오버'"],exp:["I can't believe it's over.","I can't believe it's already over.","I really can't believe it's over.","I really can't believe it's already over."]},
+ {tag:"The thing is, ___",ko:"사실은요, ~",sent:"The thing is, I'm not ready.",trans:"사실은, 저 준비가 안 됐어요.",tips:["The thing is는 '더띵이즈'","READ-y 앞강세"],exp:["The thing is, I'm not ready.","The thing is, I'm not quite ready.","The thing is, I'm really not ready yet.","The thing is, I'm really not ready for this yet."]},
+ {tag:"It's not that ~, it's just ~",ko:"~가 아니라 그냥 ~예요",sent:"It's not that I don't like it, it's just expensive.",trans:"싫은 게 아니라 그냥 비싼 거예요.",tips:["not that은 '낫댓'","just는 '저스트' 짧게"],exp:["It's not that I don't like it, it's just expensive.","It's not that I hate it, it's just too expensive.","It's not that I don't want it, it's just a bit pricey.","It's not that I don't want it, it's just a little out of my budget."]},
+ {tag:"I was wondering if ___",ko:"혹시 ~인지 궁금했어요",sent:"I was wondering if you're free.",trans:"혹시 시간 되시는지 궁금했어요.",tips:["wondering if는 '원더링이프'","FREE를 강하게"],exp:["I was wondering if you're free.","I was wondering if you're free today.","I was wondering if you're free this weekend.","I was wondering if you're free for lunch this weekend."]},
+ {tag:"To be honest, ___",ko:"솔직히 말하면 ~",sent:"To be honest, I forgot.",trans:"솔직히 말하면 깜빡했어요.",tips:["To be honest는 '투비아너스트' (h 묵음)","for-GOT 끝강세"],exp:["To be honest, I forgot.","To be honest, I totally forgot.","To be honest, I completely forgot about it.","To be honest, I completely forgot about it until now."]},
+ {tag:"I'd say ___",ko:"~인 것 같아요(제 생각엔)",sent:"I'd say it's worth it.",trans:"제 생각엔 그럴 만한 가치가 있어요.",tips:["I'd say는 '아이드세이'","WORTH를 강하게"],exp:["I'd say it's worth it.","I'd say it's totally worth it.","I'd say it's definitely worth it.","I'd say it's definitely worth it in the long run."]},
+ {tag:"It turns out ___",ko:"알고 보니 ~였어요",sent:"It turns out he was right.",trans:"알고 보니 그가 맞았어요.",tips:["turns out은 '턴자웃' 연음","RIGHT를 강하게"],exp:["It turns out he was right.","It turns out he was right all along.","It turns out she was right after all.","It turns out she was right about everything."]},
+ {tag:"I might as well ___",ko:"이왕 이렇게 된 거 ~할래요",sent:"I might as well start now.",trans:"이왕이면 지금 시작할래요.",tips:["might as well은 '마이러즈웰'","START를 강하게"],exp:["I might as well start now.","I might as well just start now.","I might as well start it now.","I might as well just start the whole thing now."]},
+ {tag:"The last thing I want is ___",ko:"제일 원치 않는 건 ~예요",sent:"The last thing I want is trouble.",trans:"제일 원치 않는 건 문제예요.",tips:["last thing은 '래스띵'","TROU-ble 앞강세"],exp:["The last thing I want is trouble.","The last thing I want is any trouble.","The last thing I want is to cause trouble.","The last thing I want is to cause any trouble for you."]},
+ {tag:"I have mixed feelings about ___",ko:"~에 대해 마음이 복잡해요",sent:"I have mixed feelings about moving.",trans:"이사에 대해 마음이 복잡해요.",tips:["mixed feelings는 '믹스트필링스'","MOV-ing 앞강세"],exp:["I have mixed feelings about moving.","I have mixed feelings about moving away.","I have really mixed feelings about moving.","I have really mixed feelings about moving so far away."]},
+ {tag:"It goes without saying that ___",ko:"~는 말할 것도 없죠",sent:"It goes without saying that practice matters.",trans:"연습이 중요한 건 말할 것도 없죠.",tips:["without saying은 '위다웃세잉'","MAT-ters 앞강세"],exp:["It goes without saying that practice matters.","It goes without saying that daily practice matters.","It goes without saying that consistency matters most.","It goes without saying that consistency matters most in the end."]},
+ {tag:"I'm having second thoughts about ___",ko:"~를 다시 고민하고 있어요",sent:"I'm having second thoughts about the plan.",trans:"그 계획을 다시 고민하고 있어요.",tips:["second thoughts는 '세컨쏘츠'","PLAN을 강하게"],exp:["I'm having second thoughts about the plan.","I'm having second thoughts about this plan.","I'm having some second thoughts about the plan.","I'm having some second thoughts about the whole plan."]},
+ {tag:"Long story short, ___",ko:"간단히 말하면 ~",sent:"Long story short, we made it.",trans:"간단히 말하면, 우리 해냈어요.",tips:["Long story short는 '롱스토리숏'","MADE it 연음"],exp:["Long story short, we made it.","Long story short, we finally made it.","Long story short, we made it in the end.","Long story short, we made it just in time."]},
+ {tag:"You have a point, but ___",ko:"일리 있는데, 하지만 ~",sent:"You have a point, but it's risky.",trans:"일리는 있는데, 좀 위험해요.",tips:["have a point는 '해버포인트'","RIS-ky 앞강세"],exp:["You have a point, but it's risky.","You have a point, but it's still risky.","You have a good point, but it's risky.","You have a good point, but it's still pretty risky."]},
+ {tag:"What's the point of ___ing?",ko:"~해서 뭐 해요?",sent:"What's the point of waiting?",trans:"기다려서 뭐 해요?",tips:["What's the point는 '왓츠더포인트'","WAIT-ing 앞강세"],exp:["What's the point of waiting?","What's the point of waiting now?","What's the point of waiting any longer?","What's the point of waiting any longer for them?"]},
+ {tag:"I can't put my finger on ___",ko:"딱 집어 말 못 하겠어요",sent:"I can't put my finger on it.",trans:"뭔가 딱 집어 말을 못 하겠어요.",tips:["put my finger on은 '풋마이핑거론'","FIN-ger 앞강세"],exp:["I can't put my finger on it.","I just can't put my finger on it.","I can't quite put my finger on it.","I can't quite put my finger on what's wrong."]},
+ {tag:"Let's call it a day.",ko:"오늘은 여기까지 하자.",sent:"Let's call it a day.",trans:"오늘은 이만 마무리하자.",tips:["call it a는 '콜이러' 연음","DAY를 강하게"],exp:["Let's call it a day.","I think we should call it a day.","It's late, let's call it a day.","It's getting late, let's just call it a day."]},
+ {tag:"It's a piece of cake.",ko:"식은 죽 먹기예요.",sent:"It's a piece of cake.",trans:"이건 식은 죽 먹기예요.",tips:["piece of는 '피서브' 연음","CAKE를 강하게"],exp:["It's a piece of cake.","This is a piece of cake.","Don't worry, it's a piece of cake.","Trust me, this whole thing is a piece of cake."]},
+ {tag:"I'm broke.",ko:"나 빈털터리야.",sent:"I'm broke.",trans:"나 완전 돈 없어.",tips:["broke는 '브로욱'","감정을 살려서"],exp:["I'm broke.","I'm totally broke.","I'm completely broke right now.","I'm completely broke until next payday."]},
+ {tag:"That makes sense.",ko:"말 되네요.",sent:"That makes sense.",trans:"아, 그러네요. 말 되네요.",tips:["makes sense는 '메잌센스'","SENSE를 강하게"],exp:["That makes sense.","Oh, that makes sense.","Yeah, that actually makes sense.","Yeah, that actually makes a lot of sense."]},
+ {tag:"It's up to you.",ko:"너한테 달렸어.",sent:"It's up to you.",trans:"네가 결정해, 너한테 달렸어.",tips:["up to you는 '업투유'","YOU를 강하게"],exp:["It's up to you.","It's totally up to you.","Honestly, it's up to you.","Honestly, it's completely up to you."]},
+ {tag:"I'm on my way.",ko:"가는 중이야.",sent:"I'm on my way.",trans:"지금 가는 중이야.",tips:["on my way는 '온마이웨이'","WAY를 강하게"],exp:["I'm on my way.","I'm on my way now.","Don't worry, I'm on my way.","Don't worry, I'm on my way right now."]},
+ {tag:"Hang in there.",ko:"조금만 버텨.",sent:"Hang in there.",trans:"조금만 더 버텨, 힘내.",tips:["Hang in은 '행인' 연음","THERE를 강하게"],exp:["Hang in there.","Just hang in there.","Hang in there, you're doing great.","Hang in there, you're almost done."]},
+ {tag:"No worries.",ko:"괜찮아 / 걱정 마.",sent:"No worries.",trans:"괜찮아, 걱정 마.",tips:["No worries는 '노워리스'","편하게 던지듯"],exp:["No worries.","No worries at all.","Seriously, no worries.","Seriously, no worries at all."]},
+ {tag:"It slipped my mind.",ko:"깜빡했어요.",sent:"It slipped my mind.",trans:"아, 깜빡 잊어버렸어요.",tips:["slipped my는 '슬립트마이'","MIND를 강하게"],exp:["It slipped my mind.","It totally slipped my mind.","Sorry, it slipped my mind.","Sorry, it completely slipped my mind."]},
+ {tag:"Let's keep in touch.",ko:"계속 연락하자.",sent:"Let's keep in touch.",trans:"앞으로도 계속 연락하자.",tips:["keep in touch는 '키핀터치'","TOUCH를 강하게"],exp:["Let's keep in touch.","Let's keep in touch, okay?","Let's definitely keep in touch.","Let's definitely keep in touch from now on."]}
+],
+"고급":[
+ {tag:"I would have ___ if ___",ko:"~했더라면 ~했을 텐데",sent:"I would have come if I had known.",trans:"알았더라면 갔을 텐데요.",tips:["would have는 '우러브'","had known은 '해드노운'"],exp:["I would have come if I had known.","I would have come if I had known earlier.","I would have come sooner if I had known.","I would have come much sooner if I had known about it."]},
+ {tag:"Had I known ~, I would ___",ko:"~를 알았더라면 ~했을 텐데",sent:"Had I known, I would have helped.",trans:"알았더라면 도왔을 텐데요.",tips:["Had I known은 '해다이노운'","HELPED를 강하게"],exp:["Had I known, I would have helped.","Had I known, I would have helped you.","Had I known earlier, I would have helped.","Had I known earlier, I would have helped you out."]},
+ {tag:"Not only ~ but also ~",ko:"~뿐만 아니라 ~도",sent:"Not only is it fast, but it's also cheap.",trans:"빠를 뿐 아니라 싸기도 해요.",tips:["Not only는 도치, '낫온리'","also cheap 강세"],exp:["Not only is it fast, but it's also cheap.","Not only is it fast, but it's also really cheap.","Not only is it fast and cheap, but it's also easy.","Not only is it fast and cheap, but it's also incredibly easy to use."]},
+ {tag:"What strikes me is ___",ko:"인상적인 건 ~예요",sent:"What strikes me is how calm she is.",trans:"인상적인 건 그녀가 참 차분하다는 거예요.",tips:["strikes me는 '스트라잌스미'","CALM의 l은 묵음"],exp:["What strikes me is how calm she is.","What strikes me is how calm she always is.","What really strikes me is how calm she stays.","What really strikes me is how calm she stays under pressure."]},
+ {tag:"I can't help but ___",ko:"~하지 않을 수 없어요",sent:"I can't help but wonder.",trans:"궁금해하지 않을 수가 없네요.",tips:["help but은 '헬법'","WON-der 앞강세"],exp:["I can't help but wonder.","I can't help but wonder why.","I can't help but wonder what happened.","I can't help but wonder what really happened that day."]},
+ {tag:"Far from ~, ___",ko:"~기는커녕 오히려 ~",sent:"Far from being easy, it was a nightmare.",trans:"쉽기는커녕 악몽이었어요.",tips:["Far from은 '파프롬'","NIGHT-mare 앞강세"],exp:["Far from being easy, it was a nightmare.","Far from being easy, it was a total nightmare.","Far from being simple, it turned into a nightmare.","Far from being simple, the whole thing turned into a nightmare."]},
+ {tag:"Be that as it may, ___",ko:"그렇다 하더라도 ~",sent:"Be that as it may, we have to try.",trans:"그렇다 하더라도 우린 시도해야 해요.",tips:["Be that as it may는 '비댓애짓메이'","TRY를 강하게"],exp:["Be that as it may, we have to try.","Be that as it may, we still have to try.","Be that as it may, we must try anyway.","Be that as it may, we must try our best anyway."]},
+ {tag:"I'm inclined to ___",ko:"~하는 쪽으로 기울어요",sent:"I'm inclined to agree.",trans:"동의하는 쪽으로 기울어요.",tips:["inclined to는 '인클라인투'","a-GREE 끝강세"],exp:["I'm inclined to agree.","I'm inclined to agree with you.","I'm inclined to agree with that idea.","I'm inclined to agree with that idea, to be honest."]},
+ {tag:"It dawned on me that ___",ko:"문득 ~라는 걸 깨달았어요",sent:"It dawned on me that I was wrong.",trans:"문득 내가 틀렸다는 걸 깨달았어요.",tips:["dawned on me는 '돈드온미'","WRONG을 강하게"],exp:["It dawned on me that I was wrong.","It slowly dawned on me that I was wrong.","It suddenly dawned on me that I was wrong.","It suddenly dawned on me that I had been wrong all along."]},
+ {tag:"For all I know, ___",ko:"내가 알기로는 ~일 수도 있어요",sent:"For all I know, he's already gone.",trans:"내가 알기론 그는 이미 떠났을 수도 있어요.",tips:["For all I know는 '퍼럴아이노우'","GONE을 강하게"],exp:["For all I know, he's already gone.","For all I know, he's already left.","For all I know, they're already gone.","For all I know, they could already be long gone."]},
+ {tag:"Given that ___",ko:"~인 점을 감안하면",sent:"Given that it's late, let's stop.",trans:"늦은 걸 감안해서 그만하죠.",tips:["Given that은 '기븐댓'","STOP을 강하게"],exp:["Given that it's late, let's stop.","Given that it's getting late, let's stop.","Given that it's so late, let's wrap up.","Given that it's so late, let's just wrap up for today."]},
+ {tag:"I take it (that) ___",ko:"~인가 보네요",sent:"I take it you've heard the news.",trans:"소식 들으셨나 보네요.",tips:["I take it은 '아이테이킷'","NEWS를 강하게"],exp:["I take it you've heard.","I take it you've heard the news.","I take it you've already heard the news.","I take it you've already heard the big news by now."]},
+ {tag:"Suffice it to say, ___",ko:"이 정도만 말해둘게요, ~",sent:"Suffice it to say, it didn't go well.",trans:"한마디로, 잘 안 됐어요.",tips:["Suffice it to say는 '서파이짓투세이'","WELL을 강하게"],exp:["Suffice it to say, it didn't go well.","Suffice it to say, it didn't go very well.","Suffice it to say, things didn't go as planned.","Suffice it to say, things didn't quite go as planned."]},
+ {tag:"The bottom line is ___",ko:"결론은 ~예요",sent:"The bottom line is we need more time.",trans:"결론은 시간이 더 필요하다는 거예요.",tips:["bottom line은 '바럼라인'","TIME을 강하게"],exp:["The bottom line is we need more time.","The bottom line is we need a bit more time.","The bottom line is we simply need more time.","The bottom line is we simply need more time to finish this."]},
+ {tag:"[슬랭] It's lit.",ko:"완전 신난다 / 끝내준다.",sent:"This party is lit.",trans:"이 파티 완전 끝내준다.",tips:["lit은 '릿' 짧고 강하게","감탄 톤으로"],exp:["It's lit.","This is lit.","This party is lit.","This party is absolutely lit tonight."]},
+ {tag:"[슬랭] No cap.",ko:"진짜야, 거짓말 아냐.",sent:"That movie was amazing, no cap.",trans:"그 영화 진짜 끝내줬어, 거짓말 아냐.",tips:["No cap은 '노캡' 또박또박","문장 끝에 붙여요"],exp:["No cap.","I'm serious, no cap.","That was amazing, no cap.","That was the best concert ever, no cap."]},
+ {tag:"[슬랭] That's a vibe.",ko:"그 느낌 좋다 / 분위기 있다.",sent:"This cafe is such a vibe.",trans:"이 카페 분위기 진짜 좋다.",tips:["vibe는 '바이브'","느낌을 살려서"],exp:["That's a vibe.","This is such a vibe.","This cafe is such a vibe.","This whole place is such a vibe, honestly."]},
+ {tag:"[슬랭] I'm dead.",ko:"너무 웃겨 죽겠어.",sent:"That joke killed me, I'm dead.",trans:"그 농담 때문에 웃겨 죽는 줄.",tips:["dead는 '데드' 과장되게","웃음 섞어서"],exp:["I'm dead.","Stop, I'm dead.","That was so funny, I'm dead.","That meme was so funny, I'm literally dead."]},
+ {tag:"[슬랭] Let's bounce.",ko:"이제 가자 / 뜨자.",sent:"This is boring, let's bounce.",trans:"여기 지루해, 그만 가자.",tips:["bounce는 '바운스'","가볍게 던지듯"],exp:["Let's bounce.","Come on, let's bounce.","This is boring, let's bounce.","This place is dead, let's just bounce."]},
+ {tag:"[슬랭] My bad.",ko:"내 잘못이야, 미안.",sent:"Oh, my bad.",trans:"아, 내 잘못이야 미안.",tips:["My bad는 '마이배드'","가볍게 사과 톤"],exp:["My bad.","Oh, my bad.","Sorry, my bad.","Sorry about that, my bad."]},
+ {tag:"[슬랭] It's a rip-off.",ko:"완전 바가지야.",sent:"Ten dollars? That's a rip-off.",trans:"10달러? 완전 바가지네.",tips:["rip-off는 '립오프'","어이없는 톤으로"],exp:["It's a rip-off.","That's a total rip-off.","Honestly, it's a rip-off.","Honestly, that price is a complete rip-off."]},
+ {tag:"[슬랭] I'm beat.",ko:"완전 지쳤어.",sent:"What a day, I'm beat.",trans:"오늘 진짜, 완전 녹초야.",tips:["beat은 '비트' 강하게","지친 톤으로"],exp:["I'm beat.","I'm so beat.","What a long day, I'm beat.","After that workout, I'm totally beat."]},
+ {tag:"[슬랭] Spill the tea.",ko:"썰 좀 풀어봐.",sent:"Come on, spill the tea.",trans:"자, 무슨 일인지 다 말해봐.",tips:["Spill the tea는 '스필더티'","TEA를 강하게"],exp:["Spill the tea.","Come on, spill the tea.","Okay, now spill the tea.","Okay, sit down and spill all the tea."]},
+ {tag:"[슬랭] That hits different.",ko:"이건 느낌이 남다르다.",sent:"This song hits different at night.",trans:"이 노래 밤에 들으면 느낌이 다르다.",tips:["hits different는 '히츠디퍼런트'","different 앞강세"],exp:["That hits different.","This one hits different.","This song hits different.","This song hits different late at night."]},
+ {tag:"[현지] I'll take a rain check.",ko:"다음 기회에 할게요.",sent:"I'll take a rain check on dinner.",trans:"저녁은 다음 기회에 할게요.",tips:["rain check은 '레인첵'","정중하게 거절"],exp:["I'll take a rain check.","Can I take a rain check?","I'll take a rain check this time.","I'll have to take a rain check, but thanks for asking."]},
+ {tag:"[현지] It's not my cup of tea.",ko:"제 취향은 아니에요.",sent:"Horror movies aren't my cup of tea.",trans:"공포 영화는 제 취향이 아니에요.",tips:["cup of tea는 '커퍼티' 연음","부드러운 톤"],exp:["It's not my cup of tea.","That's not really my cup of tea.","Horror isn't my cup of tea.","Horror movies really aren't my cup of tea."]},
+ {tag:"[현지] Let's play it by ear.",ko:"상황 봐서 정하자.",sent:"Let's just play it by ear.",trans:"그냥 상황 봐서 정하자.",tips:["play it by ear는 '플레이릿바이이어'","EAR를 강하게"],exp:["Let's play it by ear.","Let's just play it by ear.","We can play it by ear.","We can just play it by ear and see how it goes."]},
+ {tag:"[현지] Break a leg!",ko:"행운을 빌어!",sent:"You'll do great. Break a leg!",trans:"잘할 거야. 행운을 빌어!",tips:["Break a leg는 '브레이커레그' 연음","응원 톤으로"],exp:["Break a leg!","Good luck, break a leg!","You've got this, break a leg!","You've practiced so much, break a leg out there!"]},
+ {tag:"[현지] It costs an arm and a leg.",ko:"엄청 비싸요.",sent:"That bag costs an arm and a leg.",trans:"그 가방 엄청 비싸요.",tips:["an arm and a는 '어나머너' 연음","LEG를 강하게"],exp:["It costs an arm and a leg.","It costs an arm and a leg these days.","That car costs an arm and a leg.","That brand-new car costs an arm and a leg these days."]},
+ {tag:"[현지] I'm all ears.",ko:"귀 기울일게요, 말해봐요.",sent:"Go ahead, I'm all ears.",trans:"어서요, 귀 기울일게요.",tips:["all ears는 '올이어즈'","EARS를 강하게"],exp:["I'm all ears.","Go on, I'm all ears.","Tell me, I'm all ears.","Take your time, I'm all ears."]}
 ]
 };
 
@@ -457,8 +593,28 @@ const MILESTONE_MSG={
  28:"한 달 완주! 이제 진짜 영어가 몸에 붙고 있어요 🎯",
  56:"두 달! 절반을 향해 달려가고 있어요 🚴",
  84:"3개월 완주! 정말 대단해요. 영어가 두렵지 않죠? 🏆",
- 168:"6개월 대장정 완주! 당신은 이미 다른 사람이에요 👑"
+ 112:"4개월! 꾸준함이 곧 실력이에요 💎",
+ 140:"5개월! 이제 영어가 입에 붙었어요 🗣️",
+ 168:"6개월 대장정 완주! 당신은 이미 다른 사람이에요 👑",
+ 252:"9개월! 이 정도면 영어가 습관이에요 🌟",
+ 336:"12개월 완주! 1년의 기적, 진심으로 축하해요 👑🎊"
 };
+// 첫 입장 동기부여 (소리와 함께)
+const WELCOME_FIRST=[
+ "오늘부터 시작이에요! 작은 한 걸음이 6개월 뒤 큰 변화를 만들어요. 화이팅! 💪",
+ "드디어 첫날! 매일 딱 한 문장이면 충분해요. 함께 가요 🚀",
+ "환영해요! 오늘의 당신이 미래의 영어를 만듭니다. 시작해볼까요? ✨",
+ "지금 이 순간이 시작이에요. 어제보다 1% 더, 그거면 돼요 🌱"
+];
+const WELCOME_BACK=[
+ "오늘도 와줘서 고마워요. 꾸준함이 진짜 실력이에요 🔥",
+ "다시 만나서 반가워요! 오늘 문장도 가볍게 정복해요 💚",
+ "돌아왔네요! 어제의 노력이 오늘 입을 풀어줄 거예요 🗣️",
+ "좋아요, 이 리듬! 오늘도 한 걸음 더 나아가요 🚶"
+];
+let STUDENT_LOCKED=false;
+function setMonths(m){const el=document.getElementById("fMonths");if(el)el.value=m;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
 
 /* ---------- 라이브러리 (커스텀 카드 병합) ---------- */
 function getLib(){
@@ -481,7 +637,7 @@ function dayNumber(startISO){
   const s=new Date(startISO+"T00:00:00"); const n=new Date(); n.setHours(0,0,0,0); s.setHours(0,0,0,0);
   return Math.max(1, Math.floor((n-s)/DAY)+1);
 }
-function totalDays(months){return months==6?168:84;}
+function totalDays(months){return Math.max(28,(parseInt(months)||3)*28);}
 function progKey(o){return "we_prog_"+o.name+"_"+o.start;}
 function loadProg(o){return JSON.parse(localStorage.getItem(progKey(o))||'{"done":{},"streak":0,"last":null}');}
 function saveProg(o,p){localStorage.setItem(progKey(o),JSON.stringify(p));}
@@ -497,6 +653,7 @@ let mediaRec=null, chunks=[], recTimer=null, recSeconds=0, lastBlob=null;
 
 /* ================= 역할 전환 ================= */
 function setRole(r){
+  if(STUDENT_LOCKED) r="student"; // 학생 링크로 들어오면 선생님 모드 차단
   document.getElementById("rsStudent").classList.toggle("on",r==="student");
   document.getElementById("rsTeacher").classList.toggle("on",r==="teacher");
   document.getElementById("studentView").classList.toggle("hidden",r!=="student");
@@ -517,7 +674,8 @@ function setStudents(a){localStorage.setItem("we_students",JSON.stringify(a));}
 function addStudent(){
   const name=document.getElementById("fName").value.trim();
   const level=document.getElementById("fLevel").value;
-  const months=+document.getElementById("fMonths").value;
+  let months=parseInt(document.getElementById("fMonths").value)||3;
+  months=Math.min(36,Math.max(1,months));
   const start=document.getElementById("fStart").value || todayKey();
   if(!name){alert("이름을 입력해주세요.");return;}
   const arr=students();
@@ -568,7 +726,8 @@ function delStudent(i){
   if(!confirm("이 학생을 삭제할까요? (진행 기록은 남습니다)"))return;
   const a=students();a.splice(i,1);setStudents(a);renderStudents();
 }
-function previewStudent(i){const s=students()[i];if(!s)return;location.hash=encodeStudent(s);location.reload();}
+function previewStudent(i){const s=students()[i];if(!s)return;window.open(studentLink(s),"_blank");}
+function previewDemo(){const demo={name:"민지",level:"왕초보",months:3,start:todayKey()};window.open(studentLink(demo),"_blank");}
 
 /* ================= 선생님: 카드 ================= */
 function renderCards(){
@@ -606,16 +765,16 @@ function addCard(){
 /* ================= 학생: 진입 ================= */
 function bootStudent(){
   const s=decodeStudent(location.hash);
-  if(s){startStudy(s);}
+  if(s){startStudy(s,true);}
   else{document.getElementById("noStudent").classList.remove("hidden");}
 }
 function loadDemo(){
   const demo={name:"민지",level:"왕초보",months:3,start:todayKey()};
   setRole("student");
   location.hash=encodeStudent(demo);
-  startStudy(demo);
+  startStudy(demo,true);
 }
-function startStudy(s){
+function startStudy(s,entry){
   CUR=s;
   document.getElementById("noStudent").classList.add("hidden");
   document.getElementById("studyRoom").classList.remove("hidden");
@@ -646,6 +805,7 @@ function startStudy(s){
   renderCard();
   // 이미 오늘 완료했으면 표시
   if(p.done[todayKey()]){document.getElementById("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";}
+  if(entry) showWelcome(s,p);
 }
 
 function renderCard(){
@@ -724,17 +884,37 @@ function drawJourney(s,p){
   });
 }
 
-/* ================= 발음 듣기 (TTS) ================= */
+/* ================= 발음 듣기 (TTS + 폴백) ================= */
 function speakCurrent(rate){
   const txt=STEPS[STEP];
-  if(!("speechSynthesis" in window)){alert("이 브라우저는 음성 재생을 지원하지 않아요.");return;}
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(txt);
-  u.lang="en-US"; u.rate=rate||0.92; u.pitch=1;
-  const vs=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith("en"));
-  const pref=vs.find(v=>/Google US English|Samantha|Aria|Jenny|Microsoft/i.test(v.name))||vs[0];
-  if(pref)u.voice=pref;
-  window.speechSynthesis.speak(u);
+  const ss=window.speechSynthesis;
+  if(ss){
+    const vs=(ss.getVoices()||[]).filter(v=>v.lang&&v.lang.toLowerCase().indexOf("en")===0);
+    if(vs.length){
+      ss.cancel();
+      const u=new SpeechSynthesisUtterance(txt);
+      u.lang="en-US"; u.rate=rate||0.92; u.pitch=1;
+      const pref=vs.find(v=>/Google US English|Samantha|Aria|Jenny|Natural|Microsoft/i.test(v.name))||vs[0];
+      if(pref)u.voice=pref;
+      ss.speak(u);
+      return;
+    }
+  }
+  // 인앱 브라우저 등 음성엔진이 없을 때: 구글 TTS 오디오 폴백
+  playGoogleTTS(txt,rate);
+}
+function playGoogleTTS(txt,rate){
+  try{
+    const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q="+encodeURIComponent(txt);
+    const a=new Audio(url);
+    if(rate&&rate<1)a.playbackRate=Math.max(0.5,rate);
+    a.onerror=ttsFail;
+    a.play().catch(ttsFail);
+  }catch(e){ttsFail();}
+}
+function ttsFail(){
+  if(isInApp()) showExternalGuide();
+  else alert("소리 재생이 막혀 있어요. 크롬·삼성인터넷 브라우저에서 열면 잘 들려요 🙂");
 }
 
 /* ================= 녹음 ================= */
@@ -828,6 +1008,7 @@ function completeToday(){
     : (CUR.name+"님, 오늘도 한 걸음 나아갔어요.<br>녹음 파일을 선생님께 보내면 발음 피드백을 받을 수 있어요. 여정 "+done+"/"+tot+"일째!");
   document.getElementById("doneModal").classList.add("show");
   bigConfetti();
+  chime("win");
   // 헤더 새로고침
   setTimeout(()=>startStudy(CUR),100);
 }
@@ -863,6 +1044,7 @@ function cheer(){
   const el=document.getElementById("cheer");
   el.classList.add("show");
   miniConfetti();
+  chime();
   setTimeout(()=>el.classList.remove("show"),2600);
 }
 
@@ -893,20 +1075,107 @@ function loop(){
   if(parts.length)raf=requestAnimationFrame(loop);else{raf=null;ctx.clearRect(0,0,cv.width,cv.height);}
 }
 
+/* ================= 소리 (WebAudio 차임) ================= */
+let AC=null;
+function chime(type){
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
+    const notes=type==="win"?[523,659,784,1047]:[660,880];
+    notes.forEach((f,i)=>{
+      const o=AC.createOscillator(),g=AC.createGain();
+      o.type="sine";o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+      const t=AC.currentTime+i*0.12;
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.25,t+0.03);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+      o.start(t);o.stop(t+0.5);
+    });
+  }catch(e){}
+}
+
+/* ================= 인앱 브라우저 감지 / 외부 열기 ================= */
+function isInApp(){
+  const ua=navigator.userAgent||"";
+  return /KAKAOTALK|FBAN|FBAV|FB_IAB|Instagram|Line\/|NAVER|DaumApps|Snapchat|Twitter|; wv\)/i.test(ua);
+}
+function ttsAvailable(){
+  if(!window.speechSynthesis) return false;
+  const v=window.speechSynthesis.getVoices()||[];
+  return v.some(x=>x.lang&&x.lang.toLowerCase().indexOf("en")===0);
+}
+function openExternal(){
+  const url=location.href, ua=navigator.userAgent||"";
+  if(/KAKAOTALK/i.test(ua)){ location.href="kakaotalk://web/openExternal?url="+encodeURIComponent(url); return; }
+  if(/Line\//i.test(ua)){ location.href=url+(url.indexOf("?")>=0?"&":"?")+"openExternalBrowser=1"; return; }
+  if(/android/i.test(ua)){
+    const noScheme=url.replace(/^https?:\/\//,"");
+    location.href="intent://"+noScheme+"#Intent;scheme=https;package=com.android.chrome;end";
+    return;
+  }
+  // iOS 등: 강제 불가 → 주소 복사 안내
+  try{navigator.clipboard&&navigator.clipboard.writeText(url);}catch(e){}
+  alert("주소가 복사됐어요 📋\nSafari 등 기본 브라우저에 붙여넣어 열면 소리·마이크가 켜집니다 🙂");
+}
+
+/* ================= 입장 환영 (소리 + 동기부여) ================= */
+function showWelcome(s,p){
+  const inApp=isInApp();
+  const first=doneCount(p)===0;
+  const m=document.getElementById("welcomeModal");
+  const emoji=document.getElementById("wEmoji"), title=document.getElementById("wTitle"),
+        text=document.getElementById("wText"), pri=document.getElementById("wPrimary"), sec=document.getElementById("wSecondary");
+  if(inApp){
+    emoji.textContent="🔊";
+    title.innerHTML="소리와 마이크를 켜주세요";
+    text.innerHTML=s.name+"님, 지금은 카톡 안에서 열려서 <b>소리·녹음이 막혀</b> 있어요.<br>아래 버튼을 누르면 한 번에 해결돼요!";
+    pri.textContent="🚀 소리되는 브라우저로 열기";
+    pri.onclick=function(){ openExternal(); };
+    sec.classList.remove("hidden");
+    sec.textContent="그냥 진행하기";
+    sec.onclick=function(){ closeWelcome(); };
+  }else{
+    emoji.textContent= first?"🎉":"🔥";
+    title.innerHTML= first?("<b>"+s.name+"</b>님, 오늘부터 시작이에요!"):("다시 왔네요, <b>"+s.name+"</b>님!");
+    text.innerHTML= first? pick(WELCOME_FIRST) : ("🔥 <b>"+(p.streak||0)+"일</b> 연속 도전 중! "+pick(WELCOME_BACK));
+    pri.textContent= first?"오늘 숙제 시작하기 🚀":"오늘도 시작하기 💪";
+    pri.onclick=function(){ chime("win"); bigConfetti(); closeWelcome(); };
+    sec.classList.add("hidden");
+  }
+  m.classList.add("show");
+}
+function showExternalGuide(){
+  const m=document.getElementById("welcomeModal");
+  document.getElementById("wEmoji").textContent="🔊";
+  document.getElementById("wTitle").innerHTML="소리가 막혀 있어요";
+  document.getElementById("wText").innerHTML="카톡 안에서 열려서 음성이 재생되지 않아요.<br>크롬·삼성인터넷 브라우저에서 열면 잘 들립니다 🙂";
+  const pri=document.getElementById("wPrimary"), sec=document.getElementById("wSecondary");
+  pri.textContent="🚀 소리되는 브라우저로 열기"; pri.onclick=function(){openExternal();};
+  sec.classList.remove("hidden"); sec.textContent="닫기"; sec.onclick=function(){closeWelcome();};
+  m.classList.add("show");
+}
+function closeWelcome(){document.getElementById("welcomeModal").classList.remove("show");}
+
 /* ================= 초기화 ================= */
-window.speechSynthesis&&window.speechSynthesis.getVoices(); // voices 워밍업
+function warmVoices(){ try{window.speechSynthesis&&window.speechSynthesis.getVoices();}catch(e){} }
+warmVoices();
+if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=warmVoices;
+
 function init(){
-  // 기본 시작일 = 오늘
   const fs=document.getElementById("fStart"); if(fs)fs.value=todayKey();
   const s=decodeStudent(location.hash);
-  if(s){setRole("student");bootStudent();}
-  else{
-    // 링크 없으면: 학생 안내 + 선생님 모드 둘 다 접근 가능. 기본은 학생 안내.
+  if(s){
+    // 학생 링크 → 학생 전용 잠금 (선생님 메뉴 숨김)
+    STUDENT_LOCKED=true;
+    const rsw=document.querySelector(".role-switch"); if(rsw)rsw.classList.add("hidden");
+    setRole("student");
+    bootStudent();
+  }else{
     bootStudent();
     renderStudents();
   }
 }
-addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s)startStudy(s);});
+addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s)startStudy(s,true);});
 init();
 </script>
 </body>
