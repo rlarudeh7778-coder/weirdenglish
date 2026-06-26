@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F1F3D">
+<title>이상한영어 · 데일리 숙제방</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#00C9A7;--g2:#009E84;--g3:#E0FAF5;
+  --navy:#0F1F3D;--navy2:#1A2F55;--navy3:#243a66;
+  --red:#FF6B6B;--gold:#FFB020;
+  --cream:#F8FAF9;--w:#FFFFFF;
+  --t1:#0F1F3D;--t2:#4B5563;--t3:#9CA3AF;--bdr:#E5E7EB;
+  --r:16px;--r2:24px;--r3:32px;
+  --sh:0 4px 24px rgba(15,31,61,.08);
+  --sh2:0 16px 56px rgba(15,31,61,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:"Noto Sans KR",sans-serif;color:var(--t1);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.mono{font-family:"Montserrat",sans-serif}
+button{font-family:inherit;cursor:pointer;border:none}
+.hidden{display:none!important}
+
+/* ===== 상단 바 ===== */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 18px;background:rgba(248,250,249,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(0,201,167,.14)}
+.logo{font-family:"Montserrat",sans-serif;font-weight:900;font-size:18px;color:var(--navy);letter-spacing:-.5px}
+.logo span{color:var(--g)}
+.role-switch{display:flex;gap:4px;background:#EEF2F0;border-radius:50px;padding:4px}
+.role-switch button{font-size:12px;font-weight:700;color:var(--t2);background:transparent;border-radius:50px;padding:7px 13px;transition:.2s}
+.role-switch button.on{background:var(--navy);color:#fff;box-shadow:0 2px 8px rgba(15,31,61,.25)}
+
+.wrap{max-width:560px;margin:0 auto;padding:22px 18px 120px}
+
+/* ===== 공통 카드 ===== */
+.card{background:var(--w);border-radius:var(--r2);box-shadow:var(--sh);padding:22px;margin-bottom:16px;border:1px solid rgba(15,31,61,.04)}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--g3);color:var(--g2);border-radius:50px;padding:6px 14px;font-size:12px;font-weight:800;letter-spacing:.3px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--g);animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--g);color:#fff;border-radius:50px;padding:15px 22px;font-size:15px;font-weight:800;box-shadow:0 8px 24px rgba(0,201,167,.4);transition:.2s;width:100%}
+.btn:hover{background:var(--g2);transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn.dark{background:var(--navy);box-shadow:0 8px 24px rgba(15,31,61,.3)}
+.btn.dark:hover{background:var(--navy2)}
+.btn.ghost{background:#fff;color:var(--navy);border:1.6px solid var(--bdr);box-shadow:none}
+.btn.ghost:hover{border-color:var(--g);color:var(--g2);background:#fff}
+.btn.kakao{background:#FEE500;color:#3A1D1D;box-shadow:0 8px 24px rgba(254,229,0,.35)}
+.btn.kakao:hover{background:#FDD800}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.sm{padding:11px 16px;font-size:13px;width:auto}
+label.fld{display:block;font-size:13px;font-weight:700;color:var(--t2);margin:14px 0 6px}
+input.in,select.in,textarea.in{width:100%;border:1.6px solid var(--bdr);border-radius:14px;padding:13px 15px;font-size:15px;font-family:inherit;color:var(--t1);background:#fff;transition:.15s}
+input.in:focus,select.in:focus,textarea.in:focus{outline:none;border-color:var(--g);box-shadow:0 0 0 4px rgba(0,201,167,.12)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ===== 학생 헤더 ===== */
+.s-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 60%,var(--navy3) 100%);border-radius:var(--r3);padding:26px 24px 24px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--sh2);margin-bottom:18px}
+.s-hero::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,167,.35),transparent 70%);top:-90px;right:-70px}
+.s-hero .greet{font-size:13px;color:rgba(255,255,255,.7);font-weight:600;position:relative}
+.s-hero .name{font-size:26px;font-weight:900;margin:3px 0 14px;position:relative;letter-spacing:-.5px}
+.s-hero .name b{color:var(--g)}
+.s-meta{display:flex;gap:9px;flex-wrap:wrap;position:relative}
+.chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);border-radius:50px;padding:7px 13px;font-size:12px;font-weight:700}
+.chip b{color:var(--g)}
+.chip.fire b{color:var(--gold)}
+
+/* ===== 진행 바 ===== */
+.daybar{display:flex;align-items:center;gap:10px;margin-top:16px;position:relative}
+.daybar .track{flex:1;height:8px;background:rgba(255,255,255,.15);border-radius:50px;overflow:hidden}
+.daybar .fill{height:100%;background:linear-gradient(90deg,var(--g),#5ce0c8);border-radius:50px;width:0;transition:width 1s cubic-bezier(.22,1,.36,1)}
+.daybar .pct{font-size:12px;font-weight:800;color:var(--g);font-family:"Montserrat"}
+
+/* ===== 여정 로드맵 ===== */
+.journey{position:relative}
+.journey h3{font-size:16px;font-weight:900;margin-bottom:4px}
+.journey .sub{font-size:12.5px;color:var(--t2);margin-bottom:14px}
+.map-box{position:relative;width:100%;overflow:hidden;border-radius:18px;background:linear-gradient(180deg,#EAF8F4,#F8FAF9)}
+svg.map{display:block;width:100%;height:auto}
+.legend{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
+.legend .lg{flex:1;text-align:center;background:var(--cream);border-radius:14px;padding:11px 6px}
+.legend .lg .n{font-family:"Montserrat";font-size:20px;font-weight:900;color:var(--navy)}
+.legend .lg .n.g{color:var(--g)}
+.legend .lg .l{font-size:11px;color:var(--t2);font-weight:600;margin-top:2px}
+
+/* ===== 패턴 카드 ===== */
+.pattern-tag{font-size:12px;font-weight:800;color:var(--g2);letter-spacing:.3px;margin-bottom:4px}
+.pattern-ko{font-size:14px;color:var(--t2);font-weight:600;margin-bottom:14px}
+.sentence{font-size:25px;font-weight:900;line-height:1.35;letter-spacing:-.5px;color:var(--navy);word-break:keep-all}
+.sentence .hl{color:var(--g2);background:linear-gradient(transparent 60%,rgba(0,201,167,.22) 60%)}
+.trans{font-size:14.5px;color:var(--t2);margin-top:8px;font-weight:500}
+.tips{margin-top:16px;background:var(--g3);border-radius:16px;padding:14px 16px}
+.tips .th{font-size:12px;font-weight:800;color:var(--g2);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.tips ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.tips li{font-size:13px;color:var(--t1);font-weight:500;padding-left:18px;position:relative;word-break:keep-all}
+.tips li::before{content:"›";position:absolute;left:4px;color:var(--g);font-weight:900}
+
+/* ===== 녹음 ===== */
+.rec-zone{margin-top:18px;border-top:1px dashed var(--bdr);padding-top:18px}
+.play-row{display:flex;gap:10px;margin-bottom:14px}
+.play-row .btn{flex:1}
+.rec-main{display:flex;flex-direction:column;align-items:center;gap:10px}
+.rec-btn{width:84px;height:84px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 10px 30px rgba(255,107,107,.5);transition:.2s;position:relative}
+.rec-btn:hover{transform:scale(1.05)}
+.rec-btn.recording{animation:recpulse 1.2s infinite}
+.rec-btn.recording::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:3px solid rgba(255,107,107,.4);animation:ring 1.2s infinite}
+@keyframes recpulse{0%,100%{box-shadow:0 10px 30px rgba(255,107,107,.5)}50%{box-shadow:0 10px 44px rgba(255,107,107,.85)}}
+@keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+.rec-label{font-size:13px;font-weight:700;color:var(--t2)}
+.rec-time{font-family:"Montserrat";font-weight:900;font-size:15px;color:var(--red)}
+audio{width:100%;margin-top:10px;border-radius:50px}
+.compare{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
+.cmp-item{background:var(--cream);border-radius:14px;padding:10px 12px}
+.cmp-item .ch{font-size:11px;font-weight:800;color:var(--t2);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+
+/* ===== 퀴즈 스텝 ===== */
+.steps{display:flex;gap:6px;margin:18px 0 6px}
+.step-dot{flex:1;height:6px;border-radius:50px;background:var(--bdr);transition:.3s}
+.step-dot.done{background:var(--g)}
+.step-dot.now{background:var(--navy)}
+.step-meta{font-size:12px;font-weight:800;color:var(--g2);margin-bottom:10px;text-align:center}
+
+/* ===== 격려 토스트 / 컨페티 ===== */
+.cheer{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(140%);z-index:120;background:var(--navy);color:#fff;border-radius:20px;padding:16px 22px;box-shadow:var(--sh2);max-width:90%;text-align:center;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.cheer.show{transform:translateX(-50%) translateY(0)}
+.cheer .big{font-size:16px;font-weight:900}
+.cheer .big b{color:var(--g)}
+.cheer .small{font-size:13px;color:rgba(255,255,255,.8);margin-top:3px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:130}
+
+/* ===== 완료 모달 ===== */
+.modal-bg{position:fixed;inset:0;background:rgba(15,31,61,.55);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:.3s}
+.modal-bg.show{opacity:1;pointer-events:auto}
+.modal{background:#fff;border-radius:28px;padding:30px 26px;max-width:420px;width:100%;text-align:center;box-shadow:var(--sh2);transform:scale(.9);transition:.3s}
+.modal-bg.show .modal{transform:scale(1)}
+.modal .emoji{font-size:54px;margin-bottom:10px}
+.modal h2{font-size:22px;font-weight:900;margin-bottom:8px}
+.modal h2 b{color:var(--g2)}
+.modal p{font-size:14px;color:var(--t2);margin-bottom:18px;word-break:keep-all}
+.modal .btn{margin-bottom:9px}
+
+/* ===== 선생님 모드 ===== */
+.t-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.t-head h2{font-size:20px;font-weight:900}
+.muted{font-size:13px;color:var(--t2)}
+.stu-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.stu{display:flex;align-items:center;gap:12px;background:var(--cream);border-radius:16px;padding:13px 14px}
+.stu .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;flex-shrink:0}
+.stu .info{flex:1;min-width:0}
+.stu .info .nm{font-size:15px;font-weight:800}
+.stu .info .dt{font-size:12px;color:var(--t2)}
+.stu .acts{display:flex;gap:6px}
+.icon-btn{width:36px;height:36px;border-radius:11px;background:#fff;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s}
+.icon-btn:hover{border-color:var(--g);background:var(--g3)}
+.link-box{background:var(--navy);color:#fff;border-radius:16px;padding:14px;margin-top:12px;font-size:12.5px;word-break:break-all;line-height:1.7}
+.link-box .ttl{font-size:12px;font-weight:800;color:var(--g);margin-bottom:6px}
+.empty{text-align:center;color:var(--t3);font-size:14px;padding:30px 10px}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tabs button{flex:1;padding:11px;border-radius:14px;background:var(--cream);font-size:13px;font-weight:800;color:var(--t2);transition:.2s}
+.tabs button.on{background:var(--navy);color:#fff}
+.card-mini{background:var(--cream);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.card-mini .cs{font-size:14px;font-weight:800;color:var(--navy)}
+.card-mini .ck{font-size:12px;color:var(--t2)}
+.help{background:var(--g3);border-radius:16px;padding:16px;font-size:13px;color:var(--t1);line-height:1.8}
+.help b{color:var(--g2)}
+.help ol{margin:8px 0 0 18px}
+.help li{margin-bottom:4px}
+
+@media(max-width:420px){
+  .sentence{font-size:22px}
+  .s-hero .name{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">이상한<span>영어</span> · 숙제방</div>
+  <div class="role-switch">
+    <button id="rsStudent" class="on" onclick="setRole('student')">🎒 학생</button>
+    <button id="rsTeacher" onclick="setRole('teacher')">🧑‍🏫 선생님</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ================= 학생 모드 ================= -->
+  <div id="studentView">
+    <!-- 학생 없을 때 안내 -->
+    <div id="noStudent" class="card hidden">
+      <div class="eyebrow"><span class="dot"></span>학생 숙제방</div>
+      <h2 style="font-size:20px;font-weight:900;margin:14px 0 8px">선생님이 보내주신 링크로 들어와 주세요 🙏</h2>
+      <p class="muted">개인 숙제 링크를 통해 입장하면 매일 아침 오늘의 패턴 숙제가 자동으로 준비됩니다.</p>
+      <div style="margin-top:16px">
+        <p class="muted" style="margin-bottom:8px">미리 체험해 보고 싶다면:</p>
+        <button class="btn ghost" onclick="loadDemo()">샘플 숙제 체험하기 →</button>
+      </div>
+    </div>
+
+    <!-- 실제 숙제방 -->
+    <div id="studyRoom" class="hidden">
+      <!-- HERO -->
+      <div class="s-hero">
+        <div class="greet" id="greetLine">좋은 아침이에요 ☀️</div>
+        <div class="name"><b id="sName">학생</b>님, 오늘도 함께해요</div>
+        <div class="s-meta">
+          <span class="chip" id="chipLevel">🎯 레벨</span>
+          <span class="chip" id="chipDay">📅 Day 1</span>
+          <span class="chip fire" id="chipStreak">🔥 <b>0</b>일 연속</span>
+        </div>
+        <div class="daybar">
+          <div class="track"><div class="fill" id="dayFill"></div></div>
+          <div class="pct" id="dayPct">0%</div>
+        </div>
+      </div>
+
+      <!-- 여정 로드맵 -->
+      <div class="card journey">
+        <h3 id="journeyTitle">🗺️ 나의 영어 여정</h3>
+        <div class="sub" id="journeySub">수강 여정을 따라 한 걸음씩!</div>
+        <div class="map-box"><svg class="map" id="mapSvg" viewBox="0 0 520 230" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="legend">
+          <div class="lg"><div class="n g" id="lgDone">0</div><div class="l">완료한 날</div></div>
+          <div class="lg"><div class="n" id="lgTotal">84</div><div class="l">전체 여정</div></div>
+          <div class="lg"><div class="n" id="lgLeft">84</div><div class="l">남은 날</div></div>
+        </div>
+      </div>
+
+      <!-- 오늘의 패턴 카드 -->
+      <div class="card" id="patternCard">
+        <div class="eyebrow"><span class="dot"></span><span id="todayBadge">오늘의 패턴</span></div>
+        <div style="margin-top:14px">
+          <div class="pattern-tag" id="pTag">PATTERN</div>
+          <div class="pattern-ko" id="pKo">패턴 설명</div>
+          <div class="sentence" id="pSentence">Sentence here.</div>
+          <div class="trans" id="pTrans">해석</div>
+          <div class="tips">
+            <div class="th">🎧 발음 · 연음 · 악센트 포인트</div>
+            <ul id="pTips"></ul>
+          </div>
+        </div>
+
+        <!-- 녹음 영역 -->
+        <div class="rec-zone">
+          <div class="step-meta" id="stepMeta">STEP 1 · 오늘의 문장</div>
+          <div class="steps" id="stepDots"></div>
+
+          <div class="play-row">
+            <button class="btn ghost" id="listenBtn" onclick="speakCurrent()">🔊 원어민 들어보기</button>
+            <button class="btn ghost" id="slowBtn" onclick="speakCurrent(.6)">🐢 천천히</button>
+          </div>
+
+          <div class="rec-main">
+            <button class="rec-btn" id="recBtn" onclick="toggleRec()" aria-label="녹음">🎙️</button>
+            <div class="rec-label" id="recLabel">버튼을 눌러 녹음을 시작하세요</div>
+            <div class="rec-time hidden" id="recTime">00:00</div>
+          </div>
+
+          <div id="afterRec" class="hidden">
+            <div class="compare">
+              <div class="cmp-item">
+                <div class="ch">🗣️ 내 발음</div>
+                <audio id="myAudio" controls></audio>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:12px">
+              <button class="btn ghost sm" style="flex:1" onclick="resetRec()">↺ 다시 녹음</button>
+              <button class="btn sm" style="flex:1.4" id="nextBtn" onclick="submitStep()">제출하고 다음 →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 선생님 모드 ================= -->
+  <div id="teacherView" class="hidden">
+    <div class="tabs">
+      <button id="tabStu" class="on" onclick="setTab('stu')">👩‍🎓 학생 관리</button>
+      <button id="tabCard" onclick="setTab('card')">🃏 패턴 카드</button>
+      <button id="tabHelp" onclick="setTab('help')">❓ 사용법</button>
+    </div>
+
+    <!-- 학생 관리 -->
+    <div id="paneStu">
+      <div class="card">
+        <div class="t-head"><h2>학생 등록</h2></div>
+        <p class="muted">등록하면 학생별 개인 숙제 링크가 자동으로 만들어집니다.</p>
+        <label class="fld">이름</label>
+        <input class="in" id="fName" placeholder="예: 김민지">
+        <div class="row2">
+          <div>
+            <label class="fld">레벨</label>
+            <select class="in" id="fLevel">
+              <option value="왕초보">왕초보</option>
+              <option value="초급">초급</option>
+              <option value="중급">중급</option>
+            </select>
+          </div>
+          <div>
+            <label class="fld">수강권</label>
+            <select class="in" id="fMonths">
+              <option value="3">3개월</option>
+              <option value="6">6개월</option>
+            </select>
+          </div>
+        </div>
+        <label class="fld">시작일</label>
+        <input class="in" id="fStart" type="date">
+        <button class="btn dark" style="margin-top:18px" onclick="addStudent()">+ 학생 등록하고 링크 만들기</button>
+      </div>
+
+      <div class="card">
+        <div class="t-head"><h2>내 학생 <span class="muted" id="stuCount"></span></h2></div>
+        <div class="stu-list" id="stuList"></div>
+      </div>
+    </div>
+
+    <!-- 패턴 카드 -->
+    <div id="paneCard" class="hidden">
+      <div class="card">
+        <div class="t-head"><h2>패턴 카드 라이브러리</h2></div>
+        <p class="muted">레벨별로 매일 자동 출제됩니다. 직접 카드를 추가하면 라이브러리에 더해집니다.</p>
+        <label class="fld">레벨</label>
+        <select class="in" id="cLevel" onchange="renderCards()">
+          <option value="왕초보">왕초보</option>
+          <option value="초급">초급</option>
+          <option value="중급">중급</option>
+        </select>
+        <div id="cardList" style="margin-top:14px"></div>
+      </div>
+      <div class="card">
+        <div class="t-head"><h2>+ 카드 추가</h2></div>
+        <label class="fld">패턴 (예: I want to ___)</label>
+        <input class="in" id="aTag" placeholder="I want to ___">
+        <label class="fld">패턴 뜻 (예: ~하고 싶어요)</label>
+        <input class="in" id="aKo" placeholder="~하고 싶어요">
+        <label class="fld">기본 문장 (영어)</label>
+        <input class="in" id="aSent" placeholder="I want to rest.">
+        <label class="fld">해석</label>
+        <input class="in" id="aTrans" placeholder="쉬고 싶어요.">
+        <label class="fld">발음·연음·악센트 팁 (줄바꿈으로 여러 개)</label>
+        <textarea class="in" id="aTips" rows="2" placeholder="want to → '워너'&#10;강세는 REST에"></textarea>
+        <label class="fld">점진적 확장 문장 (한 줄에 하나, 짧은 → 긴 순서)</label>
+        <textarea class="in" id="aExp" rows="4" placeholder="I want to rest.&#10;I want to rest now.&#10;I want to rest at home.&#10;I want to rest at home today."></textarea>
+        <button class="btn dark" style="margin-top:16px" onclick="addCard()">카드 추가하기</button>
+      </div>
+    </div>
+
+    <!-- 사용법 -->
+    <div id="paneHelp" class="hidden">
+      <div class="card">
+        <div class="t-head"><h2>이렇게 쓰세요</h2></div>
+        <div class="help">
+          <b>① 학생을 등록하세요.</b>
+          <ol>
+            <li>이름·레벨·수강권(3/6개월)·시작일 입력 → 등록</li>
+            <li>학생마다 <b>개인 숙제 링크</b>가 자동 생성됩니다</li>
+          </ol>
+          <br>
+          <b>② 링크를 딱 한 번만 카톡으로 보내세요.</b>
+          <ol>
+            <li>학생 목록의 🔗 버튼 → 링크 복사 → 카톡 전송</li>
+            <li>학생이 즐겨찾기/홈화면에 추가하면 끝!</li>
+          </ol>
+          <br>
+          <b>③ 그 다음은 자동입니다. 🎉</b>
+          <ol>
+            <li>매일 아침 보낼 필요 없음 — 학생이 링크를 열면 <b>그날 날짜의 숙제</b>가 자동으로 떠 있어요</li>
+            <li>학생은 원어민 발음을 듣고 → 녹음 → 점점 길어지는 문장까지 연습</li>
+            <li>숙제 완료 시 선생님께 <b>"○○님 숙제 완료" 알림 메일</b>이 자동 발송됩니다</li>
+            <li>학생은 녹음 파일을 <b>카톡으로 원탭 전송</b> → 선생님은 편한 시간에 피드백</li>
+          </ol>
+          <br>
+          <b>④ 패턴 카드는 레벨별로 자동 출제</b>됩니다. 본인 커리큘럼을 '패턴 카드' 탭에서 추가하면 그날부터 반영돼요.
+        </div>
+      </div>
+      <div class="card">
+        <div class="t-head"><h2>미리보기</h2></div>
+        <p class="muted" style="margin-bottom:12px">학생 화면이 어떻게 보이는지 직접 확인해 보세요.</p>
+        <button class="btn ghost" onclick="loadDemo()">샘플 학생으로 미리보기 →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 격려 토스트 -->
+<div class="cheer" id="cheer">
+  <div class="big" id="cheerBig"></div>
+  <div class="small" id="cheerSmall"></div>
+</div>
+<canvas id="confetti"></canvas>
+
+<!-- 완료 모달 -->
+<div class="modal-bg" id="doneModal">
+  <div class="modal">
+    <div class="emoji" id="doneEmoji">🎉</div>
+    <h2 id="doneTitle">오늘 숙제 완료!</h2>
+    <p id="doneText"></p>
+    <button class="btn kakao" id="kakaoSendBtn" onclick="sendToKakao()">💛 카톡으로 선생님께 녹음 보내기</button>
+    <button class="btn ghost" onclick="closeDone()">닫기</button>
+  </div>
+</div>
+
+<script>
+/* =================================================================
+   이상한영어 · 데일리 숙제방  (단일 파일, 백엔드 불필요)
+   ================================================================= */
+const WEB3FORMS_KEY="ef0e3efd-8d61-4ddc-a211-6c9e29435f52"; // 숙제 완료 알림 메일 (랜딩페이지와 동일)
+const KAKAO_CHANNEL="http://pf.kakao.com/_Vgdzb";
+const DAY=86400000;
+
+/* ---------- 기본 패턴 라이브러리 (레벨별) ---------- */
+const BASE_LIB={
+"왕초보":[
+ {tag:"I want to ___",ko:"~하고 싶어요",sent:"I want to rest.",trans:"쉬고 싶어요.",tips:["want to는 '워너'처럼 자연스럽게 연음","강세는 REST에 꽉"],exp:["I want to rest.","I want to rest now.","I want to rest at home.","I want to rest at home today."]},
+ {tag:"I'm going to ___",ko:"~할 거예요",sent:"I'm going to study.",trans:"공부할 거예요.",tips:["going to는 '거너'로 줄여도 OK","I'm은 약하게, STUDY를 강하게"],exp:["I'm going to study.","I'm going to study English.","I'm going to study English tonight.","I'm going to study English tonight with you."]},
+ {tag:"Can you ___?",ko:"~해줄 수 있어요?",sent:"Can you help me?",trans:"도와줄 수 있어요?",tips:["Can you는 '캐뉴'로 연음","문장 끝을 살짝 올려요"],exp:["Can you help me?","Can you help me now?","Can you help me with this?","Can you help me with this right now?"]},
+ {tag:"I like ___",ko:"~을 좋아해요",sent:"I like coffee.",trans:"커피를 좋아해요.",tips:["like의 끝 'k'를 살짝만","강세는 COF-fee 앞에"],exp:["I like coffee.","I like hot coffee.","I like hot coffee in the morning.","I like hot coffee in the morning before work."]},
+ {tag:"There is ___",ko:"~가 있어요",sent:"There is a problem.",trans:"문제가 있어요.",tips:["There is a는 '데어리저'로 한 덩어리","is는 약하게"],exp:["There is a problem.","There is a small problem.","There is a small problem here.","There is a small problem here today."]},
+ {tag:"I need to ___",ko:"~해야 해요",sent:"I need to go.",trans:"가야 해요.",tips:["need to는 '니투'로 빠르게","GO를 분명하게"],exp:["I need to go.","I need to go now.","I need to go home now.","I need to go home right now, sorry."]},
+ {tag:"Do you have ___?",ko:"~ 있어요?",sent:"Do you have time?",trans:"시간 있어요?",tips:["Do you have는 '두유햅'으로 부드럽게","TIME에 강세"],exp:["Do you have time?","Do you have time now?","Do you have time later today?","Do you have time later today for a quick call?"]},
+ {tag:"Let's ___",ko:"~하자",sent:"Let's start.",trans:"시작하자.",tips:["Let's는 '렛츠'로 짧게","START를 힘있게"],exp:["Let's start.","Let's start now.","Let's start now together.","Let's start now together, okay?"]}
+],
+"초급":[
+ {tag:"I've been ___ing",ko:"~해오고 있어요",sent:"I've been waiting.",trans:"기다리고 있었어요.",tips:["I've been은 '아입빈'으로 약하게","waiting의 t는 부드럽게"],exp:["I've been waiting.","I've been waiting for you.","I've been waiting for you for an hour.","I've been waiting for you for an hour outside."]},
+ {tag:"I was going to ___",ko:"~하려고 했어요",sent:"I was going to call.",trans:"전화하려고 했어요.",tips:["was going to는 '워즈거너'","call의 'l' 끝을 살려요"],exp:["I was going to call.","I was going to call you.","I was going to call you tonight.","I was going to call you tonight after dinner."]},
+ {tag:"Would you mind ___ing?",ko:"~해주실래요?",sent:"Would you mind waiting?",trans:"기다려주실래요?",tips:["Would you는 '우쥬'로 연음","mind의 d는 거의 안 들리게"],exp:["Would you mind waiting?","Would you mind waiting here?","Would you mind waiting here a moment?","Would you mind waiting here a moment for me?"]},
+ {tag:"The more ~, the more ~",ko:"~할수록 더 ~",sent:"The more I practice, the better I get.",trans:"연습할수록 더 나아져요.",tips:["the more는 '더모어'","better의 tt는 'ㄹ'(베러)"],exp:["The more I practice, the better I get.","The more I practice English, the better I get.","The more I practice English daily, the better I get.","The more I practice English daily, the better I get at speaking."]},
+ {tag:"I'm not sure if ___",ko:"~인지 잘 모르겠어요",sent:"I'm not sure if it's right.",trans:"맞는지 잘 모르겠어요.",tips:["not sure는 '낫슈어'","if it's는 '이핏츠'로 연음"],exp:["I'm not sure if it's right.","I'm not sure if it's the right way.","I'm not sure if it's the right way to do it.","I'm not sure if it's the right way to do it here."]},
+ {tag:"It depends on ___",ko:"~에 따라 달라요",sent:"It depends on the time.",trans:"시간에 따라 달라요.",tips:["depends on은 '디펜전'으로 연음","끝의 ds는 약하게"],exp:["It depends on the time.","It depends on the time of day.","It depends on the time of day and place.","It depends on the time of day and the weather."]}
+],
+"중급":[
+ {tag:"If I were you, I would ___",ko:"나라면 ~할 거예요",sent:"If I were you, I would wait.",trans:"나라면 기다릴 거예요.",tips:["would는 '우드' 약하게","wait의 t로 끊어 마무리"],exp:["If I were you, I would wait.","If I were you, I would wait a little.","If I were you, I would wait a little longer.","If I were you, I would wait a little longer before deciding."]},
+ {tag:"I should have ___",ko:"~했어야 했어요",sent:"I should have known.",trans:"알았어야 했어요.",tips:["should have는 '슈러브'로 한 덩어리","known의 n을 살려요"],exp:["I should have known.","I should have known better.","I should have known better than that.","I should have known better than to wait so long."]},
+ {tag:"What I'm trying to say is ___",ko:"제 말은 ~라는 거예요",sent:"What I'm trying to say is it matters.",trans:"제 말은 그게 중요하다는 거예요.",tips:["trying to는 '트라이너'","matters의 tt는 'ㄹ'(매러스)"],exp:["What I'm trying to say is it matters.","What I'm trying to say is it really matters.","What I'm trying to say is it really matters to me.","What I'm trying to say is it really matters to me a lot."]},
+ {tag:"As far as I know, ___",ko:"제가 아는 한 ~",sent:"As far as I know, it's free.",trans:"제가 아는 한 무료예요.",tips:["As far as는 '애즈파라즈'로 흘려요","know의 끝을 부드럽게"],exp:["As far as I know, it's free.","As far as I know, it's completely free.","As far as I know, it's completely free for now.","As far as I know, it's completely free for new members."]}
+]
+};
+
+const GREETINGS=["좋은 아침이에요 ☀️","오늘도 화이팅이에요 💪","반가워요 ✨","멋진 하루 보내고 있나요? 🌿","오늘의 한 걸음, 시작해볼까요? 🚀"];
+const CHEERS=[
+ {b:"완벽해요, %s님! 🎉",s:"방금 그 발음, 진짜 좋았어요."},
+ {b:"%s님, 점점 좋아지고 있어요! 🌟",s:"입이 문장을 기억하기 시작했어요."},
+ {b:"바로 그거예요, %s님 👏",s:"연음이 훨씬 자연스러워졌어요."},
+ {b:"%s님은 해낼 사람이에요 💚",s:"오늘도 한 문장 정복!"},
+ {b:"우와, %s님! 🔥",s:"이 페이스라면 곧 원어민과 대화해요."}
+];
+const MILESTONE_MSG={
+ 7:"첫 일주일 완주! 습관이 만들어지고 있어요 🌱",
+ 14:"2주 돌파! 입이 점점 풀리는 게 느껴지나요? 💬",
+ 28:"한 달 완주! 이제 진짜 영어가 몸에 붙고 있어요 🎯",
+ 56:"두 달! 절반을 향해 달려가고 있어요 🚴",
+ 84:"3개월 완주! 정말 대단해요. 영어가 두렵지 않죠? 🏆",
+ 168:"6개월 대장정 완주! 당신은 이미 다른 사람이에요 👑"
+};
+
+/* ---------- 라이브러리 (커스텀 카드 병합) ---------- */
+function getLib(){
+  const lib=JSON.parse(JSON.stringify(BASE_LIB));
+  const custom=JSON.parse(localStorage.getItem("we_custom_cards")||"{}");
+  for(const lv in custom){ if(lib[lv]) lib[lv]=lib[lv].concat(custom[lv]); }
+  return lib;
+}
+
+/* ---------- 학생 설정 인코딩/디코딩 ---------- */
+function encodeStudent(o){return "s="+btoa(encodeURIComponent(JSON.stringify(o)));}
+function decodeStudent(h){
+  try{const m=(h||"").replace(/^#/,"");if(!m.startsWith("s="))return null;
+    return JSON.parse(decodeURIComponent(atob(m.slice(2))));}catch(e){return null;}
+}
+function studentLink(o){return location.origin+location.pathname+"#"+encodeStudent(o);}
+
+/* ---------- 날짜/진행 ---------- */
+function dayNumber(startISO){
+  const s=new Date(startISO+"T00:00:00"); const n=new Date(); n.setHours(0,0,0,0); s.setHours(0,0,0,0);
+  return Math.max(1, Math.floor((n-s)/DAY)+1);
+}
+function totalDays(months){return months==6?168:84;}
+function progKey(o){return "we_prog_"+o.name+"_"+o.start;}
+function loadProg(o){return JSON.parse(localStorage.getItem(progKey(o))||'{"done":{},"streak":0,"last":null}');}
+function saveProg(o,p){localStorage.setItem(progKey(o),JSON.stringify(p));}
+function doneCount(p){return Object.keys(p.done).length;}
+function todayKey(){const n=new Date();return n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");}
+
+/* ---------- 상태 ---------- */
+let CUR=null;        // 현재 학생
+let CARD=null;       // 오늘 카드
+let STEP=0;          // 0=기본문장, 1..n=확장
+let STEPS=[];        // 연습할 문장 배열
+let mediaRec=null, chunks=[], recTimer=null, recSeconds=0, lastBlob=null;
+
+/* ================= 역할 전환 ================= */
+function setRole(r){
+  document.getElementById("rsStudent").classList.toggle("on",r==="student");
+  document.getElementById("rsTeacher").classList.toggle("on",r==="teacher");
+  document.getElementById("studentView").classList.toggle("hidden",r!=="student");
+  document.getElementById("teacherView").classList.toggle("hidden",r!=="teacher");
+  if(r==="teacher") renderStudents();
+}
+function setTab(t){
+  ["stu","card","help"].forEach(x=>{
+    document.getElementById("tab"+x[0].toUpperCase()+x.slice(1)).classList.toggle("on",x===t);
+    document.getElementById("pane"+x[0].toUpperCase()+x.slice(1)).classList.toggle("hidden",x!==t);
+  });
+  if(t==="card") renderCards();
+}
+
+/* ================= 선생님: 학생 ================= */
+function students(){return JSON.parse(localStorage.getItem("we_students")||"[]");}
+function setStudents(a){localStorage.setItem("we_students",JSON.stringify(a));}
+function addStudent(){
+  const name=document.getElementById("fName").value.trim();
+  const level=document.getElementById("fLevel").value;
+  const months=+document.getElementById("fMonths").value;
+  const start=document.getElementById("fStart").value || todayKey();
+  if(!name){alert("이름을 입력해주세요.");return;}
+  const arr=students();
+  arr.push({name,level,months,start});
+  setStudents(arr);
+  document.getElementById("fName").value="";
+  renderStudents();
+  showLinkFor(arr.length-1);
+}
+function renderStudents(){
+  const arr=students(); const box=document.getElementById("stuList");
+  document.getElementById("stuCount").textContent=arr.length?("· "+arr.length+"명"):"";
+  if(!arr.length){box.innerHTML='<div class="empty">아직 등록된 학생이 없어요.<br>위에서 첫 학생을 등록해 보세요 🙂</div>';return;}
+  box.innerHTML=arr.map((s,i)=>{
+    const p=loadProg(s); const d=dayNumber(s.start);
+    return `<div class="stu">
+      <div class="av">${(s.name||"?")[0]}</div>
+      <div class="info">
+        <div class="nm">${s.name} <span class="muted">· ${s.level}</span></div>
+        <div class="dt">${s.months}개월 · 시작 ${s.start} · 오늘 Day ${d} · 완료 ${doneCount(p)}일</div>
+      </div>
+      <div class="acts">
+        <button class="icon-btn" title="링크" onclick="showLinkFor(${i})">🔗</button>
+        <button class="icon-btn" title="미리보기" onclick="previewStudent(${i})">👁️</button>
+        <button class="icon-btn" title="삭제" onclick="delStudent(${i})">🗑️</button>
+      </div></div>
+      <div id="link${i}"></div>`;
+  }).join("");
+}
+function showLinkFor(i){
+  const s=students()[i]; if(!s)return;
+  const link=studentLink(s);
+  const box=document.getElementById("link"+i);
+  box.innerHTML=`<div class="link-box">
+    <div class="ttl">🔗 ${s.name}님 개인 숙제 링크</div>
+    <div id="lk${i}">${link}</div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn sm" style="flex:1" onclick="copyLink('${encodeURIComponent(link)}',this)">복사하기</button>
+      <button class="btn sm kakao" style="flex:1" onclick="window.open('${KAKAO_CHANNEL}','_blank')">카톡 열기</button>
+    </div></div>`;
+}
+function copyLink(enc,btn){
+  const t=decodeURIComponent(enc);
+  navigator.clipboard.writeText(t).then(()=>{btn.textContent="복사됨 ✓";setTimeout(()=>btn.textContent="복사하기",1500);})
+  .catch(()=>{prompt("아래 링크를 복사하세요:",t);});
+}
+function delStudent(i){
+  if(!confirm("이 학생을 삭제할까요? (진행 기록은 남습니다)"))return;
+  const a=students();a.splice(i,1);setStudents(a);renderStudents();
+}
+function previewStudent(i){const s=students()[i];if(!s)return;location.hash=encodeStudent(s);location.reload();}
+
+/* ================= 선생님: 카드 ================= */
+function renderCards(){
+  const lv=document.getElementById("cLevel").value;
+  const lib=getLib()[lv]||[];
+  const custom=JSON.parse(localStorage.getItem("we_custom_cards")||"{}")[lv]||[];
+  const baseN=(BASE_LIB[lv]||[]).length;
+  document.getElementById("cardList").innerHTML=lib.map((c,i)=>`
+    <div class="card-mini">
+      <div class="cs">${c.sent}</div>
+      <div class="ck">${c.tag} · ${c.ko} ${i>=baseN?'· <b style="color:var(--g2)">내 카드</b>':''}</div>
+    </div>`).join("");
+}
+function addCard(){
+  const lv=document.getElementById("cLevel")?document.getElementById("cLevel").value:"왕초보";
+  const tag=document.getElementById("aTag").value.trim();
+  const ko=document.getElementById("aKo").value.trim();
+  const sent=document.getElementById("aSent").value.trim();
+  const trans=document.getElementById("aTrans").value.trim();
+  const tips=document.getElementById("aTips").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  let exp=document.getElementById("aExp").value.split("\n").map(s=>s.trim()).filter(Boolean);
+  if(!sent){alert("기본 문장을 입력해주세요.");return;}
+  if(!exp.length) exp=[sent];
+  const cur=JSON.parse(localStorage.getItem("we_custom_cards")||"{}");
+  // 카드 추가는 '패턴 카드' 탭의 선택 레벨 기준
+  const selLv=document.getElementById("cLevel").value;
+  if(!cur[selLv])cur[selLv]=[];
+  cur[selLv].push({tag,ko,sent,trans,tips,exp});
+  localStorage.setItem("we_custom_cards",JSON.stringify(cur));
+  ["aTag","aKo","aSent","aTrans","aTips","aExp"].forEach(id=>document.getElementById(id).value="");
+  renderCards();
+  alert(selLv+" 레벨에 카드를 추가했어요! ✓");
+}
+
+/* ================= 학생: 진입 ================= */
+function bootStudent(){
+  const s=decodeStudent(location.hash);
+  if(s){startStudy(s);}
+  else{document.getElementById("noStudent").classList.remove("hidden");}
+}
+function loadDemo(){
+  const demo={name:"민지",level:"왕초보",months:3,start:todayKey()};
+  setRole("student");
+  location.hash=encodeStudent(demo);
+  startStudy(demo);
+}
+function startStudy(s){
+  CUR=s;
+  document.getElementById("noStudent").classList.add("hidden");
+  document.getElementById("studyRoom").classList.remove("hidden");
+  // 헤더
+  document.getElementById("greetLine").textContent=GREETINGS[new Date().getDay()%GREETINGS.length];
+  document.getElementById("sName").textContent=s.name;
+  document.getElementById("chipLevel").innerHTML="🎯 "+s.level;
+  const d=dayNumber(s.start);
+  document.getElementById("chipDay").textContent="📅 Day "+d;
+  const p=loadProg(s);
+  document.getElementById("chipStreak").innerHTML="🔥 <b>"+(p.streak||0)+"</b>일 연속";
+  // 진행
+  const tot=totalDays(s.months), done=doneCount(p);
+  const pct=Math.min(100,Math.round(done/tot*100));
+  setTimeout(()=>{document.getElementById("dayFill").style.width=pct+"%";},250);
+  document.getElementById("dayPct").textContent=pct+"%";
+  document.getElementById("lgDone").textContent=done;
+  document.getElementById("lgTotal").textContent=tot;
+  document.getElementById("lgLeft").textContent=Math.max(0,tot-done);
+  document.getElementById("journeyTitle").textContent="🗺️ "+s.name+"님의 "+s.months+"개월 영어 여정";
+  document.getElementById("journeySub").textContent="시작일 "+s.start+" · 오늘은 "+d+"번째 날이에요";
+  drawJourney(s,p);
+  // 오늘 카드
+  const lib=getLib()[s.level]||getLib()["왕초보"];
+  CARD=lib[(d-1)%lib.length];
+  STEPS=(CARD.exp&&CARD.exp.length)?CARD.exp.slice():[CARD.sent];
+  STEP=0;
+  renderCard();
+  // 이미 오늘 완료했으면 표시
+  if(p.done[todayKey()]){document.getElementById("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";}
+}
+
+function renderCard(){
+  document.getElementById("pTag").textContent=CARD.tag||"PATTERN";
+  document.getElementById("pKo").textContent=CARD.ko||"";
+  document.getElementById("pTrans").textContent=CARD.trans||"";
+  document.getElementById("pTips").innerHTML=(CARD.tips||[]).map(t=>`<li>${t}</li>`).join("");
+  // 현재 스텝 문장
+  const cur=STEPS[STEP];
+  document.getElementById("pSentence").textContent=cur;
+  // 스텝 표시
+  const dots=document.getElementById("stepDots");
+  dots.innerHTML=STEPS.map((_,i)=>`<div class="step-dot ${i<STEP?'done':(i===STEP?'now':'')}"></div>`).join("");
+  document.getElementById("stepMeta").textContent= STEP===0
+    ? "STEP 1 · 오늘의 핵심 문장"
+    : "STEP "+(STEP+1)+" · 점점 길게! ("+(STEP)+"단계 확장)";
+  resetRec();
+}
+
+/* ================= 여정 로드맵 SVG ================= */
+function drawJourney(s,p){
+  const svg=document.getElementById("mapSvg");
+  const W=520,H=230;
+  const tot=totalDays(s.months), done=doneCount(p);
+  const ratio=Math.min(1,done/tot);
+  // 구불구불한 길
+  const path="M20,180 C90,120 130,60 200,80 S320,170 380,120 S470,40 500,70";
+  svg.innerHTML="";
+  const ns="http://www.w3.org/2000/svg";
+  const mk=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  // 배경 길(점선)
+  const base=mk("path",{d:path,fill:"none",stroke:"#CBE9E1","stroke-width":"10","stroke-linecap":"round","stroke-dasharray":"1 16"});
+  svg.appendChild(base);
+  // 진행된 길
+  const prog=mk("path",{d:path,fill:"none",stroke:"url(#grad)","stroke-width":"7","stroke-linecap":"round"});
+  const defs=mk("defs",{});
+  const lg=mk("linearGradient",{id:"grad",x1:"0",y1:"0",x2:"1",y2:"0"});
+  lg.appendChild(mk("stop",{offset:"0",["stop-color"]:"#00C9A7"}));
+  lg.appendChild(mk("stop",{offset:"1",["stop-color"]:"#5ce0c8"}));
+  defs.appendChild(lg);svg.appendChild(defs);svg.appendChild(prog);
+  const L=base.getTotalLength();
+  prog.setAttribute("stroke-dasharray",L);
+  prog.setAttribute("stroke-dashoffset",L);
+  // 마일스톤 깃발
+  const miles=[]; const step= s.months==6?28:28;
+  for(let m=step;m<=tot;m+=step) miles.push(m);
+  if(miles[miles.length-1]!==tot) miles.push(tot);
+  miles.forEach(m=>{
+    const pt=base.getPointAtLength(L*(m/tot));
+    const reached=done>=m;
+    const flag=mk("g",{});
+    flag.appendChild(mk("circle",{cx:pt.x,cy:pt.y,r:reached?9:7,fill:reached?"#FFB020":"#fff",stroke:reached?"#FFB020":"#CBE9E1","stroke-width":3}));
+    const t=mk("text",{x:pt.x,y:pt.y-14,"text-anchor":"middle","font-size":"11","font-weight":"800",fill:reached?"#B26A00":"#9CA3AF","font-family":"Montserrat"});
+    t.textContent=Math.round(m/7)+"주";
+    flag.appendChild(t);
+    svg.appendChild(flag);
+  });
+  // 아바타
+  const apt=base.getPointAtLength(L*ratio);
+  const av=mk("g",{});
+  av.appendChild(mk("circle",{cx:apt.x,cy:apt.y,r:16,fill:"#0F1F3D",stroke:"#fff","stroke-width":3}));
+  const emo=mk("text",{x:apt.x,y:apt.y+6,"text-anchor":"middle","font-size":"18"});
+  emo.textContent="🏃";
+  av.appendChild(emo);
+  // 시작/도착
+  const startPt=base.getPointAtLength(0),endPt=base.getPointAtLength(L);
+  const flagEnd=mk("text",{x:endPt.x,y:endPt.y-18,"text-anchor":"middle","font-size":"20"});flagEnd.textContent="🏁";
+  svg.appendChild(flagEnd);
+  svg.appendChild(av);
+  // 애니메이션 (길 그려지고 아바타 이동)
+  av.style.opacity=0;
+  requestAnimationFrame(()=>{
+    prog.style.transition="stroke-dashoffset 1.6s cubic-bezier(.22,1,.36,1)";
+    prog.setAttribute("stroke-dashoffset", L*(1-ratio));
+    setTimeout(()=>{av.style.transition="opacity .5s";av.style.opacity=1;},900);
+  });
+}
+
+/* ================= 발음 듣기 (TTS) ================= */
+function speakCurrent(rate){
+  const txt=STEPS[STEP];
+  if(!("speechSynthesis" in window)){alert("이 브라우저는 음성 재생을 지원하지 않아요.");return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang="en-US"; u.rate=rate||0.92; u.pitch=1;
+  const vs=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith("en"));
+  const pref=vs.find(v=>/Google US English|Samantha|Aria|Jenny|Microsoft/i.test(v.name))||vs[0];
+  if(pref)u.voice=pref;
+  window.speechSynthesis.speak(u);
+}
+
+/* ================= 녹음 ================= */
+async function toggleRec(){
+  if(mediaRec && mediaRec.state==="recording"){stopRec();return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRec=new MediaRecorder(stream);chunks=[];
+    mediaRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+    mediaRec.onstop=()=>{
+      lastBlob=new Blob(chunks,{type:chunks[0]?chunks[0].type:"audio/webm"});
+      const url=URL.createObjectURL(lastBlob);
+      document.getElementById("myAudio").src=url;
+      document.getElementById("afterRec").classList.remove("hidden");
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    mediaRec.start();
+    recSeconds=0;
+    document.getElementById("recBtn").classList.add("recording");
+    document.getElementById("recBtn").textContent="⏸️";
+    document.getElementById("recLabel").textContent="녹음 중... 다시 누르면 멈춰요";
+    const rt=document.getElementById("recTime");rt.classList.remove("hidden");rt.textContent="00:00";
+    recTimer=setInterval(()=>{recSeconds++;rt.textContent=fmt(recSeconds);},1000);
+    document.getElementById("afterRec").classList.add("hidden");
+  }catch(e){
+    alert("마이크 사용 권한이 필요해요. 브라우저 주소창의 🔒 → 마이크 허용으로 설정해 주세요.");
+  }
+}
+function stopRec(){
+  if(mediaRec&&mediaRec.state==="recording")mediaRec.stop();
+  clearInterval(recTimer);
+  document.getElementById("recBtn").classList.remove("recording");
+  document.getElementById("recBtn").textContent="🎙️";
+  document.getElementById("recLabel").textContent="녹음 완료! 들어보고 제출하세요";
+}
+function resetRec(){
+  clearInterval(recTimer);
+  if(mediaRec&&mediaRec.state==="recording"){try{mediaRec.stop();}catch(e){}}
+  lastBlob=null;
+  document.getElementById("recBtn").classList.remove("recording");
+  document.getElementById("recBtn").textContent="🎙️";
+  document.getElementById("recLabel").textContent="버튼을 눌러 녹음을 시작하세요";
+  document.getElementById("recTime").classList.add("hidden");
+  document.getElementById("afterRec").classList.add("hidden");
+}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
+
+/* ================= 제출 / 다음 스텝 ================= */
+function submitStep(){
+  // 마지막 스텝 녹음을 저장(다운로드용)
+  if(lastBlob) saveBlobName();
+  cheer();
+  STEP++;
+  if(STEP<STEPS.length){
+    setTimeout(renderCard,500);
+    window.scrollTo({top:document.getElementById("patternCard").offsetTop-70,behavior:"smooth"});
+  }else{
+    completeToday();
+  }
+}
+let lastFileName="recording.webm";
+function saveBlobName(){
+  if(!lastBlob)return;
+  const ext=(lastBlob.type.includes("mp4")?"m4a":"webm");
+  const n=new Date();
+  lastFileName=`이상한영어_${CUR.name}_${n.getMonth()+1}월${n.getDate()}일_step${STEP+1}.${ext}`;
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(lastBlob);a.download=lastFileName;a.click();
+}
+
+function completeToday(){
+  const p=loadProg(CUR);
+  const tk=todayKey();
+  const already=!!p.done[tk];
+  if(!already){
+    p.done[tk]=true;
+    // streak 계산
+    const y=new Date();y.setDate(y.getDate()-1);
+    const yk=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
+    p.streak=(p.last===yk)?(p.streak||0)+1:1;
+    p.last=tk;
+    saveProg(CUR,p);
+    notifyTeacher(p);
+  }
+  // 모달
+  const done=doneCount(p), tot=totalDays(CUR.months);
+  const ms=MILESTONE_MSG[done];
+  document.getElementById("doneEmoji").textContent= ms?"🏆":"🎉";
+  document.getElementById("doneTitle").innerHTML= ms?("축하해요, <b>"+CUR.name+"</b>님!"):("오늘 숙제 완료, <b>"+CUR.name+"</b>님!");
+  document.getElementById("doneText").innerHTML= ms? ms+"<br><br>여정 "+done+"/"+tot+"일째 🎯"
+    : (CUR.name+"님, 오늘도 한 걸음 나아갔어요.<br>녹음 파일을 선생님께 보내면 발음 피드백을 받을 수 있어요. 여정 "+done+"/"+tot+"일째!");
+  document.getElementById("doneModal").classList.add("show");
+  bigConfetti();
+  // 헤더 새로고침
+  setTimeout(()=>startStudy(CUR),100);
+}
+
+function closeDone(){document.getElementById("doneModal").classList.remove("show");}
+
+function sendToKakao(){
+  // 마지막 녹음이 없으면 안내
+  if(!lastBlob){ saveHint(); }
+  window.open(KAKAO_CHANNEL,"_blank");
+  closeDone();
+}
+function saveHint(){
+  alert("방금 녹음한 파일이 기기에 저장되어 있어요.\n열린 카톡 채널에서 파일 첨부(📎)로 선택해 보내주세요 🙂");
+}
+
+/* ================= 선생님 알림 메일 ================= */
+function notifyTeacher(p){
+  if(!WEB3FORMS_KEY) return;
+  const done=doneCount(p),tot=totalDays(CUR.months);
+  const msg=`[이상한영어 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n학생이 녹음을 카톡으로 보낼 예정입니다. 편하실 때 발음 피드백 부탁드려요!`;
+  fetch("https://api.web3forms.com/submit",{
+    method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()}`,from_name:"이상한영어 숙제방",message:msg})
+  }).catch(()=>{});
+}
+
+/* ================= 격려 토스트 ================= */
+function cheer(){
+  const c=CHEERS[Math.floor(Math.random()*CHEERS.length)];
+  document.getElementById("cheerBig").innerHTML=c.b.replace("%s","<b>"+CUR.name+"</b>");
+  document.getElementById("cheerSmall").textContent=c.s;
+  const el=document.getElementById("cheer");
+  el.classList.add("show");
+  miniConfetti();
+  setTimeout(()=>el.classList.remove("show"),2600);
+}
+
+/* ================= 컨페티 ================= */
+const cv=document.getElementById("confetti");const ctx=cv.getContext("2d");
+function sizeCv(){cv.width=innerWidth;cv.height=innerHeight;}
+addEventListener("resize",sizeCv);sizeCv();
+let parts=[];
+function spawn(n,power){
+  for(let i=0;i<n;i++){
+    parts.push({x:innerWidth/2+(Math.random()-.5)*120,y:innerHeight*0.5,
+      vx:(Math.random()-.5)*power,vy:-Math.random()*power-4,
+      g:0.18+Math.random()*0.1,r:5+Math.random()*6,
+      c:["#00C9A7","#FFB020","#FF6B6B","#0F1F3D","#5ce0c8"][Math.floor(Math.random()*5)],
+      rot:Math.random()*6,vr:(Math.random()-.5)*0.3,life:90+Math.random()*40});
+  }
+  if(!raf)loop();
+}
+function miniConfetti(){spawn(36,9);}
+function bigConfetti(){spawn(120,13);}
+let raf=null;
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;p.life--;
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=p.c;
+    ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);ctx.restore();});
+  parts=parts.filter(p=>p.life>0&&p.y<cv.height+30);
+  if(parts.length)raf=requestAnimationFrame(loop);else{raf=null;ctx.clearRect(0,0,cv.width,cv.height);}
+}
+
+/* ================= 초기화 ================= */
+window.speechSynthesis&&window.speechSynthesis.getVoices(); // voices 워밍업
+function init(){
+  // 기본 시작일 = 오늘
+  const fs=document.getElementById("fStart"); if(fs)fs.value=todayKey();
+  const s=decodeStudent(location.hash);
+  if(s){setRole("student");bootStudent();}
+  else{
+    // 링크 없으면: 학생 안내 + 선생님 모드 둘 다 접근 가능. 기본은 학생 안내.
+    bootStudent();
+    renderStudents();
+  }
+}
+addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s)startStudy(s);});
+init();
+</script>
+</body>
+</html>
