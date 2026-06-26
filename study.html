@@ -248,6 +248,26 @@ audio{width:100%;margin-top:10px;border-radius:50px}
 .day-cell.done{background:var(--g);color:#fff;border-color:var(--g)}
 .day-cell:hover{transform:scale(1.08)}
 .board-note{width:100%;border:1px solid var(--bdr);border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;margin-top:10px}
+
+/* ===== 주간 리포트 ===== */
+.wk-stats{display:flex;gap:8px;margin:14px 0 6px}
+.wk-stat{flex:1;text-align:center;background:var(--cream);border-radius:14px;padding:12px 4px}
+.wk-stat .n{font-family:"Montserrat";font-size:22px;font-weight:900;color:var(--navy)}
+.wk-stat .n.g{color:var(--g2)}.wk-stat .n.o{color:var(--gold)}
+.wk-stat .l{font-size:11px;color:var(--t2);font-weight:600;margin-top:2px}
+.wk-chart{margin-top:10px}
+.wk-bars{display:flex;align-items:flex-end;gap:6px;height:108px;padding:6px 2px 0}
+.wk-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
+.wk-bar{width:78%;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,#5ce0c8,#00C9A7);min-height:3px;transition:height .6s cubic-bezier(.22,1,.36,1);position:relative}
+.wk-bar.mid{background:linear-gradient(180deg,#FFD27A,#FFB020)}
+.wk-bar.lo{background:linear-gradient(180deg,#FFA0A0,#FF6B6B)}
+.wk-bar.empty{background:#E5E7EB}
+.wk-bv{font-size:10px;font-weight:800;color:var(--t2);font-family:"Montserrat"}
+.wk-bx{font-size:10px;color:var(--t3);font-weight:600}
+.wk-msg{margin-top:12px;background:var(--g3);border-radius:14px;padding:12px 14px;font-size:13px;font-weight:600;color:var(--navy);line-height:1.6;word-break:keep-all}
+.wk-legend{display:flex;gap:12px;justify-content:center;margin-top:10px;font-size:10.5px;color:var(--t3)}
+.wk-legend span{display:inline-flex;align-items:center;gap:4px}
+.wk-dot{width:9px;height:9px;border-radius:3px;display:inline-block}
 </style>
 </head>
 <body>
@@ -356,6 +376,26 @@ audio{width:100%;margin-top:10px;border-radius:50px}
             <button class="btn sm" style="flex:1" id="nextBtn" onclick="submitStep()">제출하고 다음 →</button>
           </div>
         </div>
+      </div>
+
+      <!-- 주간 리포트 -->
+      <div class="card" id="weeklyCard">
+        <div class="t-head"><h2 style="font-size:17px">📊 이번 주 리포트</h2><span class="muted" id="wkRange"></span></div>
+        <div class="wk-stats">
+          <div class="wk-stat"><div class="n g" id="wkAvg">–</div><div class="l">평균 발음</div></div>
+          <div class="wk-stat"><div class="n" id="wkDone">0/7</div><div class="l">이번 주 완료</div></div>
+          <div class="wk-stat"><div class="n o" id="wkStreak">0</div><div class="l">연속일 🔥</div></div>
+        </div>
+        <div class="wk-chart">
+          <div class="wk-bars" id="wkBars"></div>
+        </div>
+        <div class="wk-legend">
+          <span><i class="wk-dot" style="background:#00C9A7"></i>좋음(85+)</span>
+          <span><i class="wk-dot" style="background:#FFB020"></i>보통(65~84)</span>
+          <span><i class="wk-dot" style="background:#FF6B6B"></i>연습 필요</span>
+          <span><i class="wk-dot" style="background:#E5E7EB"></i>안 함</span>
+        </div>
+        <div class="wk-msg" id="wkMsg"></div>
       </div>
 
       <!-- 내 숙제 기록 -->
@@ -1470,6 +1510,7 @@ function startStudy(s,entry){
   STEP=0;
   DAY_SCORES=[];
   renderCard();
+  renderWeekly(s);
   renderHistory(s);
   // 이미 오늘 완료했으면 표시
   if(p.done[todayKey()]){document.getElementById("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";}
@@ -1731,12 +1772,13 @@ function evalPronunciation(){
   const cur=STEPS[STEP]; const target=Array.isArray(cur)?cur[0]:cur;
   box.classList.remove("hidden");
   box.innerHTML="<div class='eval-listening'><span class='eq'><i></i><i></i><i></i><i></i></span> 듣고 있어요… 문장을 말해보세요!</div>";
-  const rec=new SR(); rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=3;
+  const rec=new SR(); rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=1;
   let got=false;
   rec.onresult=e=>{
     got=true;
-    let best=""; for(let i=0;i<e.results[0].length;i++){const alt=e.results[0][i].transcript; if(scoreSpeech(target,alt).score>scoreSpeech(target,best).score)best=alt;}
-    showEvalResult(target,best);
+    const res=e.results[0][0];            // 최우선 인식 결과(조작 없이)
+    const conf=(typeof res.confidence==="number"&&res.confidence>0)?res.confidence:null;
+    showEvalResult(target, res.transcript, conf);
   };
   rec.onerror=ev=>{
     if(ev.error==="not-allowed"||ev.error==="service-not-allowed"){ box.innerHTML="<div class='score-sub'>🎤 마이크 권한이 필요해요. 주소창 🔒 → 마이크 → 허용 후 다시 시도해 주세요.</div>"; }
@@ -1744,24 +1786,28 @@ function evalPronunciation(){
   };
   try{ rec.start(); }catch(e){ box.innerHTML="<div class='score-sub'>잠시 후 다시 시도해 주세요.</div>"; }
 }
-function showEvalResult(target,heard){
-  const r=scoreSpeech(target,heard);
-  DAY_SCORES.push(r.score);
-  const col = r.score>=85?"#00C9A7":(r.score>=65?"#FFB020":"#FF6B6B");
-  const msg = r.score>=90?"완벽한 발음이에요! 🎉":(r.score>=75?"아주 좋아요! 👏":(r.score>=60?"좋아요, 거의 다 됐어요 💪":"다시 또박또박 말해볼까요? 🙂"));
-  const circ=2*Math.PI*26, off=circ*(1-r.score/100);
+function showEvalResult(target,heard,conf){
+  const r=scoreSpeech(target,heard);          // 단어 일치율(%)
+  // 인식 신뢰도(또렷함) 반영 → 항상 100 방지, 더 현실적인 점수
+  const cf = conf!=null ? Math.max(0,Math.min(1,conf)) : 0.8;
+  const score = Math.max(0, Math.min(100, Math.round(r.score*(0.55+0.45*cf))));
+  DAY_SCORES.push(score);
+  const col = score>=85?"#00C9A7":(score>=65?"#FFB020":"#FF6B6B");
+  const msg = score>=90?"아주 또렷해요! 🎉":(score>=75?"좋아요! 👏":(score>=60?"거의 다 됐어요 💪":"또박또박 다시 해볼까요? 🙂"));
+  const circ=2*Math.PI*26, off=circ*(1-score/100);
   const heardHtml=r.marks.map(m=>`<span class="${m.ok?'w-ok':'w-no'}">${m.w}</span>`).join(" ");
   document.getElementById("evalResult").innerHTML=
     `<div class="score-big">
        <div class="score-ring">
          <svg width="64" height="64"><circle cx="32" cy="32" r="26" fill="none" stroke="#E5E7EB" stroke-width="7"/>
          <circle cx="32" cy="32" r="26" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>
-         <div class="sv">${r.score}</div>
+         <div class="sv">${score}</div>
        </div>
-       <div><div class="score-msg">${msg}</div><div class="score-sub">정확도 ${r.score}점 · 다시 도전하면 점수가 올라요</div></div>
+       <div><div class="score-msg">${msg}</div><div class="score-sub">단어 인식 ${r.score}% · 또렷함 ${Math.round(cf*100)}% 반영</div></div>
      </div>
      <div class="heard"><div class="heard-label">내 발음 인식 결과 (초록=정확, 빨강=놓침)</div>${heardHtml}</div>
-     <button class="btn ghost sm" style="width:100%;margin-top:12px" onclick="evalPronunciation()">🔁 다시 평가받기</button>`;
+     <div class="score-sub" style="margin-top:8px;font-size:11px">※ 참고용 자동 점수예요(단어 인식+또렷함 기준). 정밀한 억양 코칭은 선생님이 도와줘요.</div>
+     <button class="btn ghost sm" style="width:100%;margin-top:10px" onclick="evalPronunciation()">🔁 다시 평가받기</button>`;
   chime();
 }
 
@@ -1840,6 +1886,49 @@ function closeGame(){
   document.getElementById("gameBg").classList.remove("show");
   GAME=null;
   completeToday();
+}
+
+/* ================= 학생: 주간 리포트 ================= */
+function dateKeyOffset(n){ // n일 전 날짜키
+  const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-n);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function renderWeekly(s){
+  const p=loadProg(s);
+  const scores=p.scores||{}, done=p.done||{};
+  const WD=["일","월","화","수","목","금","토"];
+  // 최근 7일 (왼→오: 6일전 … 오늘)
+  const days=[];
+  for(let i=6;i>=0;i--){ const k=dateKeyOffset(i); const dt=new Date(k+"T00:00:00");
+    days.push({k, label:WD[dt.getDay()], done:!!done[k], score: (scores[k]!=null?scores[k]:null)}); }
+  const weekScores=days.filter(d=>d.score!=null).map(d=>d.score);
+  const avg=weekScores.length?Math.round(weekScores.reduce((a,b)=>a+b,0)/weekScores.length):null;
+  const doneCnt=days.filter(d=>d.done).length;
+  document.getElementById("wkAvg").textContent= avg!=null? avg : "–";
+  document.getElementById("wkDone").textContent= doneCnt+"/7";
+  document.getElementById("wkStreak").textContent= (p.streak||0);
+  document.getElementById("wkRange").textContent= days[0].k.slice(5)+" ~ "+days[6].k.slice(5);
+  // 막대
+  document.getElementById("wkBars").innerHTML=days.map(d=>{
+    let h, cls, val;
+    if(d.score!=null){ h=Math.max(8,Math.round(d.score*0.85)); cls=d.score>=85?"":(d.score>=65?"mid":"lo"); val=d.score; }
+    else if(d.done){ h=14; cls=""; val="✓"; }
+    else { h=6; cls="empty"; val=""; }
+    return `<div class="wk-col"><div class="wk-bv">${val!==""?val:"&nbsp;"}</div><div class="wk-bar ${cls}" style="height:${h}px"></div><div class="wk-bx">${d.label}</div></div>`;
+  }).join("");
+  // 메시지 (지난주 대비)
+  const prev=[]; for(let i=13;i>=7;i--){const k=dateKeyOffset(i); if(scores[k]!=null)prev.push(scores[k]);}
+  const prevAvg=prev.length?Math.round(prev.reduce((a,b)=>a+b,0)/prev.length):null;
+  let msg;
+  if(avg==null && doneCnt===0){ msg="이번 주 첫 숙제를 시작해 보세요! 매일 한 문장이면 충분해요 🌱"; }
+  else if(avg==null){ msg=doneCnt+"일 숙제 완료! 🎤 '발음 평가받기'를 누르면 점수 그래프가 채워져요."; }
+  else {
+    let trend="";
+    if(prevAvg!=null){ const diff=avg-prevAvg; trend = diff>0? ` 지난주보다 <b>+${diff}점</b> 올랐어요 📈` : (diff<0? ` (지난주 ${prevAvg}점)`:" 지난주와 비슷하게 잘 유지하고 있어요"); }
+    const tip = avg>=85? "발음이 아주 또렷해요. 이대로만!" : (avg>=65? "조금만 더 또박또박! 강세 단어를 살려보세요." : "천천히, 강세를 크게. 매일 하면 확 올라요.");
+    msg= `${s.name}님 이번 주 평균 <b>${avg}점</b>, ${doneCnt}일 완료!${trend}<br>${tip}`;
+  }
+  document.getElementById("wkMsg").innerHTML=msg;
 }
 
 /* ================= 학생: 내 숙제 기록 ================= */
