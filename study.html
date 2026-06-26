@@ -177,6 +177,77 @@ audio{width:100%;margin-top:10px;border-radius:50px}
   .sentence{font-size:22px}
   .s-hero .name{font-size:23px}
 }
+
+/* ===== 발음 평가 ===== */
+.eval-result{margin-top:14px;background:var(--cream);border-radius:16px;padding:16px;border:1px solid var(--bdr)}
+.score-big{display:flex;align-items:center;gap:12px}
+.score-ring{width:64px;height:64px;flex-shrink:0;position:relative}
+.score-ring svg{transform:rotate(-90deg)}
+.score-ring .sv{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Montserrat";font-weight:900;font-size:18px;color:var(--navy)}
+.score-msg{font-size:14px;font-weight:800;color:var(--navy)}
+.score-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.heard{margin-top:12px;font-size:13px;line-height:1.7;word-break:keep-all}
+.heard .w-ok{color:var(--g2);font-weight:700}
+.heard .w-no{color:var(--red);font-weight:700;text-decoration:underline dotted}
+.heard-label{font-size:11px;font-weight:800;color:var(--t3);margin-bottom:4px}
+.eval-listening{display:flex;align-items:center;gap:10px;color:var(--red);font-weight:800;font-size:14px}
+.eq{display:inline-flex;gap:3px;align-items:flex-end;height:18px}
+.eq i{width:3px;background:var(--red);border-radius:2px;animation:eqb .9s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}.eq i:nth-child(4){animation-delay:.45s}
+@keyframes eqb{0%,100%{height:5px}50%{height:18px}}
+.rec-optional{margin-top:14px;border:1px dashed var(--bdr);border-radius:14px;padding:0 14px}
+.rec-optional summary{padding:12px 0;font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;list-style:none}
+.rec-optional summary::-webkit-details-marker{display:none}
+.rec-optional[open] summary{border-bottom:1px solid var(--bdr);margin-bottom:12px}
+.proceed-row{display:flex;gap:10px;margin-top:14px}
+
+/* ===== 복습 게임 ===== */
+.game-bg{position:fixed;inset:0;background:linear-gradient(160deg,#0F1F3D,#1A2F55);z-index:210;display:none;flex-direction:column;padding:22px 18px;overflow-y:auto;color:#fff}
+.game-bg.show{display:flex}
+.game-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.game-top .gt{font-size:15px;font-weight:900}
+.game-x{background:rgba(255,255,255,.12);color:#fff;border-radius:50px;width:34px;height:34px;font-size:16px}
+.game-prog{font-size:12px;color:var(--g);font-weight:800;margin-bottom:18px}
+.game-card{background:#fff;border-radius:22px;padding:22px;color:var(--t1);box-shadow:var(--sh2);max-width:520px;width:100%;margin:0 auto}
+.game-q{font-size:13px;color:var(--t2);font-weight:700;margin-bottom:6px}
+.game-ko{font-size:20px;font-weight:900;color:var(--navy);margin-bottom:16px;word-break:keep-all}
+.build-area{min-height:54px;border:2px dashed var(--bdr);border-radius:14px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;margin-bottom:14px}
+.build-area.ok{border-color:var(--g);background:var(--g3)}
+.build-area.no{border-color:var(--red);background:#FFF0F0}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip-w{background:var(--cream);border:1.5px solid var(--bdr);border-radius:12px;padding:10px 14px;font-size:15px;font-weight:700;color:var(--navy);cursor:pointer;transition:.12s;user-select:none}
+.chip-w:hover{border-color:var(--g);transform:translateY(-1px)}
+.chip-w.used{opacity:.25;pointer-events:none}
+.chip-p{background:var(--navy);color:#fff;border-radius:12px;padding:10px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.game-fb{text-align:center;font-weight:800;font-size:15px;min-height:22px;margin-bottom:12px}
+.game-fb.ok{color:var(--g2)}.game-fb.no{color:var(--red)}
+.game-done{text-align:center;color:#fff;padding:30px 10px}
+.game-done .e{font-size:56px}.game-done h3{font-size:22px;font-weight:900;margin:8px 0}
+.game-done p{color:rgba(255,255,255,.8);font-size:14px;margin-bottom:18px}
+
+/* ===== 학생 숙제 기록 ===== */
+.hist-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto}
+.hist-item{display:flex;align-items:center;gap:11px;background:var(--cream);border-radius:14px;padding:11px 13px}
+.hist-d{width:46px;flex-shrink:0;text-align:center}
+.hist-d .dd{font-family:"Montserrat";font-weight:900;font-size:17px;color:var(--navy);line-height:1}
+.hist-d .mm{font-size:10px;color:var(--t3);font-weight:700}
+.hist-main{flex:1;min-width:0}
+.hist-tag{font-size:13.5px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-ko{font-size:12px;color:var(--t2)}
+.hist-score{font-family:"Montserrat";font-weight:900;font-size:14px;flex-shrink:0;padding:4px 9px;border-radius:50px}
+.sc-hi{background:var(--g3);color:var(--g2)}.sc-mid{background:#FFF3D6;color:#B26A00}.sc-lo{background:#FFE9E9;color:#D33}
+
+/* ===== 선생님 숙제 현황 보드 ===== */
+.board-stu{background:var(--w);border:1px solid var(--bdr);border-radius:16px;padding:14px;margin-bottom:12px}
+.board-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.board-head .av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900}
+.board-head .nm{font-size:15px;font-weight:800}
+.board-head .dt{font-size:11.5px;color:var(--t2)}
+.day-grid{display:flex;flex-wrap:wrap;gap:6px}
+.day-cell{width:30px;height:30px;border-radius:9px;border:1px solid var(--bdr);background:var(--cream);font-size:11px;font-weight:800;color:var(--t3);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.12s}
+.day-cell.done{background:var(--g);color:#fff;border-color:var(--g)}
+.day-cell:hover{transform:scale(1.08)}
+.board-note{width:100%;border:1px solid var(--bdr);border-radius:10px;padding:8px 10px;font-size:13px;font-family:inherit;margin-top:10px}
 </style>
 </head>
 <body>
@@ -247,7 +318,7 @@ audio{width:100%;margin-top:10px;border-radius:50px}
           </div>
         </div>
 
-        <!-- 녹음 영역 -->
+        <!-- 연습 영역 -->
         <div class="rec-zone">
           <div class="step-meta" id="stepMeta">STEP 1 · 오늘의 문장</div>
           <div class="steps" id="stepDots"></div>
@@ -257,35 +328,70 @@ audio{width:100%;margin-top:10px;border-radius:50px}
             <button class="btn ghost" id="slowBtn" onclick="speakCurrent(.6)">🐢 천천히</button>
           </div>
 
-          <div class="rec-main">
-            <button class="rec-btn" id="recBtn" onclick="toggleRec()" aria-label="녹음">🎙️</button>
-            <div class="rec-label" id="recLabel">버튼을 눌러 녹음을 시작하세요</div>
-            <div class="rec-time hidden" id="recTime">00:00</div>
-          </div>
+          <!-- 발음 평가 (자동 채점) -->
+          <button class="btn" id="evalBtn" onclick="evalPronunciation()">🎤 말하고 발음 평가받기</button>
+          <div id="evalResult" class="eval-result hidden"></div>
 
-          <div id="afterRec" class="hidden">
-            <div class="compare">
-              <div class="cmp-item">
-                <div class="ch">🗣️ 내 발음</div>
-                <audio id="myAudio" controls></audio>
+          <!-- 녹음(선택) : 내 목소리 직접 들어보기 -->
+          <details class="rec-optional">
+            <summary>🎙️ 내 목소리도 녹음해서 직접 들어보기 (선택)</summary>
+            <div class="rec-main">
+              <button class="rec-btn" id="recBtn" onclick="toggleRec()" aria-label="녹음">🎙️</button>
+              <div class="rec-label" id="recLabel">버튼을 눌러 녹음을 시작하세요</div>
+              <div class="rec-time hidden" id="recTime">00:00</div>
+            </div>
+            <div id="afterRec" class="hidden">
+              <div class="compare">
+                <div class="cmp-item">
+                  <div class="ch">🗣️ 내 발음</div>
+                  <audio id="myAudio" controls></audio>
+                </div>
               </div>
+              <button class="btn ghost sm" style="width:100%;margin-top:10px" onclick="resetRec()">↺ 다시 녹음</button>
             </div>
-            <div style="display:flex;gap:10px;margin-top:12px">
-              <button class="btn ghost sm" style="flex:1" onclick="resetRec()">↺ 다시 녹음</button>
-              <button class="btn sm" style="flex:1.4" id="nextBtn" onclick="submitStep()">제출하고 다음 →</button>
-            </div>
+          </details>
+
+          <!-- 진행 -->
+          <div class="proceed-row" id="proceedRow">
+            <button class="btn sm" style="flex:1" id="nextBtn" onclick="submitStep()">제출하고 다음 →</button>
           </div>
         </div>
       </div>
+
+      <!-- 내 숙제 기록 -->
+      <div class="card" id="historyCard">
+        <div class="t-head"><h2 style="font-size:17px">📚 내 숙제 기록</h2><span class="muted" id="histCount"></span></div>
+        <div class="hist-list" id="histList"></div>
+      </div>
     </div>
+  </div>
+
+  <!-- ===== 복습 게임 (문장 잇기) ===== -->
+  <div class="game-bg" id="gameBg">
+    <div class="game-top">
+      <div class="gt">🎮 문장 잇기 복습</div>
+      <button class="game-x" onclick="closeGame()">✕</button>
+    </div>
+    <div class="game-prog" id="gameProg"></div>
+    <div id="gameBody"></div>
   </div>
 
   <!-- ================= 선생님 모드 ================= -->
   <div id="teacherView" class="hidden">
     <div class="tabs">
-      <button id="tabStu" class="on" onclick="setTab('stu')">👩‍🎓 학생 관리</button>
-      <button id="tabCard" onclick="setTab('card')">🃏 패턴 카드</button>
+      <button id="tabStu" class="on" onclick="setTab('stu')">👩‍🎓 학생</button>
+      <button id="tabBoard" onclick="setTab('board')">📋 숙제 현황</button>
+      <button id="tabCard" onclick="setTab('card')">🃏 카드</button>
       <button id="tabHelp" onclick="setTab('help')">❓ 사용법</button>
+    </div>
+
+    <!-- 숙제 현황 보드 -->
+    <div id="paneBoard" class="hidden">
+      <div class="card">
+        <div class="t-head"><h2>숙제 완료 현황</h2></div>
+        <p class="muted">학생이 숙제를 끝내면 <b>완료 알림 메일</b>이 자동으로 와요(발음 점수 포함). 아래에서 날짜 칸을 눌러 "확인함"으로 체크하고, 피드백 메모를 남길 수 있어요.</p>
+        <div id="boardList" style="margin-top:14px"></div>
+      </div>
     </div>
 
     <!-- 학생 관리 -->
@@ -1206,11 +1312,12 @@ function setRole(r){
   if(r==="teacher") renderStudents();
 }
 function setTab(t){
-  ["stu","card","help"].forEach(x=>{
+  ["stu","board","card","help"].forEach(x=>{
     document.getElementById("tab"+x[0].toUpperCase()+x.slice(1)).classList.toggle("on",x===t);
     document.getElementById("pane"+x[0].toUpperCase()+x.slice(1)).classList.toggle("hidden",x!==t);
   });
   if(t==="card") renderCards();
+  if(t==="board") renderBoard();
 }
 
 /* ================= 선생님: 학생 ================= */
@@ -1361,7 +1468,9 @@ function startStudy(s,entry){
   CARD=lib[p.assigned[tk]%lib.length];
   STEPS=(CARD.exp&&CARD.exp.length)?CARD.exp.slice():[[CARD.sent,CARD.trans]];
   STEP=0;
+  DAY_SCORES=[];
   renderCard();
+  renderHistory(s);
   // 이미 오늘 완료했으면 표시
   if(p.done[todayKey()]){document.getElementById("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";}
   if(entry) showWelcome(s,p);
@@ -1383,6 +1492,8 @@ function renderCard(){
   document.getElementById("stepMeta").textContent= STEP===0
     ? "STEP 1 · 오늘의 핵심 문장"
     : "STEP "+(STEP+1)+" · 점점 길게! ("+(STEP)+"단계 확장)";
+  // 발음 평가 결과 초기화
+  const ev=document.getElementById("evalResult"); if(ev){ev.classList.add("hidden");ev.innerHTML="";}
   resetRec();
 }
 
@@ -1535,66 +1646,271 @@ function resetRec(){
 function fmt(s){return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");}
 
 /* ================= 제출 / 다음 스텝 ================= */
+let DAY_SCORES=[];
 function submitStep(){
-  // 다운로드 없이 바로 다음 단계로 (녹음은 마지막에 카톡 음성메시지로 제출)
   cheer();
   STEP++;
   if(STEP<STEPS.length){
     setTimeout(renderCard,500);
     window.scrollTo({top:document.getElementById("patternCard").offsetTop-70,behavior:"smooth"});
   }else{
-    completeToday();
+    // 모든 문장 완료 → 복습 게임 → 완료 처리
+    startReviewGame();
   }
 }
 
+// 완료 기록 (게임 후 호출)
 function completeToday(){
   const p=loadProg(CUR);
   const tk=todayKey();
   const already=!!p.done[tk];
+  const avg=DAY_SCORES.length?Math.round(DAY_SCORES.reduce((a,b)=>a+b,0)/DAY_SCORES.length):null;
   if(!already){
     p.done[tk]=true;
-    // streak 계산
+    if(avg!=null){ if(!p.scores)p.scores={}; p.scores[tk]=avg; }
     const y=new Date();y.setDate(y.getDate()-1);
     const yk=y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0");
     p.streak=(p.last===yk)?(p.streak||0)+1:1;
     p.last=tk;
     saveProg(CUR,p);
-    notifyTeacher(p);
+    notifyTeacher(p,avg);
   }
-  // 모달 — 오늘 숙제 모두 제출 완료 + 복습 안내
   const done=doneCount(p), tot=totalDays(CUR.months);
   const ms=MILESTONE_MSG[done];
   const todayEn=(CARD.exp&&CARD.exp.length)?CARD.exp[CARD.exp.length-1][0]:CARD.sent;
+  const scoreLine= avg!=null ? ("🎤 오늘 발음 점수 <b>"+avg+"점</b><br>") : "";
   document.getElementById("doneEmoji").textContent= ms?"🏆":"🎉";
   document.getElementById("doneTitle").innerHTML= "오늘 숙제 <b>모두 제출 완료!</b>";
   document.getElementById("doneText").innerHTML=
     (ms? ("🎊 "+ms+"<br>") : (CUR.name+"님, 오늘도 끝까지 해냈어요! 👏<br>"))
+    + scoreLine
     + "<br><div style='background:#FFF7E6;border:1px solid #FFE0A3;border-radius:14px;padding:12px 14px;color:#8a5a00;font-weight:700;font-size:13.5px;line-height:1.6'>📖 오늘 배운 문장, 잊지 말고<br><b>10번씩 더 소리 내어 읽어보세요!</b><br><span style='font-weight:500;color:#a06a10'>「"+todayEn+"」</span></div>"
     + "<br>여정 "+done+"/"+tot+"일째 🎯";
   document.getElementById("doneModal").classList.add("show");
   bigConfetti();
   chime("win");
-  // 헤더 새로고침
   setTimeout(()=>startStudy(CUR),100);
 }
 
 function closeDone(){document.getElementById("doneModal").classList.remove("show");}
 
 function sendToKakao(){
-  // 다운로드 없이: 카톡 채널을 열어 '음성메시지'로 읽어 보내도록 안내
   window.open(KAKAO_CHANNEL,"_blank");
   closeDone();
   setTimeout(function(){ alert("카톡 채널이 열렸어요 🙂\n채널 대화창에서 마이크(🎤) 버튼으로 오늘 문장을 한 번 읽어 음성메시지로 보내주세요!"); },400);
 }
 
+/* ================= 발음 평가 (음성인식 자동 채점) ================= */
+function normWords(s){return String(s||"").toLowerCase().replace(/[^a-z0-9'\s]/g," ").split(/\s+/).filter(Boolean);}
+function lcsLen(a,b){
+  const dp=Array(a.length+1).fill(0).map(()=>Array(b.length+1).fill(0));
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)
+    dp[i][j]= a[i-1]===b[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j],dp[i][j-1]);
+  return dp[a.length][b.length];
+}
+function scoreSpeech(target, heard){
+  const t=normWords(target), h=normWords(heard);
+  if(!t.length) return {score:0,marks:[]};
+  const matched=lcsLen(t,h);
+  let score=Math.round(matched/t.length*100);
+  // 단어별 표시: heard에 있는 단어는 ok
+  const hset={}; h.forEach(w=>hset[w]=(hset[w]||0)+1);
+  const tw=String(target).split(/\s+/);
+  const marks=tw.map(w=>{const k=w.toLowerCase().replace(/[^a-z0-9']/g,""); const ok=k&&hset[k]>0; if(ok)hset[k]--; return {w,ok};});
+  return {score,marks};
+}
+function evalPronunciation(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const box=document.getElementById("evalResult");
+  if(!SR){
+    if(isInApp()){ showExternalGuide(); return; }
+    box.classList.remove("hidden");
+    box.innerHTML="<div class='score-sub'>이 브라우저는 자동 발음평가를 지원하지 않아요. 크롬·삼성인터넷에서 열면 됩니다. (지금은 '제출하고 다음'으로 진행 가능)</div>";
+    return;
+  }
+  const cur=STEPS[STEP]; const target=Array.isArray(cur)?cur[0]:cur;
+  box.classList.remove("hidden");
+  box.innerHTML="<div class='eval-listening'><span class='eq'><i></i><i></i><i></i><i></i></span> 듣고 있어요… 문장을 말해보세요!</div>";
+  const rec=new SR(); rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=3;
+  let got=false;
+  rec.onresult=e=>{
+    got=true;
+    let best=""; for(let i=0;i<e.results[0].length;i++){const alt=e.results[0][i].transcript; if(scoreSpeech(target,alt).score>scoreSpeech(target,best).score)best=alt;}
+    showEvalResult(target,best);
+  };
+  rec.onerror=ev=>{
+    if(ev.error==="not-allowed"||ev.error==="service-not-allowed"){ box.innerHTML="<div class='score-sub'>🎤 마이크 권한이 필요해요. 주소창 🔒 → 마이크 → 허용 후 다시 시도해 주세요.</div>"; }
+    else if(!got){ box.innerHTML="<div class='score-sub'>잘 안 들렸어요. 다시 '발음 평가받기'를 눌러 또박또박 말해보세요 🙂</div>"; }
+  };
+  try{ rec.start(); }catch(e){ box.innerHTML="<div class='score-sub'>잠시 후 다시 시도해 주세요.</div>"; }
+}
+function showEvalResult(target,heard){
+  const r=scoreSpeech(target,heard);
+  DAY_SCORES.push(r.score);
+  const col = r.score>=85?"#00C9A7":(r.score>=65?"#FFB020":"#FF6B6B");
+  const msg = r.score>=90?"완벽한 발음이에요! 🎉":(r.score>=75?"아주 좋아요! 👏":(r.score>=60?"좋아요, 거의 다 됐어요 💪":"다시 또박또박 말해볼까요? 🙂"));
+  const circ=2*Math.PI*26, off=circ*(1-r.score/100);
+  const heardHtml=r.marks.map(m=>`<span class="${m.ok?'w-ok':'w-no'}">${m.w}</span>`).join(" ");
+  document.getElementById("evalResult").innerHTML=
+    `<div class="score-big">
+       <div class="score-ring">
+         <svg width="64" height="64"><circle cx="32" cy="32" r="26" fill="none" stroke="#E5E7EB" stroke-width="7"/>
+         <circle cx="32" cy="32" r="26" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${off}"/></svg>
+         <div class="sv">${r.score}</div>
+       </div>
+       <div><div class="score-msg">${msg}</div><div class="score-sub">정확도 ${r.score}점 · 다시 도전하면 점수가 올라요</div></div>
+     </div>
+     <div class="heard"><div class="heard-label">내 발음 인식 결과 (초록=정확, 빨강=놓침)</div>${heardHtml}</div>
+     <button class="btn ghost sm" style="width:100%;margin-top:12px" onclick="evalPronunciation()">🔁 다시 평가받기</button>`;
+  chime();
+}
+
+/* ================= 복습 게임 (문장 잇기) ================= */
+let GAME=null;
+function startReviewGame(){
+  // 오늘 문장 중 2~3개로 게임 (짧은→긴 중 뒤쪽 위주)
+  const all=STEPS.map(s=>Array.isArray(s)?s:[s,""]);
+  let picks=[];
+  if(all.length<=3) picks=all.slice();
+  else picks=[all[1],all[2],all[all.length-1]];
+  GAME={rounds:picks,idx:0};
+  document.getElementById("gameBg").classList.add("show");
+  renderGameRound();
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor((i+1)*((Date.now()+i*97)%1000)/1000)%(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function renderGameRound(){
+  const g=GAME; if(!g) return;
+  if(g.idx>=g.rounds.length){ finishGame(); return; }
+  const [en,ko]=g.rounds[g.idx];
+  const words=en.replace(/\s+/g," ").trim().split(" ");
+  document.getElementById("gameProg").textContent="문제 "+(g.idx+1)+" / "+g.rounds.length+"  ·  단어를 순서대로 눌러 문장을 완성하세요";
+  let bankShuffled=shuffle(words.map((w,i)=>({w,i})));
+  // 너무 쉬운 1~2단어는 그대로
+  document.getElementById("gameBody").innerHTML=
+    `<div class="game-card">
+       <div class="game-q">🇰🇷 이 뜻이 되도록 영어 문장을 만들어요</div>
+       <div class="game-ko">${ko||en}</div>
+       <div class="build-area" id="buildArea"></div>
+       <div class="bank" id="bank"></div>
+       <div class="game-fb" id="gameFb"></div>
+       <div style="display:flex;gap:10px">
+         <button class="btn ghost sm" style="flex:1" onclick="resetBuild()">↺ 지우기</button>
+         <button class="btn sm" style="flex:1.3" onclick="checkBuild()">정답 확인</button>
+       </div>
+     </div>`;
+  g.answer=words; g.built=[]; g.bank=bankShuffled;
+  renderBank();
+}
+function renderBank(){
+  const g=GAME;
+  const bank=document.getElementById("bank"), build=document.getElementById("buildArea");
+  bank.innerHTML=g.bank.map((o,bi)=>`<span class="chip-w ${g.built.indexOf(bi)>=0?'used':''}" onclick="pickWord(${bi})">${o.w}</span>`).join("");
+  build.classList.remove("ok","no");
+  build.innerHTML=g.built.map((bi,pos)=>`<span class="chip-p" onclick="unpick(${pos})">${g.bank[bi].w}</span>`).join("") || '<span class="score-sub" style="align-self:center">아래 단어를 눌러보세요</span>';
+}
+function pickWord(bi){ if(GAME.built.indexOf(bi)>=0)return; GAME.built.push(bi); document.getElementById("gameFb").textContent=""; renderBank(); }
+function unpick(pos){ GAME.built.splice(pos,1); renderBank(); }
+function resetBuild(){ GAME.built=[]; renderBank(); }
+function checkBuild(){
+  const g=GAME;
+  const made=g.built.map(bi=>g.bank[bi].w).join(" ");
+  const ans=g.answer.join(" ");
+  const fb=document.getElementById("gameFb"), build=document.getElementById("buildArea");
+  if(made.toLowerCase()===ans.toLowerCase()){
+    fb.textContent="정답이에요! 🎉"; fb.className="game-fb ok"; build.classList.add("ok");
+    miniConfetti(); chime();
+    g.idx++;
+    setTimeout(renderGameRound,900);
+  }else{
+    fb.textContent="조금 달라요. 순서를 다시 맞춰볼까요? 🤔"; fb.className="game-fb no"; build.classList.add("no");
+    chime();
+  }
+}
+function finishGame(){
+  document.getElementById("gameBody").innerHTML=
+    `<div class="game-done">
+       <div class="e">🏅</div>
+       <h3>복습 완료!</h3>
+       <p>${CUR.name}님, 오늘 문장을 완벽히 다졌어요.<br>이제 숙제를 마무리할게요!</p>
+       <button class="btn" style="max-width:320px;margin:0 auto" onclick="closeGame()">숙제 마무리하기 →</button>
+     </div>`;
+  bigConfetti(); chime("win");
+}
+function closeGame(){
+  document.getElementById("gameBg").classList.remove("show");
+  GAME=null;
+  completeToday();
+}
+
+/* ================= 학생: 내 숙제 기록 ================= */
+function renderHistory(s){
+  const p=loadProg(s);
+  const lib=getLib()[s.level]||getLib()["왕초보"];
+  const dates=Object.keys(p.done).sort().reverse();
+  const box=document.getElementById("histList");
+  document.getElementById("histCount").textContent=dates.length?("· 총 "+dates.length+"일 완료"):"";
+  if(!dates.length){ box.innerHTML='<div class="empty">아직 완료한 숙제가 없어요.<br>오늘 첫 숙제를 시작해 보세요 🙂</div>'; return; }
+  box.innerHTML=dates.slice(0,60).map(d=>{
+    const idx=(p.assigned&&p.assigned[d]!=null)?p.assigned[d]:null;
+    const card= idx!=null ? lib[idx%lib.length] : null;
+    const tag= card?card.tag:"오늘의 패턴";
+    const ko= card?card.ko:"";
+    const sc= p.scores&&p.scores[d]!=null ? p.scores[d] : null;
+    const scCls= sc==null?"":(sc>=85?"sc-hi":(sc>=65?"sc-mid":"sc-lo"));
+    const parts=d.split("-");
+    return `<div class="hist-item">
+      <div class="hist-d"><div class="dd">${+parts[2]}</div><div class="mm">${+parts[1]}월</div></div>
+      <div class="hist-main"><div class="hist-tag">${tag}</div><div class="hist-ko">${ko}</div></div>
+      ${sc!=null?`<div class="hist-score ${scCls}">${sc}점</div>`:`<div class="hist-score sc-hi">✓</div>`}
+    </div>`;
+  }).join("");
+}
+
+/* ================= 선생님: 숙제 현황 보드 ================= */
+function boardKey(s){return "we_board_"+s.name+"_"+s.start;}
+function renderBoard(){
+  const arr=students(); const box=document.getElementById("boardList");
+  if(!arr.length){ box.innerHTML='<div class="empty">먼저 \'학생\' 탭에서 학생을 등록하세요.</div>'; return; }
+  box.innerHTML=arr.map((s,i)=>{
+    const d=dayNumber(s.start);
+    const conf=JSON.parse(localStorage.getItem(boardKey(s))||'{"days":{},"note":""}');
+    const N=Math.min(d,28); // 최근 28일 칸
+    let cells="";
+    for(let k=1;k<=Math.max(N,d>0?Math.min(d,28):1);k++){
+      const on=conf.days[k]?"done":"";
+      cells+=`<div class="day-cell ${on}" onclick="toggleBoard(${i},${k})">${k}</div>`;
+    }
+    return `<div class="board-stu">
+      <div class="board-head">
+        <div class="av">${(s.name||'?')[0]}</div>
+        <div style="flex:1"><div class="nm">${s.name} <span class="muted">· ${s.level}</span></div>
+        <div class="dt">시작 ${s.start} · 오늘 Day ${d} · 확인 ${Object.values(conf.days).filter(Boolean).length}일</div></div>
+      </div>
+      <div class="day-grid">${cells}</div>
+      <textarea class="board-note" placeholder="${s.name}님 피드백 메모 (예: 6/27 R발음 좋아짐)" onchange="saveBoardNote(${i},this.value)">${conf.note||""}</textarea>
+    </div>`;
+  }).join("");
+}
+function toggleBoard(i,k){
+  const s=students()[i]; if(!s)return;
+  const key=boardKey(s); const conf=JSON.parse(localStorage.getItem(key)||'{"days":{},"note":""}');
+  conf.days[k]=!conf.days[k]; localStorage.setItem(key,JSON.stringify(conf)); renderBoard();
+}
+function saveBoardNote(i,v){
+  const s=students()[i]; if(!s)return;
+  const key=boardKey(s); const conf=JSON.parse(localStorage.getItem(key)||'{"days":{},"note":""}');
+  conf.note=v; localStorage.setItem(key,JSON.stringify(conf));
+}
+
 /* ================= 선생님 알림 메일 ================= */
-function notifyTeacher(p){
+function notifyTeacher(p,avg){
   if(!WEB3FORMS_KEY) return;
   const done=doneCount(p),tot=totalDays(CUR.months);
-  const msg=`[이상한영어 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n학생이 녹음을 카톡으로 보낼 예정입니다. 편하실 때 발음 피드백 부탁드려요!`;
+  const scoreTxt= avg!=null ? (avg+"점") : "미측정";
+  const msg=`[이상한영어 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n자동 발음 점수: ${scoreTxt}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n* 자동 점수는 음성인식 기반 참고용입니다. 학생이 카톡으로 녹음(음성메시지)을 보낼 수 있어요.`;
   fetch("https://api.web3forms.com/submit",{
     method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
-    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()}`,from_name:"이상한영어 숙제방",message:msg})
+    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()} · 발음 ${scoreTxt}`,from_name:"이상한영어 숙제방",message:msg})
   }).catch(()=>{});
 }
 
