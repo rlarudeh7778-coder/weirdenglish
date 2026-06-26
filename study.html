@@ -571,13 +571,53 @@ audio{width:100%;margin-top:10px;border-radius:50px}
   </div>
 </div>
 
+<!-- Firebase (실시간 진행/점수 동기화 + 선생님 대시보드) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 /* =================================================================
-   이상한영어 · 데일리 숙제방  (단일 파일, 백엔드 불필요)
+   이상한영어 · 데일리 숙제방
    ================================================================= */
 const WEB3FORMS_KEY="ef0e3efd-8d61-4ddc-a211-6c9e29435f52"; // 숙제 완료 알림 메일 (랜딩페이지와 동일)
 const KAKAO_CHANNEL="http://pf.kakao.com/_Vgdzb";
 const DAY=86400000;
+
+/* ===== Firebase 설정 (비어있으면 클라우드 OFF, 기존 로컬 모드로 동작) ===== */
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyBymjs8TRH16hGRW_ubVMFTX0FRhvmakUY",
+  authDomain:"weirdenglish-2e382.firebaseapp.com",
+  projectId:"weirdenglish-2e382",
+  storageBucket:"weirdenglish-2e382.firebasestorage.app",
+  messagingSenderId:"1010598738337",
+  appId:"1:1010598738337:web:5bf9f8d84240646891b3e0"
+};
+let CLOUD=false, DB=null, boardUnsub=null;
+function initCloud(){
+  try{
+    if(!FIREBASE_CONFIG.apiKey || typeof firebase==="undefined") return;
+    firebase.initializeApp(FIREBASE_CONFIG);
+    DB=firebase.firestore();
+    try{ firebase.auth().signInAnonymously().catch(function(){}); }catch(e){}
+    CLOUD=true;
+  }catch(e){ CLOUD=false; }
+}
+function studentId(s){ return (s.name+"__"+s.start).replace(/[^\w가-힣]/g,"_"); }
+function cloudSaveCompletion(s,p,avg,card){
+  if(!CLOUD||!DB) return;
+  try{
+    const id=studentId(s), tk=todayKey(), now=Date.now();
+    DB.collection("students").doc(id).set({
+      name:s.name, level:s.level, months:s.months, start:s.start,
+      streak:p.streak||0, doneCount:doneCount(p), totalDays:totalDays(s.months),
+      lastDate:tk, lastScore:(avg==null?null:avg), updatedAt:now
+    },{merge:true});
+    DB.collection("students").doc(id).collection("days").doc(tk).set({
+      date:tk, patternTag:(card&&card.tag)||"", patternKo:(card&&card.ko)||"",
+      score:(avg==null?null:avg), ts:now
+    });
+  }catch(e){}
+}
 
 /* ---------- 기본 패턴 라이브러리 (레벨별) ---------- */
 const BASE_LIB={
@@ -1715,6 +1755,7 @@ function completeToday(){
     p.last=tk;
     saveProg(CUR,p);
     notifyTeacher(p,avg);
+    cloudSaveCompletion(CUR,p,avg,CARD);
   }
   const done=doneCount(p), tot=totalDays(CUR.months);
   const ms=MILESTONE_MSG[done];
@@ -1957,8 +1998,39 @@ function renderHistory(s){
 
 /* ================= 선생님: 숙제 현황 보드 ================= */
 function boardKey(s){return "we_board_"+s.name+"_"+s.start;}
+function scoreBadge(sc){ if(sc==null)return ""; const c=sc>=85?"sc-hi":(sc>=65?"sc-mid":"sc-lo"); return `<span class="hist-score ${c}">${sc}점</span>`; }
 function renderBoard(){
-  const arr=students(); const box=document.getElementById("boardList");
+  const box=document.getElementById("boardList");
+  // 클라우드 ON: 모든 기기의 학생 진행을 실시간으로
+  if(CLOUD&&DB){
+    box.innerHTML='<div class="empty">실시간 현황 불러오는 중…</div>';
+    if(boardUnsub){try{boardUnsub();}catch(e){}}
+    boardUnsub=DB.collection("students").orderBy("updatedAt","desc").onSnapshot(function(snap){
+      if(snap.empty){ box.innerHTML='<div class="empty">아직 숙제를 완료한 학생이 없어요.<br>학생이 첫 숙제를 끝내면 여기에 실시간으로 떠요 🙂</div>'; return; }
+      const tk=todayKey(); let html="";
+      snap.forEach(function(doc){
+        const v=doc.data(); const d=dayNumber(v.start);
+        const conf=JSON.parse(localStorage.getItem("we_board_"+v.name+"_"+v.start)||'{"note":""}');
+        const todayDone=(v.lastDate===tk);
+        html+=`<div class="board-stu">
+          <div class="board-head">
+            <div class="av">${(v.name||'?')[0]}</div>
+            <div style="flex:1"><div class="nm">${v.name} <span class="muted">· ${v.level}</span> ${todayDone?'<span style="color:var(--g2);font-size:11px;font-weight:800">● 오늘 완료</span>':'<span style="color:var(--t3);font-size:11px">오늘 미완료</span>'}</div>
+            <div class="dt">시작 ${v.start} · 오늘 Day ${d} · 완료 ${v.doneCount||0}/${v.totalDays||0}일 · 🔥${v.streak||0}일</div></div>
+            ${scoreBadge(v.lastScore)}
+          </div>
+          <div style="font-size:12px;color:var(--t2);margin:6px 0 2px">최근: ${v.lastDate||'-'} ${v.lastScore!=null?('· 발음 '+v.lastScore+'점'):''}</div>
+          <button class="btn ghost sm" style="width:100%;margin-top:6px" onclick="loadStudentDays('${doc.id}',this)">📅 일자별 기록 보기</button>
+          <div class="cloud-days" id="cd_${doc.id}"></div>
+          <textarea class="board-note" placeholder="${v.name}님 피드백 메모" onchange="saveCloudNote('${v.name}','${v.start}',this.value)">${conf.note||""}</textarea>
+        </div>`;
+      });
+      box.innerHTML=html;
+    }, function(err){ box.innerHTML='<div class="empty">현황을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>'; });
+    return;
+  }
+  // 클라우드 OFF: 기존 로컬 수동 보드
+  const arr=students();
   if(!arr.length){ box.innerHTML='<div class="empty">먼저 \'학생\' 탭에서 학생을 등록하세요.</div>'; return; }
   box.innerHTML=arr.map((s,i)=>{
     const d=dayNumber(s.start);
@@ -1989,6 +2061,29 @@ function saveBoardNote(i,v){
   const s=students()[i]; if(!s)return;
   const key=boardKey(s); const conf=JSON.parse(localStorage.getItem(key)||'{"days":{},"note":""}');
   conf.note=v; localStorage.setItem(key,JSON.stringify(conf));
+}
+// 클라우드: 학생 일자별 기록 펼치기 / 메모 저장
+function loadStudentDays(id,btn){
+  if(!CLOUD||!DB)return;
+  const box=document.getElementById("cd_"+id);
+  if(box.innerHTML.trim()){ box.innerHTML=""; btn.textContent="📅 일자별 기록 보기"; return; }
+  box.innerHTML="<div class='score-sub' style='padding:6px 0'>불러오는 중…</div>";
+  btn.textContent="▲ 기록 접기";
+  DB.collection("students").doc(id).collection("days").orderBy("date","desc").limit(30).get().then(function(snap){
+    if(snap.empty){ box.innerHTML="<div class='score-sub' style='padding:6px 0'>기록이 없어요.</div>"; return; }
+    let h='<div class="hist-list" style="margin-top:8px">';
+    snap.forEach(function(doc){ const v=doc.data(); const pr=(v.date||"").split("-");
+      h+=`<div class="hist-item"><div class="hist-d"><div class="dd">${pr[2]?+pr[2]:''}</div><div class="mm">${pr[1]?+pr[1]+'월':''}</div></div>
+      <div class="hist-main"><div class="hist-tag">${v.patternTag||'-'}</div><div class="hist-ko">${v.patternKo||''}</div></div>
+      ${v.score!=null?scoreBadge(v.score):'<div class="hist-score sc-hi">✓</div>'}</div>`;
+    });
+    h+='</div>'; box.innerHTML=h;
+  }).catch(function(){ box.innerHTML="<div class='score-sub'>불러오기 실패</div>"; });
+}
+function saveCloudNote(name,start,v){
+  const key="we_board_"+name+"_"+start;
+  const conf=JSON.parse(localStorage.getItem(key)||'{"note":""}'); conf.note=v;
+  localStorage.setItem(key,JSON.stringify(conf));
 }
 
 /* ================= 선생님 알림 메일 ================= */
@@ -2129,6 +2224,7 @@ warmVoices();
 if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=warmVoices;
 
 function init(){
+  initCloud();
   const fs=document.getElementById("fStart"); if(fs)fs.value=todayKey();
   const s=decodeStudent(location.hash);
   if(s){
