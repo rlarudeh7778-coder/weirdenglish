@@ -907,8 +907,59 @@ h1.mt{font-size:clamp(40px,5.6vw,78px);font-weight:900;line-height:1.08;letter-s
 .col-cta:hover{background:var(--g);color:var(--w)}
 
 /* nav에 칼럼 링크 추가 대응 */
-@media(max-width:1024px){.col-grid{grid-template-columns:1fr;gap:20px}}
 @media(min-width:700px) and (max-width:1024px){.col-grid{grid-template-columns:1fr 1fr}}
+
+/* ── 모바일: 칼럼 2열 컴팩트 + 탭하면 모달 펼침 ── */
+@media(max-width:700px){
+  .col-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .col-card{cursor:pointer;border-radius:18px}
+  .col-card:hover{transform:none;box-shadow:none;border-color:var(--bdr)}
+  .col-card:active{transform:scale(.97)}
+  .col-thumb{height:84px}
+  .col-thumb-ico{font-size:32px}
+  .col-tag{top:8px;left:8px;padding:3px 9px;font-size:9.5px}
+  .col-body{padding:13px 13px 15px}
+  .col-meta{font-size:9.5px;margin-bottom:6px}
+  .col-title{font-size:13px;line-height:1.4;margin-bottom:0;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  /* 카드 안 본문/버튼은 모바일에서 숨김 (모달에서 보여줌) */
+  .col-card .col-preview,.col-card .col-full,.col-card .col-toggle,.col-card .col-cta{display:none !important}
+  .col-card::after{content:"탭하면 펼쳐져요 →";display:block;margin-top:10px;
+    font-size:10.5px;font-weight:700;color:var(--g2)}
+}
+
+/* 칼럼 모달 (모바일 전용) */
+.colm-overlay{
+  position:fixed;inset:0;z-index:9999;display:none;
+  background:rgba(15,31,61,.55);backdrop-filter:blur(3px);
+  padding:0;align-items:flex-end;
+}
+.colm-overlay.on{display:flex}
+.colm-sheet{
+  background:var(--w);width:100%;max-height:90vh;overflow-y:auto;
+  border-radius:24px 24px 0 0;padding:0 0 32px;
+  animation:colmUp .28s cubic-bezier(.22,1,.36,1);
+  -webkit-overflow-scrolling:touch;
+}
+@keyframes colmUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.colm-handle{width:42px;height:5px;border-radius:50px;background:var(--bdr);
+  margin:12px auto 4px}
+.colm-thumb{height:120px;position:relative;display:flex;align-items:center;justify-content:center;
+  margin:0 0 0}
+.colm-thumb .col-thumb-ico{font-size:46px}
+.colm-tag{position:absolute;top:14px;left:18px;background:rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);color:var(--w);border:1px solid rgba(255,255,255,.25);
+  border-radius:50px;padding:4px 12px;font-size:11px;font-weight:700}
+.colm-close{position:absolute;top:12px;right:14px;width:34px;height:34px;border-radius:50%;
+  background:rgba(255,255,255,.22);border:none;color:var(--w);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.colm-body{padding:22px 22px 0}
+.colm-meta{font-size:11px;color:var(--t3);font-weight:600;margin-bottom:10px}
+.colm-title{font-size:18px;font-weight:800;color:var(--navy);line-height:1.45;margin-bottom:16px;word-break:keep-all}
+.colm-text p{font-size:14.5px;color:var(--t2);line-height:1.95;margin-bottom:13px;word-break:keep-all}
+.colm-text p strong{color:var(--navy);font-weight:800}
+.colm-cta{display:inline-flex;align-items:center;background:var(--g);color:var(--w);
+  border-radius:50px;padding:12px 22px;font-size:14px;font-weight:700;text-decoration:none;margin-top:8px}
 
 
 /* ── REFUND 섹션 ── */
@@ -2770,7 +2821,7 @@ body.sticky-active .kakao-float{bottom:96px}
     <div class="col-grid">
 
       <!-- 칼럼 1 -->
-      <div class="col-card fu">
+      <div class="col-card fu" data-col="1" onclick="openColM(1)">
         <div class="col-thumb">
           <div class="col-thumb-bg" style="background:linear-gradient(135deg,#0F1F3D,#1A2F55)">
             <span class="col-thumb-ico">🗣️</span>
@@ -2801,7 +2852,7 @@ body.sticky-active .kakao-float{bottom:96px}
       </div>
 
       <!-- 칼럼 2 -->
-      <div class="col-card fu d1">
+      <div class="col-card fu d1" data-col="2" onclick="openColM(2)">
         <div class="col-thumb">
           <div class="col-thumb-bg" style="background:linear-gradient(135deg,#00C9A7,#009E84)">
             <span class="col-thumb-ico">👂</span>
@@ -2831,7 +2882,7 @@ body.sticky-active .kakao-float{bottom:96px}
       </div>
 
       <!-- 칼럼 3 -->
-      <div class="col-card fu d2">
+      <div class="col-card fu d2" data-col="3" onclick="openColM(3)">
         <div class="col-thumb">
           <div class="col-thumb-bg" style="background:linear-gradient(135deg,#FF5757,#C0392B)">
             <span class="col-thumb-ico">✈️</span>
@@ -2867,7 +2918,7 @@ body.sticky-active .kakao-float{bottom:96px}
       </div>
 
       <!-- 칼럼 4 -->
-      <div class="col-card fu">
+      <div class="col-card fu" data-col="4" onclick="openColM(4)">
         <div class="col-thumb">
           <div class="col-thumb-bg" style="background:linear-gradient(135deg,#1A3A2E,#0F2A24)">
             <span class="col-thumb-ico">🏠</span>
@@ -2894,7 +2945,7 @@ body.sticky-active .kakao-float{bottom:96px}
       </div>
 
       <!-- 칼럼 5 -->
-      <div class="col-card fu">
+      <div class="col-card fu" data-col="5" onclick="openColM(5)">
         <div class="col-thumb">
           <div class="col-thumb-bg" style="background:linear-gradient(135deg,#2A1F3D,#1A1230)">
             <span class="col-thumb-ico">🎤</span>
@@ -2922,7 +2973,7 @@ body.sticky-active .kakao-float{bottom:96px}
       </div>
 
       <!-- 칼럼 6 -->
-      <div class="col-card fu">
+      <div class="col-card fu" data-col="6" onclick="openColM(6)">
         <div class="col-thumb">
           <div class="col-thumb-bg" style="background:linear-gradient(135deg,#3D2A1A,#2A1D12)">
             <span class="col-thumb-ico">🔥</span>
@@ -2950,6 +3001,24 @@ body.sticky-active .kakao-float{bottom:96px}
       </div>
 
     </div><!-- /col-grid -->
+  </div>
+
+  <!-- 칼럼 모달 (모바일) -->
+  <div class="colm-overlay" id="colmOverlay" onclick="if(event.target===this)closeColM()">
+    <div class="colm-sheet">
+      <div class="colm-handle"></div>
+      <div class="colm-thumb" id="colmThumb">
+        <span class="col-thumb-ico" id="colmIco"></span>
+        <span class="colm-tag" id="colmTag"></span>
+        <button class="colm-close" onclick="closeColM()" aria-label="닫기">×</button>
+      </div>
+      <div class="colm-body">
+        <div class="colm-meta" id="colmMeta"></div>
+        <h3 class="colm-title" id="colmTitle"></h3>
+        <div class="colm-text" id="colmText"></div>
+        <a class="colm-cta" href="http://pf.kakao.com/_Vgdzb" target="_blank" rel="noopener">상담 신청하기</a>
+      </div>
+    </div>
   </div>
 </section>
 <section class="trust-section">
@@ -3601,6 +3670,37 @@ function loadYouTube(){
   f.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/ibkh5aNgmYw?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="이상한영어 소개영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
   f.onclick=null;
 }
+
+/* 칼럼 모달 (모바일) */
+function openColM(n){
+  if(window.innerWidth>700) return; // 데스크탑은 그대로 인라인
+  const card=document.querySelector('.col-card[data-col="'+n+'"]');
+  if(!card) return;
+  const bg=card.querySelector('.col-thumb-bg');
+  const ico=card.querySelector('.col-thumb-ico');
+  const tag=card.querySelector('.col-tag');
+  const meta=card.querySelector('.col-meta');
+  const title=card.querySelector('.col-title');
+  const full=card.querySelector('.col-full');
+  const thumb=document.getElementById('colmThumb');
+  thumb.style.background = bg ? bg.style.background : 'var(--navy)';
+  document.getElementById('colmIco').textContent = ico ? ico.textContent : '';
+  document.getElementById('colmTag').textContent = tag ? tag.textContent : '';
+  document.getElementById('colmMeta').textContent = meta ? meta.textContent : '';
+  document.getElementById('colmTitle').textContent = title ? title.textContent : '';
+  document.getElementById('colmText').innerHTML = full ? full.innerHTML : '';
+  const ov=document.getElementById('colmOverlay');
+  ov.classList.add('on');
+  ov.querySelector('.colm-sheet').scrollTop=0;
+  document.body.style.overflow='hidden';
+}
+function closeColM(){
+  document.getElementById('colmOverlay').classList.remove('on');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape')closeColM();
+});
 
 /* 칼럼 더보기 토글 */
 function toggleCol(id){
