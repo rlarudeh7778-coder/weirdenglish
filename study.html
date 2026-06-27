@@ -321,6 +321,51 @@ body{font-size:16px}
 .install-hint{font-size:13.5px}
 .t-head h2{font-size:21px}
 @media(max-width:380px){ .btn{font-size:15.5px} .sentence{font-size:23px} }
+
+/* ===== 복습 카드 ===== */
+.rv-item{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:14px;padding:11px 13px;margin-bottom:8px}
+.rv-main{flex:1;min-width:0}
+.rv-tag{font-size:12px;font-weight:800;color:var(--g2)}
+.rv-ago{color:var(--t3);font-weight:600;margin-left:4px}
+.rv-en{font-size:16px;font-weight:800;color:var(--navy);margin-top:2px;word-break:keep-all}
+.rv-ko{font-size:12.5px;color:var(--t2)}
+.rv-play{flex:0 0 auto;width:42px;height:42px;border-radius:12px;background:#fff;border:1.5px solid var(--bdr);font-size:18px}
+.rv-play:active{background:var(--g3)}
+.combine-box{background:linear-gradient(135deg,#EAF8F4,#F8FAF9);border:1.5px solid var(--g);border-radius:16px;padding:15px;margin-top:6px}
+.cb-h{font-size:14px;font-weight:900;color:var(--g2)}
+.cb-h span{font-size:11px;color:var(--t3);font-weight:700}
+.cb-desc{font-size:12.5px;color:var(--t2);margin:6px 0 10px}
+.cb-desc b{color:var(--navy)}
+.cb-ex{font-size:18px;font-weight:900;color:var(--navy);line-height:1.4;word-break:keep-all}
+.cb-ko{font-size:13px;color:var(--t2);margin-top:4px}
+.cb-btns{display:flex;gap:8px;margin-top:12px}
+.cb-btns .btn{flex:1}
+.cb-tip{font-size:12px;color:var(--g2);font-weight:700;margin-top:10px;text-align:center}
+
+/* ===== 성취 리포트 / 수료증 ===== */
+.report{background:linear-gradient(160deg,#0F1F3D,#1A2F55 70%,#243a66);border-radius:24px;padding:26px 22px;color:#fff;position:relative;overflow:hidden;text-align:center}
+.report::before{content:"";position:absolute;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,167,.35),transparent 70%);top:-110px;right:-80px}
+.rp-badge{font-size:46px}
+.rp-title{font-size:13px;color:var(--g);font-weight:800;letter-spacing:1px;position:relative}
+.rp-name{font-size:26px;font-weight:900;margin:2px 0 2px;position:relative}
+.rp-period{font-size:12px;color:rgba(255,255,255,.6);margin-bottom:16px;position:relative}
+.rp-grid{display:flex;gap:8px;position:relative;margin-bottom:14px}
+.rp-cell{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:12px 4px}
+.rp-cell .n{font-family:"Montserrat";font-size:22px;font-weight:900;color:#fff}
+.rp-cell .n.g{color:var(--g)}
+.rp-cell .l{font-size:10.5px;color:rgba(255,255,255,.65);margin-top:2px}
+.rp-ba{background:rgba(0,201,167,.14);border:1px solid rgba(0,201,167,.35);border-radius:16px;padding:14px;margin-bottom:14px;position:relative}
+.rp-ba .lab{font-size:12px;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:6px}
+.rp-ba .ba{display:flex;align-items:center;justify-content:center;gap:12px;font-family:"Montserrat";font-weight:900}
+.rp-ba .b1{font-size:24px;color:rgba(255,255,255,.6)}
+.rp-ba .arrow{color:var(--g);font-size:20px}
+.rp-ba .b2{font-size:34px;color:var(--g)}
+.rp-ba .up{font-size:13px;color:var(--g);font-weight:800;margin-top:4px}
+.rp-badges{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;position:relative;margin-bottom:6px}
+.rp-bg{font-size:11px;font-weight:800;border-radius:50px;padding:6px 11px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.45);border:1px solid rgba(255,255,255,.12)}
+.rp-bg.on{background:rgba(255,176,32,.18);color:#FFD27A;border-color:rgba(255,176,32,.5)}
+.rp-msg{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;line-height:1.6;margin-top:12px;position:relative;word-break:keep-all}
+.wk-report-btn{width:100%;margin-top:14px}
 </style>
 </head>
 <body>
@@ -380,6 +425,13 @@ body{font-size:16px}
           <div class="lg"><div class="n" id="lgTotal">84</div><div class="l">전체 여정</div></div>
           <div class="lg"><div class="n" id="lgLeft">84</div><div class="l">남은 날</div></div>
         </div>
+      </div>
+
+      <!-- 복습 카드 (누적) -->
+      <div class="card hidden" id="reviewCard">
+        <div class="t-head"><h2 style="font-size:17px">🔁 복습 · 어제까지 배운 패턴</h2></div>
+        <p class="muted" style="margin:-4px 0 12px">새 패턴 전에 한 번씩 듣고 따라 말해보세요!</p>
+        <div id="reviewList"></div>
       </div>
 
       <!-- 오늘의 패턴 카드 -->
@@ -454,6 +506,7 @@ body{font-size:16px}
           <span><i class="wk-dot" style="background:#E5E7EB"></i>안 함</span>
         </div>
         <div class="wk-msg" id="wkMsg"></div>
+        <button class="btn dark sm wk-report-btn" onclick="openReport()">📜 나의 성취 리포트 · 수료증 보기</button>
       </div>
 
       <!-- 내 숙제 기록 -->
@@ -626,6 +679,15 @@ body{font-size:16px}
     <p id="doneText"></p>
     <button class="btn kakao" id="kakaoSendBtn" onclick="sendToKakao()">💛 카톡으로 선생님께 녹음 보내기</button>
     <button class="btn ghost" onclick="closeDone()">닫기</button>
+  </div>
+</div>
+
+<!-- 성취 리포트 / 수료증 -->
+<div class="modal-bg" id="reportModal">
+  <div class="modal" style="padding:16px">
+    <div class="report" id="reportBody"></div>
+    <button class="btn ghost" style="margin-top:12px" onclick="closeReport()">닫기</button>
+    <p class="muted" style="font-size:11.5px;margin-top:8px">📸 이 화면을 캡처해서 자랑하거나 선생님께 보내보세요!</p>
   </div>
 </div>
 
@@ -1689,6 +1751,7 @@ function startStudy(s,entry){
   STEP=0;
   DAY_SCORES=[];
   renderCard();
+  renderReview(s);
   renderWeekly(s);
   renderHistory(s);
   cloudSync(s);   // 클라우드에서 기록 복원 (다른 브라우저/기기에서 한 숙제도 반영)
@@ -1778,9 +1841,8 @@ function drawJourney(s,p){
 }
 
 /* ================= 발음 듣기 (TTS + 폴백) ================= */
-function speakCurrent(rate){
-  const cur=STEPS[STEP];
-  const txt=Array.isArray(cur)?cur[0]:cur;
+function speakText(txt,rate){
+  if(!txt) return;
   const ss=window.speechSynthesis;
   if(ss){
     const vs=(ss.getVoices()||[]).filter(v=>v.lang&&v.lang.toLowerCase().indexOf("en")===0);
@@ -1794,9 +1856,13 @@ function speakCurrent(rate){
       return;
     }
   }
-  // 인앱 브라우저 등 음성엔진이 없을 때: 구글 TTS 오디오 폴백
   playGoogleTTS(txt,rate);
 }
+function speakCurrent(rate){ const cur=STEPS[STEP]; speakText(Array.isArray(cur)?cur[0]:cur, rate); }
+// 복습/이어말하기 전용
+let REVIEW_ITEMS=[], COMBINE=null;
+function speakReview(i,rate){ if(REVIEW_ITEMS[i]) speakText(REVIEW_ITEMS[i].en, rate); }
+function speakCombine(rate){ if(COMBINE) speakText(COMBINE.en, rate); }
 function playGoogleTTS(txt,rate){
   try{
     const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q="+encodeURIComponent(txt);
@@ -2069,6 +2135,52 @@ function closeGame(){
   completeToday();
 }
 
+/* ================= 학생: 누적 복습 + 이어 말하기(중급·고급) ================= */
+function renderReview(s){
+  const card=document.getElementById("reviewCard");
+  const p=loadProg(s); const lib=getLib()[s.level]||getLib()["왕초보"];
+  const tk=todayKey();
+  const dates=Object.keys(p.done||{}).filter(d=>d!==tk).sort().reverse();
+  REVIEW_ITEMS=[]; const seen={};
+  for(const d of dates){
+    if(REVIEW_ITEMS.length>=3) break;
+    const idx=(p.assigned&&p.assigned[d]!=null)?p.assigned[d]:null; if(idx==null) continue;
+    const c=lib[idx%lib.length]; if(!c||seen[c.tag]) continue; seen[c.tag]=1;
+    const en=(c.exp&&c.exp[0])?c.exp[0][0]:c.sent, ko=(c.exp&&c.exp[0])?c.exp[0][1]:c.trans;
+    const daysAgo=Math.max(1,Math.round((new Date(tk+"T00:00:00")-new Date(d+"T00:00:00"))/DAY));
+    REVIEW_ITEMS.push({en,ko,tag:c.tag,daysAgo});
+  }
+  // 이어 말하기 (중급·고급만)
+  COMBINE=null;
+  if((s.level==="중급"||s.level==="고급") && REVIEW_ITEMS.length && CARD){
+    const prev=REVIEW_ITEMS[0];
+    const t=(CARD.exp&&CARD.exp[0])?CARD.exp[0]:[CARD.sent,CARD.trans];
+    const strip=x=>String(x).replace(/[.?!]+\s*$/,"");
+    const lower=x=>x.charAt(0).toLowerCase()+x.slice(1);
+    COMBINE={ en:strip(prev.en)+", and "+lower(t[0]), ko:strip(prev.ko)+", 그리고 "+t[1], prevTag:prev.tag, todayTag:CARD.tag };
+  }
+  if(!REVIEW_ITEMS.length){ card.classList.add("hidden"); return; }
+  card.classList.remove("hidden");
+  let html=REVIEW_ITEMS.map((r,i)=>`
+    <div class="rv-item">
+      <div class="rv-main"><div class="rv-tag">${r.tag}<span class="rv-ago">· ${r.daysAgo}일 전</span></div>
+        <div class="rv-en">${r.en}</div><div class="rv-ko">${r.ko}</div></div>
+      <button class="rv-play" onclick="speakReview(${i})" title="듣기">🔊</button>
+    </div>`).join("");
+  if(COMBINE){
+    html+=`<div class="combine-box">
+      <div class="cb-h">🔗 이어 말하기 챌린지 <span>(중급·고급)</span></div>
+      <div class="cb-desc"><b>${COMBINE.prevTag}</b> + <b>${COMBINE.todayTag}</b> 를 한 문장으로!</div>
+      <div class="cb-ex">${COMBINE.en}</div>
+      <div class="cb-ko">${COMBINE.ko}</div>
+      <div class="cb-btns"><button class="btn ghost sm" onclick="speakCombine()">🔊 예시 듣기</button>
+      <button class="btn ghost sm" onclick="speakCombine(.6)">🐢 천천히</button></div>
+      <div class="cb-tip">예시처럼, 또는 내 식대로 이어서 말해보세요!</div>
+    </div>`;
+  }
+  document.getElementById("reviewList").innerHTML=html;
+}
+
 /* ================= 학생: 주간 리포트 (이번 주 일~토, 매주 리셋) ================= */
 function keyOf(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
 function renderWeekly(s){
@@ -2114,6 +2226,53 @@ function renderWeekly(s){
   }
   document.getElementById("wkMsg").innerHTML=msg;
 }
+
+/* ================= 학생: 성취 리포트 / 수료증 ================= */
+function openReport(){
+  const s=CUR; if(!s) return;
+  const p=loadProg(s);
+  const done=doneCount(p), tot=totalDays(s.months);
+  const pct=Math.min(100,Math.round(done/tot*100));
+  const sentences=done*4; // 패턴당 약 4문장
+  // 발음 비포→애프터 (가장 오래된 점수 vs 최근 점수)
+  const sd=Object.keys(p.scores||{}).sort();
+  const first= sd.length?p.scores[sd[0]]:null;
+  const last= sd.length?p.scores[sd[sd.length-1]]:null;
+  const avg= sd.length?Math.round(sd.reduce((a,k)=>a+p.scores[k],0)/sd.length):null;
+  // 배지
+  const BADGES=[{d:7,e:"🌱",l:"7일"},{d:14,e:"💬",l:"2주"},{d:28,e:"🎯",l:"1달"},{d:56,e:"🚴",l:"2달"},{d:84,e:"🏆",l:"3달"},{d:168,e:"👑",l:"6달"}];
+  const badgeHtml=BADGES.map(b=>`<span class="rp-bg ${done>=b.d?'on':''}">${b.e} ${b.l}</span>`).join("");
+  // 비포애프터 블록
+  let baHtml="";
+  if(sd.length>=2 && last!=null && first!=null){
+    const up=last-first;
+    baHtml=`<div class="rp-ba"><div class="lab">🎤 발음 점수 변화</div>
+      <div class="ba"><span class="b1">${first}</span><span class="arrow">→</span><span class="b2">${last}</span></div>
+      <div class="up">${up>=0?'▲ +'+up+'점 올랐어요!':'꾸준히 도전 중!'}</div></div>`;
+  }else if(sd.length===1){
+    baHtml=`<div class="rp-ba"><div class="lab">🎤 발음 점수</div><div class="ba"><span class="b2">${last}</span></div><div class="up">계속하면 변화가 보여요!</div></div>`;
+  }
+  const msg = done===0 ? "오늘 첫 숙제로 여정을 시작해요! 🌟"
+    : (pct>=100? `${s.name}님, 전 과정 완주! 정말 자랑스러워요 👑`
+    : `${s.name}님, 여기까지 ${done}일·약 ${sentences}문장을 해냈어요. 이 속도면 분명히 됩니다! 💚`);
+  document.getElementById("reportBody").innerHTML=
+    `<div class="rp-badge">${pct>=100?"👑":"🏅"}</div>
+     <div class="rp-title">MY ENGLISH JOURNEY</div>
+     <div class="rp-name">${s.name}님의 성취 리포트</div>
+     <div class="rp-period">${s.start} ~ ${todayKey()} · ${s.level} · ${s.months}개월 과정</div>
+     <div class="rp-grid">
+       <div class="rp-cell"><div class="n g">${done}</div><div class="l">완료한 날</div></div>
+       <div class="rp-cell"><div class="n">${sentences}</div><div class="l">연습 문장</div></div>
+       <div class="rp-cell"><div class="n">${avg!=null?avg:'–'}</div><div class="l">평균 발음</div></div>
+       <div class="rp-cell"><div class="n">${pct}%</div><div class="l">여정 달성</div></div>
+     </div>
+     ${baHtml}
+     <div class="rp-badges">${badgeHtml}</div>
+     <div class="rp-msg">${msg}</div>`;
+  document.getElementById("reportModal").classList.add("show");
+  bigConfetti();
+}
+function closeReport(){ document.getElementById("reportModal").classList.remove("show"); }
 
 /* ================= 학생: 내 숙제 기록 ================= */
 function renderHistory(s){
