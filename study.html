@@ -2389,7 +2389,24 @@ function lockStudent(){
   const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.add("hidden");
   setRole("student");
 }
+/* 데스크톱 모드 등으로 화면이 넓게(작게) 잡히면 앱 크기로 자동 보정 — 손가락 확대 불필요 */
+function fitApp(){
+  try{
+    const iw=window.innerWidth||document.documentElement.clientWidth||0;
+    const isTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+    if(isTouch && iw>520){
+      // 콘텐츠가 ~430px 폭 앱처럼 보이도록 확대
+      document.documentElement.style.zoom=(iw/430).toFixed(3);
+    }else{
+      document.documentElement.style.zoom="";
+    }
+  }catch(e){}
+}
+addEventListener("resize",fitApp);
+addEventListener("orientationchange",function(){setTimeout(fitApp,200);});
+
 function init(){
+  fitApp();
   initCloud();
   const fs=document.getElementById("fStart"); if(fs)fs.value=todayKey();
   const s=decodeStudent(location.hash);
