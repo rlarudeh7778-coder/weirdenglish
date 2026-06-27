@@ -36,6 +36,10 @@ export default {
     }
 
     try {
+      if (!env.ANTHROPIC_API_KEY) {
+        return new Response(JSON.stringify({ reply: "(설정 오류) ANTHROPIC_API_KEY 시크릿이 비어 있어요." }),
+          { headers: { ...cors, "content-type": "application/json" } });
+      }
       const { system, messages } = await req.json();
       const safeMsgs = (Array.isArray(messages) ? messages : []).slice(-16); // 길이 제한(비용 보호)
       const r = await fetch("https://api.anthropic.com/v1/messages", {
@@ -52,13 +56,15 @@ export default {
           messages: safeMsgs,
         }),
       });
-      const j = await r.json();
-      const reply = (j && j.content && j.content[0] && j.content[0].text) ? j.content[0].text
-        : (j && j.error ? "(오류: " + (j.error.message || "") + ")" : "...");
+      const raw = await r.text();
+      let j = null; try { j = JSON.parse(raw); } catch (e) {}
+      const reply = (j && j.content && j.content[0] && j.content[0].text)
+        ? j.content[0].text
+        : "(오류 " + r.status + ": " + raw.slice(0, 400) + ")";  // 진단용: 원본 응답 노출
       return new Response(JSON.stringify({ reply }),
         { headers: { ...cors, "content-type": "application/json" } });
     } catch (e) {
-      return new Response(JSON.stringify({ reply: "(연결 오류) 잠시 후 다시 시도해 주세요." }),
+      return new Response(JSON.stringify({ reply: "(연결 오류) " + (e && e.message ? e.message : "") }),
         { headers: { ...cors, "content-type": "application/json" } });
     }
   },
