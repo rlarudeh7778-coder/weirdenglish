@@ -2636,9 +2636,14 @@ function aiCall(userText){
   c.appendChild(tp); c.scrollTop=c.scrollHeight;
   fetch(AI_ENDPOINT,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({system:AI_SYS,messages:AI_MSGS})})
    .then(r=>r.json()).then(j=>{
-     const reply=(j&&j.reply)?j.reply:"...";
-     AI_MSGS.push({role:"assistant",content:reply});
+     let reply=(j&&j.reply)?j.reply:"...";
      const t=document.getElementById("aiTyping"); if(t)t.remove();
+     // 내부 오류 메시지는 학생에게 친절하게
+     if(/^\((오류|연결|설정|허용)/.test(reply)){
+       aiBubble("bot","앗, 지금은 잠깐 연결이 안 돼요 😅 잠시 후 다시 시도해 주세요!");
+       AI_BUSY=false; return;
+     }
+     AI_MSGS.push({role:"assistant",content:reply});
      aiBubble("bot",reply); speakText(enOnly(reply),0.7);
      AI_BUSY=false;
    }).catch(()=>{
