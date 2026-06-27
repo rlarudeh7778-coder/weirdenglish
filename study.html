@@ -165,6 +165,8 @@ audio{width:100%;margin-top:10px;border-radius:50px}
 .stu .info{flex:1;min-width:0}
 .stu .info .nm{font-size:15px;font-weight:800}
 .stu .info .dt{font-size:12px;color:var(--t2)}
+.dday{display:inline-block;font-size:11px;font-weight:800;color:var(--g2);background:var(--g3);border-radius:50px;padding:2px 9px;margin-left:2px}
+.dday.soon{color:#B26A00;background:#FFF3D6}
 .stu .acts{display:flex;gap:6px}
 .icon-btn{width:36px;height:36px;border-radius:11px;background:#fff;border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:15px;transition:.15s}
 .icon-btn:hover{border-color:var(--g);background:var(--g3)}
@@ -1431,6 +1433,12 @@ function dayNumber(startISO){
   return Math.max(1, Math.floor((n-s)/DAY)+1);
 }
 function totalDays(months){return Math.max(28,(parseInt(months)||3)*28);}
+function daysLeft(s){ // 수강 종료까지 남은 일수
+  const end=new Date(s.start+"T00:00:00"); end.setMonth(end.getMonth()+(parseInt(s.months)||3));
+  const n=new Date(); n.setHours(0,0,0,0); end.setHours(0,0,0,0);
+  return Math.ceil((end-n)/DAY);
+}
+function ddayLabel(s){ const left=daysLeft(s); return left>0?("D-"+left+" ("+left+"일 남음)") : (left===0?"D-day (오늘 종료)":("종료 +"+(-left)+"일")); }
 function progKey(o){return "we_prog_"+o.name+"_"+o.start;}
 function loadProg(o){return JSON.parse(localStorage.getItem(progKey(o))||'{"done":{},"streak":0,"last":null}');}
 function saveProg(o,p){localStorage.setItem(progKey(o),JSON.stringify(p));}
@@ -1488,7 +1496,7 @@ function renderStudents(){
     return `<div class="stu">
       <div class="av">${(s.name||"?")[0]}</div>
       <div class="info">
-        <div class="nm">${s.name} <span class="muted">· ${s.level}</span></div>
+        <div class="nm">${s.name} <span class="muted">· ${s.level}</span> <span class="dday ${daysLeft(s)<=7?'soon':''}">${ddayLabel(s)}</span></div>
         <div class="dt">${s.months}개월 · 시작 ${s.start} · 오늘 Day ${d} · 완료 ${doneCount(p)}일</div>
       </div>
       <div class="acts">
@@ -1517,8 +1525,23 @@ function copyLink(enc,btn){
   .catch(()=>{prompt("아래 링크를 복사하세요:",t);});
 }
 function delStudent(i){
-  if(!confirm("이 학생을 삭제할까요? (진행 기록은 남습니다)"))return;
-  const a=students();a.splice(i,1);setStudents(a);renderStudents();
+  const a=students(); const s=a[i]; if(!s)return;
+  if(!confirm(s.name+"님을 삭제할까요?\n숙제 현황·진행 기록도 함께 삭제됩니다. (되돌릴 수 없어요)"))return;
+  // 로컬 정리
+  try{ localStorage.removeItem(progKey(s)); localStorage.removeItem("we_board_"+s.name+"_"+s.start); }catch(e){}
+  // 클라우드 정리 (숙제 현황에서도 제거)
+  cloudDeleteStudent(studentId(s));
+  a.splice(i,1); setStudents(a); renderStudents();
+}
+function cloudDeleteStudent(id){
+  if(!CLOUD||!DB) return Promise.resolve();
+  try{
+    const ref=DB.collection("students").doc(id);
+    return ref.collection("days").get().then(function(snap){
+      const ps=[]; snap.forEach(function(d){ ps.push(d.ref.delete()); });
+      return Promise.all(ps);
+    }).then(function(){ return ref.delete(); }).catch(function(){});
+  }catch(e){ return Promise.resolve(); }
 }
 function previewStudent(i){const s=students()[i];if(!s)return;window.open(studentLink(s),"_blank");}
 function previewDemo(){const demo={name:"민지",level:"왕초보",months:3,start:todayKey()};window.open(studentLink(demo),"_blank");}
@@ -2079,15 +2102,20 @@ function renderBoard(){
         const v=doc.data(); const d=dayNumber(v.start);
         const conf=JSON.parse(localStorage.getItem("we_board_"+v.name+"_"+v.start)||'{"note":""}');
         const todayDone=(v.lastDate===tk);
+        const left=daysLeft({start:v.start,months:v.months});
+        const dd= left>0?("D-"+left):(left===0?"D-day":"종료+"+(-left));
         html+=`<div class="board-stu">
           <div class="board-head">
             <div class="av">${(v.name||'?')[0]}</div>
-            <div style="flex:1"><div class="nm">${v.name} <span class="muted">· ${v.level}</span> ${todayDone?'<span style="color:var(--g2);font-size:11px;font-weight:800">● 오늘 완료</span>':'<span style="color:var(--t3);font-size:11px">오늘 미완료</span>'}</div>
+            <div style="flex:1"><div class="nm">${v.name} <span class="muted">· ${v.level}</span> <span class="dday ${left<=7?'soon':''}">${dd}</span> ${todayDone?'<span style="color:var(--g2);font-size:11px;font-weight:800">● 오늘 완료</span>':'<span style="color:var(--t3);font-size:11px">오늘 미완료</span>'}</div>
             <div class="dt">시작 ${v.start} · 오늘 Day ${d} · 완료 ${v.doneCount||0}/${v.totalDays||0}일 · 🔥${v.streak||0}일</div></div>
             ${scoreBadge(v.lastScore)}
           </div>
           <div style="font-size:12px;color:var(--t2);margin:6px 0 2px">최근: ${v.lastDate||'-'} ${v.lastScore!=null?('· 발음 '+v.lastScore+'점'):''}</div>
-          <button class="btn ghost sm" style="width:100%;margin-top:6px" onclick="loadStudentDays('${doc.id}',this)">📅 일자별 기록 보기</button>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button class="btn ghost sm" style="flex:1" onclick="loadStudentDays('${doc.id}',this)">📅 기록 보기</button>
+            <button class="btn ghost sm" style="flex:0 0 auto;color:#D33" onclick="boardDelete('${doc.id}','${(v.name||'').replace(/'/g,'')}')">🗑️ 삭제</button>
+          </div>
           <div class="cloud-days" id="cd_${doc.id}"></div>
           <textarea class="board-note" placeholder="${v.name}님 피드백 메모" onchange="saveCloudNote('${v.name}','${v.start}',this.value)">${conf.note||""}</textarea>
         </div>`;
@@ -2151,6 +2179,17 @@ function saveCloudNote(name,start,v){
   const key="we_board_"+name+"_"+start;
   const conf=JSON.parse(localStorage.getItem(key)||'{"note":""}'); conf.note=v;
   localStorage.setItem(key,JSON.stringify(conf));
+}
+// 현황 보드에서 학생 삭제 (클라우드 + 로컬 명단/기록)
+function boardDelete(id,name){
+  if(!confirm((name||"이 학생")+"님을 삭제할까요?\n숙제 현황·기록이 모두 삭제됩니다. (되돌릴 수 없어요)"))return;
+  cloudDeleteStudent(id);
+  // 로컬 학생 명단에서도 동일 id 제거
+  try{
+    const a=students().filter(function(s){ return studentId(s)!==id; });
+    setStudents(a);
+  }catch(e){}
+  // 화면은 onSnapshot이 자동 갱신
 }
 
 /* ================= 선생님 알림 메일 ================= */
