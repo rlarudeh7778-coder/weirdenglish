@@ -366,6 +366,30 @@ body{font-size:16px}
 .rp-bg.on{background:rgba(255,176,32,.18);color:#FFD27A;border-color:rgba(255,176,32,.5)}
 .rp-msg{font-size:13px;color:rgba(255,255,255,.85);font-weight:600;line-height:1.6;margin-top:12px;position:relative;word-break:keep-all}
 .wk-report-btn{width:100%;margin-top:14px}
+
+/* ===== AI 회화 튜터 ===== */
+.ai-cardbox{background:linear-gradient(135deg,#0F1F3D,#1A2F55);color:#fff;border:none}
+.ai-cardbox .t-head h2{color:#fff}
+.ai-cardbox .muted{color:rgba(255,255,255,.7)!important}
+.ai-wrap{position:fixed;inset:0;z-index:220;display:none;flex-direction:column;background:var(--cream)}
+.ai-wrap.show{display:flex}
+.ai-top{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--navy);color:#fff;flex-shrink:0}
+.ai-top .t{font-weight:900;font-size:16px;flex:1}
+.ai-top .t small{display:block;font-size:11px;font-weight:600;color:var(--g)}
+.ai-top button{background:rgba(255,255,255,.15);color:#fff;border-radius:50px;width:36px;height:36px;font-size:16px;flex-shrink:0}
+.ai-chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ai-msg{max-width:86%;padding:12px 15px;border-radius:18px;font-size:15.5px;line-height:1.55;word-break:keep-all}
+.ai-msg.bot{background:#fff;border:1px solid var(--bdr);align-self:flex-start;border-bottom-left-radius:5px}
+.ai-msg.me{background:var(--g);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
+.ai-msg .say{margin-left:6px;cursor:pointer;opacity:.55;font-size:14px}
+.ai-typing{align-self:flex-start;color:var(--t3);font-size:13px;padding:4px 8px}
+.ai-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--bdr);background:#fff;flex-shrink:0}
+.ai-input input{flex:1;border:1.6px solid var(--bdr);border-radius:50px;padding:13px 16px;font-size:15px;font-family:inherit}
+.ai-input input:focus{outline:none;border-color:var(--g)}
+.ai-input .mic{flex:0 0 auto;width:48px;border-radius:50px;background:var(--cream);border:1.6px solid var(--bdr);font-size:18px}
+.ai-input .mic.rec{background:#FFE9E9;border-color:var(--red)}
+.ai-input .send{flex:0 0 auto;background:var(--g);color:#fff;border-radius:50px;padding:0 18px;font-weight:800;font-size:15px}
+.ai-hint{font-size:11.5px;color:var(--t3);text-align:center;padding:6px}
 </style>
 </head>
 <body>
@@ -486,6 +510,13 @@ body{font-size:16px}
             <button class="btn sm" style="flex:1" id="nextBtn" onclick="submitStep()">제출하고 다음 →</button>
           </div>
         </div>
+      </div>
+
+      <!-- AI 회화 튜터 -->
+      <div class="card ai-cardbox" id="aiCard">
+        <div class="t-head"><h2 style="font-size:17px">🤖 AI 회화 튜터</h2></div>
+        <p class="muted" style="margin:-4px 0 12px">오늘 배운 패턴으로 AI와 짧은 영어 대화! 24시간 언제든, 틀려도 괜찮아요.</p>
+        <button class="btn" onclick="openAI()">AI 튜터와 대화 시작 →</button>
       </div>
 
       <!-- 주간 리포트 -->
@@ -680,6 +711,18 @@ body{font-size:16px}
     <button class="btn kakao" id="kakaoSendBtn" onclick="sendToKakao()">💛 카톡으로 선생님께 녹음 보내기</button>
     <button class="btn ghost" onclick="closeDone()">닫기</button>
   </div>
+</div>
+
+<!-- AI 회화 튜터 -->
+<div class="ai-wrap" id="aiWrap">
+  <div class="ai-top"><span style="font-size:22px">🤖</span><div class="t">AI 영어 튜터<small id="aiSub">오늘 패턴으로 대화</small></div><button onclick="closeAI()">✕</button></div>
+  <div class="ai-chat" id="aiChat"></div>
+  <div class="ai-input">
+    <button class="mic" id="aiMic" onclick="aiVoiceInput()" title="말하기">🎤</button>
+    <input id="aiInput" placeholder="영어로 답해보세요..." autocomplete="off" onkeydown="if(event.key==='Enter')aiSendInput()">
+    <button class="send" onclick="aiSendInput()">전송</button>
+  </div>
+  <div class="ai-hint">🎤로 말하거나 직접 입력 · 틀려도 괜찮아요!</div>
 </div>
 
 <!-- 성취 리포트 / 수료증 -->
@@ -2537,6 +2580,62 @@ function showExternalGuide(){
   m.classList.add("show");
 }
 function closeWelcome(){document.getElementById("welcomeModal").classList.remove("show");}
+
+/* ================= AI 회화 튜터 ================= */
+const AI_ENDPOINT=""; // ← Cloudflare Worker 주소를 여기에 넣으면 켜집니다
+let AI_MSGS=[], AI_SYS="", AI_BUSY=false;
+function enOnly(t){ return String(t).replace(/\([^)]*\)/g," ").replace(/[가-힣]/g," ").replace(/\s+/g," ").trim()||String(t); }
+function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
+function openAI(){
+  if(!AI_ENDPOINT){ alert("🤖 AI 튜터는 곧 열려요!\n(선생님이 서버 연결을 마치면 바로 사용할 수 있어요)"); return; }
+  if(!CUR||!CARD) return;
+  AI_MSGS=[]; document.getElementById("aiChat").innerHTML="";
+  const ex=(CARD.exp&&CARD.exp[0])?CARD.exp[0][0]:CARD.sent;
+  document.getElementById("aiSub").textContent="오늘 패턴: "+CARD.tag;
+  AI_SYS="You are a warm, patient English conversation tutor for a Korean learner named "+CUR.name+" (level: "+CUR.level+"). Today's target pattern is \""+CARD.tag+"\" (example: \""+ex+"\"). Goal: a SHORT friendly spoken-style chat that makes the student actually USE today's pattern. Rules: keep YOUR English very simple and short (max 1-2 short sentences). Ask ONE easy question at a time. After the student answers, if there's a small mistake, add ONE short Korean tip in parentheses like (팁: ...). Praise often. A little Korean is okay for comfort but keep English primary. After about 4 exchanges, praise warmly and wrap up.";
+  document.getElementById("aiWrap").classList.add("show");
+  aiCall("(Start the conversation: greet "+CUR.name+" and ask one easy question using today's pattern.)");
+}
+function closeAI(){ document.getElementById("aiWrap").classList.remove("show"); try{window.speechSynthesis&&window.speechSynthesis.cancel();}catch(e){} }
+function aiBubble(role,text){
+  const c=document.getElementById("aiChat");
+  const d=document.createElement("div"); d.className="ai-msg "+(role==="me"?"me":"bot");
+  if(role==="bot"){ d.innerHTML=escapeHtml(text)+" <span class='say' onclick=\"speakText(this.getAttribute('data-en'))\" data-en='"+enOnly(text).replace(/'/g,"")+"'>🔊</span>"; }
+  else d.textContent=text;
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+function aiSendInput(){
+  const inp=document.getElementById("aiInput"); const v=inp.value.trim();
+  if(!v||AI_BUSY) return; inp.value=""; aiBubble("me",v); aiCall(v);
+}
+function aiCall(userText){
+  AI_BUSY=true;
+  AI_MSGS.push({role:"user",content:userText});
+  const c=document.getElementById("aiChat");
+  const tp=document.createElement("div"); tp.className="ai-typing"; tp.id="aiTyping"; tp.textContent="튜터가 입력 중…";
+  c.appendChild(tp); c.scrollTop=c.scrollHeight;
+  fetch(AI_ENDPOINT,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({system:AI_SYS,messages:AI_MSGS})})
+   .then(r=>r.json()).then(j=>{
+     const reply=(j&&j.reply)?j.reply:"...";
+     AI_MSGS.push({role:"assistant",content:reply});
+     const t=document.getElementById("aiTyping"); if(t)t.remove();
+     aiBubble("bot",reply); speakText(enOnly(reply));
+     AI_BUSY=false;
+   }).catch(()=>{
+     const t=document.getElementById("aiTyping"); if(t)t.remove();
+     aiBubble("bot","(연결이 잘 안 됐어요. 잠시 후 다시 시도해 주세요!)"); AI_BUSY=false;
+   });
+}
+function aiVoiceInput(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ if(isInApp())showExternalGuide(); else alert("이 브라우저는 음성 입력을 지원하지 않아요. 직접 입력해 주세요 🙂"); return; }
+  const mic=document.getElementById("aiMic"); mic.classList.add("rec");
+  const rec=new SR(); rec.lang="en-US"; rec.interimResults=false;
+  rec.onresult=e=>{ const t=e.results[0][0].transcript; document.getElementById("aiInput").value=t; mic.classList.remove("rec"); aiSendInput(); };
+  rec.onerror=()=>{ mic.classList.remove("rec"); };
+  rec.onend=()=>{ mic.classList.remove("rec"); };
+  try{ rec.start(); }catch(e){ mic.classList.remove("rec"); }
+}
 
 /* ================= 초기화 ================= */
 function warmVoices(){ try{window.speechSynthesis&&window.speechSynthesis.getVoices();}catch(e){} }
