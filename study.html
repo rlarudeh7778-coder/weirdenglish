@@ -4,11 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F1F3D">
-<title>이상한영어 · 데일리 숙제방</title>
+<title>이상한영어 숙제방 🎒</title>
 <meta name="robots" content="noindex">
-<!-- 앱처럼 (홈 화면에 추가 시 풀스크린) -->
-<link rel="manifest" href="/study.webmanifest">
-<meta name="mobile-web-app-capable" content="yes">
+<!-- 카톡 공유 미리보기 (썸네일) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="이상한영어 숙제방 🎒">
+<meta property="og:description" content="오늘의 영어 숙제 · 발음 연습 · 나의 영어 여정 — 매일 한 문장씩!">
+<meta property="og:image" content="https://weirdenglish.co.kr/study-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="이상한영어">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="이상한영어 숙제방 🎒">
+<meta name="twitter:description" content="오늘의 영어 숙제 · 발음 연습 · 나의 영어 여정">
+<meta name="twitter:image" content="https://weirdenglish.co.kr/study-og.png">
+<!-- iOS 홈 화면 추가 시 풀스크린 (PWA 강제설치는 사용 안 함) -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="이상한영어 숙제방">
@@ -1682,7 +1692,6 @@ function startStudy(s,entry){
   renderWeekly(s);
   renderHistory(s);
   cloudSync(s);   // 클라우드에서 기록 복원 (다른 브라우저/기기에서 한 숙제도 반영)
-  maybeShowInstall();
   // 이미 오늘 완료했으면 표시
   if(p.done[todayKey()]){document.getElementById("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";}
   if(entry) showWelcome(s,p);
@@ -2383,36 +2392,19 @@ function lockStudent(){
 function init(){
   initCloud();
   const fs=document.getElementById("fStart"); if(fs)fs.value=todayKey();
-  const params=new URLSearchParams(location.search||"");
-  const isPreview=params.get("pv")==="1";
-  // 선생님 강제 진입 (학생 기기에서 선생님 모드 보고 싶을 때: ?role=teacher)
-  if(params.get("role")==="teacher"){
-    try{ localStorage.removeItem("we_student"); }catch(e){}
-    const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.remove("hidden");
-    bootStudent(); renderStudents(); return;
-  }
   const s=decodeStudent(location.hash);
   if(s){
-    // 학생 링크 → 학생 전용 잠금 + 이 기기에 학생 정보 기억 (앱/재접속 시 자동 복원)
+    // 학생 링크 (study.html#s=...) = 항상 학생 (선생님 메뉴 숨김)
     lockStudent();
-    if(!isPreview){ try{ localStorage.setItem("we_student", JSON.stringify(s)); }catch(e){} }
     bootStudent();
     return;
   }
-  // 해시 없음 → 이 기기에 저장된 학생이 있으면 학생으로 복원 (홈 화면 앱/북마크 대응)
-  let saved=null; try{ saved=JSON.parse(localStorage.getItem("we_student")||"null"); }catch(e){}
-  if(saved && saved.name){
-    lockStudent();
-    document.getElementById("noStudent").classList.add("hidden");
-    startStudy(saved,true);
-    return;
-  }
-  // 그 외 = 선생님 접근
+  // 기본 주소 (study.html) = 항상 선생님
   const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.remove("hidden");
   bootStudent();
   renderStudents();
 }
-addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s){try{localStorage.setItem("we_student",JSON.stringify(s));}catch(e){} startStudy(s,true);}});
+addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s)startStudy(s,true);});
 init();
 </script>
 </body>
