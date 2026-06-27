@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F1F3D">
 <title>이상한영어 · 데일리 숙제방</title>
 <meta name="robots" content="noindex">
@@ -279,6 +279,38 @@ audio{width:100%;margin-top:10px;border-radius:50px}
 .wk-legend{display:flex;gap:12px;justify-content:center;margin-top:10px;font-size:10.5px;color:var(--t3)}
 .wk-legend span{display:inline-flex;align-items:center;gap:4px}
 .wk-dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+/* ===== 가독성 업 (앱처럼 크게) ===== */
+body{font-size:16px}
+.eyebrow{font-size:13px}
+.sentence{font-size:clamp(24px,7vw,31px)}
+.pattern-tag{font-size:13px}
+.pattern-ko{font-size:15px}
+.trans{font-size:16.5px}
+.tips .th{font-size:13px}
+.tips li{font-size:14.5px}
+.btn{font-size:16.5px;padding:16px 22px}
+.btn.sm{font-size:14.5px;padding:12px 16px}
+.play-row .btn{font-size:15px}
+.step-meta{font-size:13px}
+.rec-label{font-size:14px}
+.score-msg{font-size:15.5px}
+.score-sub{font-size:12.5px}
+.heard{font-size:14.5px}
+.cmp-item .ch{font-size:12px}
+.s-hero .greet{font-size:14px}
+.chip{font-size:13px;padding:8px 14px}
+.journey h3{font-size:18px}
+.journey .sub{font-size:13px}
+.wk-stat .l{font-size:12px}
+.wk-msg{font-size:14px}
+.hist-tag{font-size:14.5px}
+.hist-ko{font-size:12.5px}
+.modal h2{font-size:23px}
+.modal p{font-size:15px}
+.install-hint{font-size:13.5px}
+.t-head h2{font-size:21px}
+@media(max-width:380px){ .btn{font-size:15.5px} .sentence{font-size:23px} }
 </style>
 </head>
 <body>
@@ -608,16 +640,23 @@ const FIREBASE_CONFIG={
   messagingSenderId:"1010598738337",
   appId:"1:1010598738337:web:5bf9f8d84240646891b3e0"
 };
-let CLOUD=false, DB=null, boardUnsub=null;
+let CLOUD=false, DB=null, boardUnsub=null, AUTH_READY=null;
 function initCloud(){
   try{
     if(!FIREBASE_CONFIG.apiKey || typeof firebase==="undefined") return;
     firebase.initializeApp(FIREBASE_CONFIG);
     DB=firebase.firestore();
-    try{ firebase.auth().signInAnonymously().catch(function(){}); }catch(e){}
     CLOUD=true;
+    // 익명 로그인 완료를 기다리는 Promise (인증필수 규칙에서도 저장되게)
+    AUTH_READY=new Promise(function(res){
+      try{
+        firebase.auth().onAuthStateChanged(function(u){ if(u) res(true); });
+        firebase.auth().signInAnonymously().catch(function(){ res(false); });
+      }catch(e){ res(false); }
+    });
   }catch(e){ CLOUD=false; }
 }
+function whenAuth(){ return AUTH_READY || Promise.resolve(false); }
 function isStandalone(){ return window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true; }
 function maybeShowInstall(){
   const el=document.getElementById("installHint"); if(!el)return;
@@ -628,19 +667,21 @@ function dismissInstall(){ localStorage.setItem("we_install_dismissed","1"); con
 function studentId(s){ return (s.name+"__"+s.start).replace(/[^\w가-힣]/g,"_"); }
 function cloudSaveCompletion(s,p,avg,card){
   if(!CLOUD||!DB) return;
-  try{
-    const id=studentId(s), tk=todayKey(), now=Date.now();
-    DB.collection("students").doc(id).set({
-      name:s.name, level:s.level, months:s.months, start:s.start,
-      streak:p.streak||0, doneCount:doneCount(p), totalDays:totalDays(s.months),
-      lastDate:tk, lastScore:(avg==null?null:avg), updatedAt:now,
-      prog:p   // 전체 진행기록(클라우드 백업 → 어느 기기/브라우저로 열어도 복원)
-    },{merge:true});
-    DB.collection("students").doc(id).collection("days").doc(tk).set({
-      date:tk, patternTag:(card&&card.tag)||"", patternKo:(card&&card.ko)||"",
-      score:(avg==null?null:avg), ts:now
-    });
-  }catch(e){}
+  whenAuth().then(function(){
+    try{
+      const id=studentId(s), tk=todayKey(), now=Date.now();
+      DB.collection("students").doc(id).set({
+        name:s.name, level:s.level, months:s.months, start:s.start,
+        streak:p.streak||0, doneCount:doneCount(p), totalDays:totalDays(s.months),
+        lastDate:tk, lastScore:(avg==null?null:avg), updatedAt:now,
+        prog:p   // 전체 진행기록(클라우드 백업 → 어느 기기/브라우저로 열어도 복원)
+      },{merge:true}).catch(function(e){ console.warn("cloud save fail",e&&e.code); });
+      DB.collection("students").doc(id).collection("days").doc(tk).set({
+        date:tk, patternTag:(card&&card.tag)||"", patternKo:(card&&card.ko)||"",
+        score:(avg==null?null:avg), ts:now
+      }).catch(function(){});
+    }catch(e){}
+  });
 }
 // 진행기록 병합 (로컬 + 클라우드 합집합)
 function mergeProg(local,cloud){
@@ -657,16 +698,18 @@ function mergeProg(local,cloud){
 // 학생 진입 시 클라우드에서 기록 불러와 화면 갱신
 function cloudSync(s){
   if(!CLOUD||!DB) return;
-  try{
-    DB.collection("students").doc(studentId(s)).get().then(function(doc){
-      if(!doc.exists) return;
-      const cloud=doc.data().prog;
-      if(!cloud) return;
-      const merged=mergeProg(loadProg(s), cloud);
-      saveProg(s,merged);
-      if(CUR && CUR.name===s.name && CUR.start===s.start) refreshStudentStats(s);
-    }).catch(function(){});
-  }catch(e){}
+  whenAuth().then(function(){
+    try{
+      DB.collection("students").doc(studentId(s)).get().then(function(doc){
+        if(!doc.exists) return;
+        const cloud=doc.data().prog;
+        if(!cloud) return;
+        const merged=mergeProg(loadProg(s), cloud);
+        saveProg(s,merged);
+        if(CUR && CUR.name===s.name && CUR.start===s.start) refreshStudentStats(s);
+      }).catch(function(){});
+    }catch(e){}
+  });
 }
 // 헤더·여정·리포트·기록만 다시 그림 (오늘 카드/녹음은 유지)
 function refreshStudentStats(s){
@@ -1535,16 +1578,17 @@ function delStudent(i){
 }
 function cloudDeleteStudent(id){
   if(!CLOUD||!DB) return Promise.resolve();
-  try{
+  return whenAuth().then(function(){
     const ref=DB.collection("students").doc(id);
     return ref.collection("days").get().then(function(snap){
       const ps=[]; snap.forEach(function(d){ ps.push(d.ref.delete()); });
       return Promise.all(ps);
     }).then(function(){ return ref.delete(); }).catch(function(){});
-  }catch(e){ return Promise.resolve(); }
+  });
 }
-function previewStudent(i){const s=students()[i];if(!s)return;window.open(studentLink(s),"_blank");}
-function previewDemo(){const demo={name:"민지",level:"왕초보",months:3,start:todayKey()};window.open(studentLink(demo),"_blank");}
+function previewLink(o){return location.origin+location.pathname+"?pv=1#"+encodeStudent(o);}
+function previewStudent(i){const s=students()[i];if(!s)return;window.open(previewLink(s),"_blank");}
+function previewDemo(){const demo={name:"민지",level:"왕초보",months:3,start:todayKey()};window.open(previewLink(demo),"_blank");}
 
 /* ================= 선생님: 카드 ================= */
 function renderCards(){
@@ -2095,6 +2139,7 @@ function renderBoard(){
   if(CLOUD&&DB){
     box.innerHTML='<div class="empty">실시간 현황 불러오는 중…</div>';
     if(boardUnsub){try{boardUnsub();}catch(e){}}
+    whenAuth().then(function(){
     boardUnsub=DB.collection("students").orderBy("updatedAt","desc").onSnapshot(function(snap){
       if(snap.empty){ box.innerHTML='<div class="empty">아직 숙제를 완료한 학생이 없어요.<br>학생이 첫 숙제를 끝내면 여기에 실시간으로 떠요 🙂</div>'; return; }
       const tk=todayKey(); let html="";
@@ -2122,6 +2167,7 @@ function renderBoard(){
       });
       box.innerHTML=html;
     }, function(err){ box.innerHTML='<div class="empty">현황을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>'; });
+    });
     return;
   }
   // 클라우드 OFF: 기존 로컬 수동 보드
@@ -2329,24 +2375,44 @@ function warmVoices(){ try{window.speechSynthesis&&window.speechSynthesis.getVoi
 warmVoices();
 if(window.speechSynthesis) window.speechSynthesis.onvoiceschanged=warmVoices;
 
+function lockStudent(){
+  STUDENT_LOCKED=true;
+  const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.add("hidden");
+  setRole("student");
+}
 function init(){
   initCloud();
   const fs=document.getElementById("fStart"); if(fs)fs.value=todayKey();
+  const params=new URLSearchParams(location.search||"");
+  const isPreview=params.get("pv")==="1";
+  // 선생님 강제 진입 (학생 기기에서 선생님 모드 보고 싶을 때: ?role=teacher)
+  if(params.get("role")==="teacher"){
+    try{ localStorage.removeItem("we_student"); }catch(e){}
+    const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.remove("hidden");
+    bootStudent(); renderStudents(); return;
+  }
   const s=decodeStudent(location.hash);
   if(s){
-    // 학생 링크 → 학생 전용 잠금 (선생님 메뉴 완전 숨김)
-    STUDENT_LOCKED=true;
-    const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.add("hidden");
-    setRole("student");
+    // 학생 링크 → 학생 전용 잠금 + 이 기기에 학생 정보 기억 (앱/재접속 시 자동 복원)
+    lockStudent();
+    if(!isPreview){ try{ localStorage.setItem("we_student", JSON.stringify(s)); }catch(e){} }
     bootStudent();
-  }else{
-    // 해시 없는 기본 주소 = 선생님 접근 → 역할전환 노출
-    const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.remove("hidden");
-    bootStudent();
-    renderStudents();
+    return;
   }
+  // 해시 없음 → 이 기기에 저장된 학생이 있으면 학생으로 복원 (홈 화면 앱/북마크 대응)
+  let saved=null; try{ saved=JSON.parse(localStorage.getItem("we_student")||"null"); }catch(e){}
+  if(saved && saved.name){
+    lockStudent();
+    document.getElementById("noStudent").classList.add("hidden");
+    startStudy(saved,true);
+    return;
+  }
+  // 그 외 = 선생님 접근
+  const rsw=document.getElementById("roleSwitch"); if(rsw)rsw.classList.remove("hidden");
+  bootStudent();
+  renderStudents();
 }
-addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s)startStudy(s,true);});
+addEventListener("hashchange",()=>{const s=decodeStudent(location.hash);if(s){try{localStorage.setItem("we_student",JSON.stringify(s));}catch(e){} startStudy(s,true);}});
 init();
 </script>
 </body>
