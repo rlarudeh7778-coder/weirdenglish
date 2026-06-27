@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <title>이상한영어 | 집에서 2:1로 관리받는 영어PT</title>
 
   <!-- ===== SEO & 공유 미리보기 (Open Graph) ===== -->
@@ -50,7 +50,7 @@
   --sh2: 0 16px 56px rgba(15,31,61,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden;width:100%;max-width:100%}
 body{font-family:"Noto Sans KR",sans-serif;color:var(--t1);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
 /* ── NAV ── */
@@ -96,7 +96,7 @@ h1.mt{font-size:clamp(40px,5.6vw,78px);font-weight:900;line-height:1.08;letter-s
 .stat-l{font-size:11px;color:rgba(255,255,255,.5);font-weight:500;margin-top:2px}
 .stat-divider{width:1px;background:rgba(255,255,255,.15);align-self:stretch}
 .hero-right{position:relative;display:flex;justify-content:center;align-items:center;z-index:2}
-.hero-visual-wrap{position:relative;width:400px;display:flex;flex-direction:column;gap:16px}
+.hero-visual-wrap{position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
 
 /* 채팅 목업 카드 */
 .chat-mock{background:var(--w);border-radius:22px;padding:22px;width:100%;max-width:400px;box-shadow:0 24px 64px rgba(0,0,0,.32);animation:cardFloat 6s ease-in-out infinite}
