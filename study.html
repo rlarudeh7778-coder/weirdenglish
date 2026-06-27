@@ -817,7 +817,9 @@ function cloudSync(s){
     try{
       DB.collection("students").doc(studentId(s)).get().then(function(doc){
         if(!doc.exists) return;
-        const cloud=doc.data().prog;
+        const data=doc.data();
+        if(typeof AI_BLOCKED!=="undefined") AI_BLOCKED=!!data.aiBlocked; // 선생님 차단 반영
+        const cloud=data.prog;
         if(!cloud) return;
         const merged=mergeProg(loadProg(s), cloud);
         saveProg(s,merged);
@@ -2370,6 +2372,7 @@ function renderBoard(){
           <div style="font-size:12px;color:var(--t2);margin:6px 0 2px">최근: ${v.lastDate||'-'} ${v.lastScore!=null?('· 발음 '+v.lastScore+'점'):''}</div>
           <div style="display:flex;gap:8px;margin-top:6px">
             <button class="btn ghost sm" style="flex:1" onclick="loadStudentDays('${doc.id}',this)">📅 기록 보기</button>
+            <button class="btn ghost sm" style="flex:0 0 auto;color:${v.aiBlocked?'#009E84':'#B26A00'}" onclick="aiToggleBlock('${doc.id}',${v.aiBlocked?'false':'true'})">${v.aiBlocked?'🔓 AI 허용':'🔒 AI 차단'}</button>
             <button class="btn ghost sm" style="flex:0 0 auto;color:#D33" onclick="boardDelete('${doc.id}','${(v.name||'').replace(/'/g,'')}')">🗑️ 삭제</button>
           </div>
           <div class="cloud-days" id="cd_${doc.id}"></div>
@@ -2436,6 +2439,14 @@ function saveCloudNote(name,start,v){
   const key="we_board_"+name+"_"+start;
   const conf=JSON.parse(localStorage.getItem(key)||'{"note":""}'); conf.note=v;
   localStorage.setItem(key,JSON.stringify(conf));
+}
+// AI 튜터 차단/허용 (클라우드 플래그)
+function aiToggleBlock(id,block){
+  if(!CLOUD||!DB) return;
+  if(block && !confirm("이 학생의 AI 튜터를 잠글까요?\n(학생이 다음 접속부터 AI 튜터를 못 씁니다)"))return;
+  whenAuth().then(function(){
+    DB.collection("students").doc(id).set({aiBlocked:!!block, updatedAt:Date.now()},{merge:true}).catch(function(){});
+  });
 }
 // 현황 보드에서 학생 삭제 (클라우드 + 로컬 명단/기록)
 function boardDelete(id,name){
@@ -2583,24 +2594,33 @@ function closeWelcome(){document.getElementById("welcomeModal").classList.remove
 
 /* ================= AI 회화 튜터 ================= */
 const AI_ENDPOINT="https://weird-ai.rlarudeh7778.workers.dev"; // Cloudflare Worker
-let AI_MSGS=[], AI_SYS="", AI_BUSY=false;
+let AI_MSGS=[], AI_SYS="", AI_BUSY=false, AI_BLOCKED=false;
 function enOnly(t){ return String(t).replace(/\([^)]*\)/g," ").replace(/[가-힣]/g," ").replace(/\s+/g," ").trim()||String(t); }
 function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
 function openAI(){
   if(!AI_ENDPOINT){ alert("🤖 AI 튜터는 곧 열려요!\n(선생님이 서버 연결을 마치면 바로 사용할 수 있어요)"); return; }
   if(!CUR||!CARD) return;
+  // 수강 종료 / 선생님 차단 시 사용 불가
+  if(typeof daysLeft==="function" && daysLeft(CUR)<=0){ alert("수강 기간이 종료되어 AI 튜터를 사용할 수 없어요.\n재등록 후 다시 이용해 주세요 🙏"); return; }
+  if(AI_BLOCKED){ alert("현재 AI 튜터가 잠겨 있어요.\n선생님께 문의해 주세요 🙏"); return; }
   AI_MSGS=[]; document.getElementById("aiChat").innerHTML="";
   const ex=(CARD.exp&&CARD.exp[0])?CARD.exp[0][0]:CARD.sent;
-  document.getElementById("aiSub").textContent="오늘 패턴: "+CARD.tag;
-  AI_SYS="You are a warm, patient English conversation tutor for a Korean learner named "+CUR.name+" (level: "+CUR.level+"). Today's target pattern is \""+CARD.tag+"\" (example: \""+ex+"\"). Goal: a SHORT friendly spoken-style chat that makes the student actually USE today's pattern. Rules: keep YOUR English very simple and short (max 1-2 short sentences). Ask ONE easy question at a time. After the student answers, if there's a small mistake, add ONE short Korean tip in parentheses like (팁: ...). Praise often. A little Korean is okay for comfort but keep English primary. After about 4 exchanges, praise warmly and wrap up.";
+  const ko=(CARD.exp&&CARD.exp[0])?CARD.exp[0][1]:(CARD.trans||"");
+  document.getElementById("aiSub").textContent="오늘 표현: "+CARD.tag;
+  AI_SYS="You are a warm, very patient English tutor for a Korean BEGINNER named "+CUR.name+" (level: "+CUR.level+"). "
+    +"Today's NEW expression the student just learned is: \""+ex+"\" (meaning in Korean: \""+ko+"\"; pattern: "+CARD.tag+"). "
+    +"VERY IMPORTANT — speak like talking to a young beginner, slowly: use ONE very short, very simple English sentence at a time (max ~8 words). Never use hard words. "
+    +"Begin the conversation YOURSELF: warmly greet "+CUR.name+" by name and gently invite them to try saying today's new expression out loud. "
+    +"After the student replies: praise them warmly first. If there is a small mistake, add ONE short Korean tip in parentheses like (팁: ...). Then ask ONE more very easy question that reuses today's expression. "
+    +"Keep it slow and encouraging for about 4 short turns, then praise and wrap up. A little Korean is okay for comfort, but keep simple English as the main language.";
   document.getElementById("aiWrap").classList.add("show");
-  aiCall("(Start the conversation: greet "+CUR.name+" and ask one easy question using today's pattern.)");
+  aiCall("(Begin now: in very simple, slow English, greet "+CUR.name+" by name and ask them to try saying today's new expression: \""+ex+"\".)");
 }
 function closeAI(){ document.getElementById("aiWrap").classList.remove("show"); try{window.speechSynthesis&&window.speechSynthesis.cancel();}catch(e){} }
 function aiBubble(role,text){
   const c=document.getElementById("aiChat");
   const d=document.createElement("div"); d.className="ai-msg "+(role==="me"?"me":"bot");
-  if(role==="bot"){ d.innerHTML=escapeHtml(text)+" <span class='say' onclick=\"speakText(this.getAttribute('data-en'))\" data-en='"+enOnly(text).replace(/'/g,"")+"'>🔊</span>"; }
+  if(role==="bot"){ d.innerHTML=escapeHtml(text)+" <span class='say' onclick=\"speakText(this.getAttribute('data-en'),0.7)\" data-en='"+enOnly(text).replace(/'/g,"")+"'>🔊</span>"; }
   else d.textContent=text;
   c.appendChild(d); c.scrollTop=c.scrollHeight;
 }
@@ -2619,7 +2639,7 @@ function aiCall(userText){
      const reply=(j&&j.reply)?j.reply:"...";
      AI_MSGS.push({role:"assistant",content:reply});
      const t=document.getElementById("aiTyping"); if(t)t.remove();
-     aiBubble("bot",reply); speakText(enOnly(reply));
+     aiBubble("bot",reply); speakText(enOnly(reply),0.7);
      AI_BUSY=false;
    }).catch(()=>{
      const t=document.getElementById("aiTyping"); if(t)t.remove();
