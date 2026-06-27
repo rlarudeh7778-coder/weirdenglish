@@ -4233,6 +4233,136 @@ setTimeout(()=>{showT();function sN(){const d=6000+Math.random()*4000;setTimeout
   border:1px solid rgba(0,201,167,.3);
 }
 .st-btn{margin-bottom:10px}
+
+
+/* ═══════════════════════════════════════════
+   모바일 가독성 강화 (글씨·여백 시원하게)
+   ═══════════════════════════════════════════ */
+@media(max-width:768px){
+  /* 섹션 공통 제목·소제목 키우기 */
+  .sec-label{font-size:13px !important;letter-spacing:1px}
+  .sec-title{font-size:clamp(26px,7.4vw,34px) !important;line-height:1.32 !important;letter-spacing:-0.5px}
+  .sec-sub{font-size:15.5px !important;line-height:1.75 !important}
+
+  /* 히어로 */
+  h1.mt{font-size:clamp(36px,10vw,52px) !important;line-height:1.18 !important}
+  .hero-sub{font-size:16.5px !important;line-height:1.78 !important}
+  .hero-stats{gap:24px !important}
+  .stat-n{font-size:28px !important}
+  .stat-l{font-size:12px !important}
+  .btn-g{padding:16px 28px !important;font-size:15.5px !important}
+  .btn-ghost{padding:15px 24px !important;font-size:14.5px !important}
+  .native-badge,.hero-native-badge{font-size:13px !important}
+
+  /* 고민(pain) 카드 */
+  .pain-c{padding:22px 18px !important}
+  .pain-q{font-size:14.5px !important;line-height:1.65 !important}
+  .pain-emoji{font-size:30px !important}
+
+  /* 통계 카드 */
+  .sc-num{font-size:36px !important}
+  .sc-label{font-size:13px !important}
+
+  /* 후킹 문구 */
+  .hook-big{font-size:clamp(22px,6.6vw,34px) !important;line-height:1.4 !important}
+
+  /* 원장 스토리 */
+  .dir-bio,.dir-intro p{font-size:15.5px !important;line-height:1.8 !important}
+  .dir-badge{font-size:12.5px !important;padding:8px 13px !important}
+  .qa-title{font-size:18px !important}
+  .qa-text{font-size:14.5px !important;line-height:1.7 !important}
+  .qa-label{font-size:12px !important}
+
+  /* CEO 메시지 */
+  .cms-block .cms-num{font-size:30px !important}
+  .cms-lead{font-size:16px !important;line-height:1.8 !important}
+  .cms-emphasis{font-size:21px !important;line-height:1.45 !important}
+  .cms-emphasis-sub{font-size:15px !important;line-height:1.85 !important}
+  .cms-text,.cms-block p{font-size:15px !important;line-height:1.8 !important}
+  .cms-big-quote,.cms-final-big{font-size:22px !important;line-height:1.45 !important}
+
+  /* 특징 카드 */
+  .fc-title{font-size:18px !important}
+  .fc-desc{font-size:14.5px !important;line-height:1.72 !important}
+  .fc-ico{font-size:34px !important}
+
+  /* 커리큘럼 / 과정맵 */
+  .cmap-card .cm-ko{font-size:16px !important}
+  .cmap-card .cm-en{font-size:12px !important}
+  .gs-label{font-size:12px !important}
+  .gs-week{font-size:12px !important}
+
+  /* 로드맵 */
+  .road-stage{font-size:20px !important;line-height:1.4 !important}
+  .road-desc{font-size:15px !important;line-height:1.85 !important}
+  .road-period{font-size:13px !important;padding:8px 16px !important}
+  .road-tag{font-size:12.5px !important}
+  .road-note-title{font-size:18px !important}
+  .road-note-desc{font-size:15px !important;line-height:1.85 !important}
+
+  /* 수강금액 */
+  .pt-amount{font-size:27px !important}
+  .pt-band{font-size:13px !important}
+  .pt-fit{font-size:14px !important;line-height:1.72 !important}
+  .price-lead-txt{font-size:15px !important;line-height:1.85 !important}
+  .pv-title{font-size:15px !important}
+  .ph-step h4{font-size:15.5px !important}
+  .ph-step p{font-size:13.5px !important}
+
+  /* 후기 — 글씨 키우고 별·이름 키우기 */
+  .rc-text-short{font-size:15px !important;line-height:1.7 !important}
+  .rc-name{font-size:14.5px !important}
+  .rc-role{font-size:12.5px !important}
+  .rc-stars{font-size:14px !important}
+  .rc-badge{font-size:11.5px !important;padding:4px 11px !important}
+
+  /* CTA */
+  .cta-imagine-title{font-size:clamp(24px,6.6vw,32px) !important;line-height:1.35 !important}
+  .cta-sub-desc{font-size:15px !important;line-height:1.8 !important}
+  .cta-form-title{font-size:20px !important}
+  .ff-input,.ff-label{font-size:15px !important}
+
+  /* 하단 스티키 바 */
+  .sb-title{font-size:14px !important}
+  .sb-sub{font-size:11.5px !important}
+  .sb-btn{font-size:14px !important;padding:12px 20px !important}
+}
+
+@media(max-width:480px){
+  .sec-title{font-size:clamp(24px,7.6vw,30px) !important}
+  .hero-sub{font-size:16px !important}
+  .cms-emphasis{font-size:19px !important}
+  .road-stage{font-size:19px !important}
+  .rc-text-short{font-size:14.5px !important}
+  /* 후기 카드 화면에 꽉 차게 (한 장씩 시원하게) */
+  .rc{width:84vw !important;min-width:84vw !important;padding:22px 20px !important}
+}
+
+
+
+/* ═══ 통계 "명" 잘림 + 원장 배지 정렬 보강 ═══ */
+@media(max-width:768px){
+  /* 통계 숫자 한 줄 유지 + 단위 작게 */
+  .stat-card{padding:24px 12px !important}
+  .sc-num{font-size:32px !important;white-space:nowrap !important;
+    display:flex !important;align-items:baseline !important;justify-content:center !important;gap:1px}
+  .sc-num .accent{font-size:17px !important;font-weight:800}
+  .sc-num .count-num{display:inline !important}
+
+  /* 원장 이력 배지: 2열 그리드로 균일 정렬 */
+  .dir-badge-row{display:grid !important;grid-template-columns:1fr 1fr !important;
+    gap:9px !important;margin-top:20px !important}
+  .dir-badge{justify-content:center !important;text-align:center !important;
+    font-size:13px !important;padding:11px 10px !important;white-space:nowrap}
+  /* 5개 중 마지막 1개는 두 칸 폭 차지해 가운데 정렬 */
+  .dir-badge:last-child:nth-child(odd){grid-column:1 / -1;justify-self:center;min-width:60%}
+}
+@media(max-width:380px){
+  .sc-num{font-size:28px !important}
+  .sc-num .accent{font-size:15px !important}
+  .dir-badge{font-size:12px !important;padding:10px 8px !important}
+}
+
 </style>
 
 </body>
