@@ -2,10 +2,16 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F1F3D">
 <title>이상한영어 · 데일리 숙제방</title>
 <meta name="robots" content="noindex">
+<!-- 앱처럼 (홈 화면에 추가 시 풀스크린) -->
+<link rel="manifest" href="/study.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="이상한영어 숙제방">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
@@ -21,11 +27,14 @@
   --sh2:0 16px 56px rgba(15,31,61,.14);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html{scroll-behavior:smooth}
-body{font-family:"Noto Sans KR",sans-serif;color:var(--t1);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%;font-size:16px}
+body{font-family:"Noto Sans KR",sans-serif;color:var(--t1);background:var(--cream);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;max-width:100vw}
 .mono{font-family:"Montserrat",sans-serif}
 button{font-family:inherit;cursor:pointer;border:none}
 .hidden{display:none!important}
+.install-hint{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFF7E6;border:1px solid #FFE0A3;color:#8a5a00;border-radius:14px;padding:11px 14px;font-size:13px;font-weight:700;margin-bottom:14px}
+.install-hint b{color:#7a4f00}
+.install-hint button{background:rgba(0,0,0,.06);border-radius:50px;width:26px;height:26px;font-size:13px;color:#8a5a00;flex-shrink:0}
 
 /* ===== 상단 바 ===== */
 .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 18px;background:rgba(248,250,249,.92);backdrop-filter:blur(18px);border-bottom:1px solid rgba(0,201,167,.14)}
@@ -297,6 +306,11 @@ audio{width:100%;margin-top:10px;border-radius:50px}
 
     <!-- 실제 숙제방 -->
     <div id="studyRoom" class="hidden">
+      <!-- 홈 화면 추가 안내 (앱처럼) -->
+      <div id="installHint" class="install-hint hidden">
+        <span>📱 <b>홈 화면에 추가</b>하면 앱처럼 크게, 편하게 써요</span>
+        <button onclick="dismissInstall()" aria-label="닫기">✕</button>
+      </div>
       <!-- HERO -->
       <div class="s-hero">
         <div class="greet" id="greetLine">좋은 아침이에요 ☀️</div>
@@ -602,6 +616,13 @@ function initCloud(){
     CLOUD=true;
   }catch(e){ CLOUD=false; }
 }
+function isStandalone(){ return window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone===true; }
+function maybeShowInstall(){
+  const el=document.getElementById("installHint"); if(!el)return;
+  if(isStandalone() || localStorage.getItem("we_install_dismissed")){ el.classList.add("hidden"); return; }
+  el.classList.remove("hidden");
+}
+function dismissInstall(){ localStorage.setItem("we_install_dismissed","1"); const el=document.getElementById("installHint"); if(el)el.classList.add("hidden"); }
 function studentId(s){ return (s.name+"__"+s.start).replace(/[^\w가-힣]/g,"_"); }
 function cloudSaveCompletion(s,p,avg,card){
   if(!CLOUD||!DB) return;
@@ -610,13 +631,54 @@ function cloudSaveCompletion(s,p,avg,card){
     DB.collection("students").doc(id).set({
       name:s.name, level:s.level, months:s.months, start:s.start,
       streak:p.streak||0, doneCount:doneCount(p), totalDays:totalDays(s.months),
-      lastDate:tk, lastScore:(avg==null?null:avg), updatedAt:now
+      lastDate:tk, lastScore:(avg==null?null:avg), updatedAt:now,
+      prog:p   // 전체 진행기록(클라우드 백업 → 어느 기기/브라우저로 열어도 복원)
     },{merge:true});
     DB.collection("students").doc(id).collection("days").doc(tk).set({
       date:tk, patternTag:(card&&card.tag)||"", patternKo:(card&&card.ko)||"",
       score:(avg==null?null:avg), ts:now
     });
   }catch(e){}
+}
+// 진행기록 병합 (로컬 + 클라우드 합집합)
+function mergeProg(local,cloud){
+  const out=local?JSON.parse(JSON.stringify(local)):{done:{},scores:{},streak:0,assigned:{},cursor:0,last:null};
+  if(!cloud) return out;
+  out.done=Object.assign({}, cloud.done||{}, out.done||{});
+  out.scores=Object.assign({}, cloud.scores||{}, out.scores||{});
+  out.assigned=Object.assign({}, cloud.assigned||{}, out.assigned||{});
+  out.streak=Math.max(out.streak||0, cloud.streak||0);
+  out.cursor=Math.max(out.cursor||0, cloud.cursor||0);
+  if(cloud.last && (!out.last || cloud.last>out.last)) out.last=cloud.last;
+  return out;
+}
+// 학생 진입 시 클라우드에서 기록 불러와 화면 갱신
+function cloudSync(s){
+  if(!CLOUD||!DB) return;
+  try{
+    DB.collection("students").doc(studentId(s)).get().then(function(doc){
+      if(!doc.exists) return;
+      const cloud=doc.data().prog;
+      if(!cloud) return;
+      const merged=mergeProg(loadProg(s), cloud);
+      saveProg(s,merged);
+      if(CUR && CUR.name===s.name && CUR.start===s.start) refreshStudentStats(s);
+    }).catch(function(){});
+  }catch(e){}
+}
+// 헤더·여정·리포트·기록만 다시 그림 (오늘 카드/녹음은 유지)
+function refreshStudentStats(s){
+  const p=loadProg(s);
+  const tot=totalDays(s.months), done=doneCount(p);
+  const pct=Math.min(100,Math.round(done/tot*100));
+  const el=id=>document.getElementById(id);
+  if(el("chipStreak")) el("chipStreak").innerHTML="🔥 <b>"+(p.streak||0)+"</b>일 연속";
+  if(el("dayFill")) el("dayFill").style.width=pct+"%";
+  if(el("dayPct")) el("dayPct").textContent=pct+"%";
+  if(el("lgDone")) el("lgDone").textContent=done;
+  if(el("lgLeft")) el("lgLeft").textContent=Math.max(0,tot-done);
+  drawJourney(s,p); renderWeekly(s); renderHistory(s);
+  if(p.done[todayKey()] && el("todayBadge")) el("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";
 }
 
 /* ---------- 기본 패턴 라이브러리 (레벨별) ---------- */
@@ -1552,6 +1614,8 @@ function startStudy(s,entry){
   renderCard();
   renderWeekly(s);
   renderHistory(s);
+  cloudSync(s);   // 클라우드에서 기록 복원 (다른 브라우저/기기에서 한 숙제도 반영)
+  maybeShowInstall();
   // 이미 오늘 완료했으면 표시
   if(p.done[todayKey()]){document.getElementById("todayBadge").textContent="오늘 숙제 완료 ✓ (복습 가능)";}
   if(entry) showWelcome(s,p);
@@ -1929,19 +1993,19 @@ function closeGame(){
   completeToday();
 }
 
-/* ================= 학생: 주간 리포트 ================= */
-function dateKeyOffset(n){ // n일 전 날짜키
-  const d=new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-n);
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
+/* ================= 학생: 주간 리포트 (이번 주 일~토, 매주 리셋) ================= */
+function keyOf(dt){ return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
 function renderWeekly(s){
   const p=loadProg(s);
   const scores=p.scores||{}, done=p.done||{};
   const WD=["일","월","화","수","목","금","토"];
-  // 최근 7일 (왼→오: 6일전 … 오늘)
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dow=today.getDay();            // 0=일요일
+  const sunday=new Date(today); sunday.setDate(today.getDate()-dow);  // 이번 주 일요일
+  // 이번 주 7칸 (일~토)
   const days=[];
-  for(let i=6;i>=0;i--){ const k=dateKeyOffset(i); const dt=new Date(k+"T00:00:00");
-    days.push({k, label:WD[dt.getDay()], done:!!done[k], score: (scores[k]!=null?scores[k]:null)}); }
+  for(let i=0;i<7;i++){ const dt=new Date(sunday); dt.setDate(sunday.getDate()+i); const k=keyOf(dt);
+    days.push({k, label:WD[i], done:!!done[k], score:(scores[k]!=null?scores[k]:null), future: dt>today, isToday:i===dow}); }
   const weekScores=days.filter(d=>d.score!=null).map(d=>d.score);
   const avg=weekScores.length?Math.round(weekScores.reduce((a,b)=>a+b,0)/weekScores.length):null;
   const doneCnt=days.filter(d=>d.done).length;
@@ -1949,16 +2013,19 @@ function renderWeekly(s){
   document.getElementById("wkDone").textContent= doneCnt+"/7";
   document.getElementById("wkStreak").textContent= (p.streak||0);
   document.getElementById("wkRange").textContent= days[0].k.slice(5)+" ~ "+days[6].k.slice(5);
-  // 막대
+  // 막대 (미래 날짜는 흐리게)
   document.getElementById("wkBars").innerHTML=days.map(d=>{
     let h, cls, val;
     if(d.score!=null){ h=Math.max(8,Math.round(d.score*0.85)); cls=d.score>=85?"":(d.score>=65?"mid":"lo"); val=d.score; }
     else if(d.done){ h=14; cls=""; val="✓"; }
     else { h=6; cls="empty"; val=""; }
-    return `<div class="wk-col"><div class="wk-bv">${val!==""?val:"&nbsp;"}</div><div class="wk-bar ${cls}" style="height:${h}px"></div><div class="wk-bx">${d.label}</div></div>`;
+    const op=d.future?"opacity:.45":"";
+    const todayMark=d.isToday?"font-weight:900;color:var(--g2)":"";
+    return `<div class="wk-col" style="${op}"><div class="wk-bv">${val!==""?val:"&nbsp;"}</div><div class="wk-bar ${cls}" style="height:${h}px"></div><div class="wk-bx" style="${todayMark}">${d.label}</div></div>`;
   }).join("");
-  // 메시지 (지난주 대비)
-  const prev=[]; for(let i=13;i>=7;i--){const k=dateKeyOffset(i); if(scores[k]!=null)prev.push(scores[k]);}
+  // 지난주(일~토) 평균과 비교
+  const prevSun=new Date(sunday); prevSun.setDate(sunday.getDate()-7);
+  const prev=[]; for(let i=0;i<7;i++){ const dt=new Date(prevSun); dt.setDate(prevSun.getDate()+i); const k=keyOf(dt); if(scores[k]!=null)prev.push(scores[k]); }
   const prevAvg=prev.length?Math.round(prev.reduce((a,b)=>a+b,0)/prev.length):null;
   let msg;
   if(avg==null && doneCnt===0){ msg="이번 주 첫 숙제를 시작해 보세요! 매일 한 문장이면 충분해요 🌱"; }
@@ -2210,7 +2277,7 @@ function showExternalGuide(){
   const m=document.getElementById("welcomeModal");
   document.getElementById("wEmoji").textContent="🔊";
   document.getElementById("wTitle").innerHTML="소리가 막혀 있어요";
-  document.getElementById("wText").innerHTML="카톡 안에서 열려서 음성이 재생되지 않아요.<br>크롬·삼성인터넷 브라우저에서 열면 잘 들립니다 🙂";
+  document.getElementById("wText").innerHTML="카톡 안에서 열려서 음성·녹음이 막혀요.<br>크롬·삼성인터넷에서 열면 잘 됩니다 🙂<br><br><b>💡 팁:</b> 브라우저로 열린 뒤 메뉴(⋮)에서 <b>‘홈 화면에 추가’</b>를 누르면<br>앱처럼 크고 편하게 쓸 수 있어요!";
   const pri=document.getElementById("wPrimary"), sec=document.getElementById("wSecondary");
   pri.textContent="🚀 소리되는 브라우저로 열기"; pri.onclick=function(){openExternal();};
   sec.classList.remove("hidden"); sec.textContent="닫기"; sec.onclick=function(){closeWelcome();};
