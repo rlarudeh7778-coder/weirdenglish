@@ -2005,8 +2005,7 @@ function completeToday(){
     p.streak=(p.last===yk)?(p.streak||0)+1:1;
     p.last=tk;
     saveProg(CUR,p);
-    notifyTeacher(p,avg);
-    cloudSaveCompletion(CUR,p,avg,CARD);
+    cloudSaveCompletion(CUR,p,avg,CARD); // 완료 즉시 클라우드 → 선생님 '숙제 현황'에 실시간 반영 (이메일 알림은 사용 안 함)
   }
   const done=doneCount(p), tot=totalDays(CUR.months);
   const ms=MILESTONE_MSG[done];
