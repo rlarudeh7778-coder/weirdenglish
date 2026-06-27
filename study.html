@@ -2582,7 +2582,7 @@ function showExternalGuide(){
 function closeWelcome(){document.getElementById("welcomeModal").classList.remove("show");}
 
 /* ================= AI 회화 튜터 ================= */
-const AI_ENDPOINT=""; // ← Cloudflare Worker 주소를 여기에 넣으면 켜집니다
+const AI_ENDPOINT="https://weird-ai.rlarudeh7778.workers.dev"; // Cloudflare Worker
 let AI_MSGS=[], AI_SYS="", AI_BUSY=false;
 function enOnly(t){ return String(t).replace(/\([^)]*\)/g," ").replace(/[가-힣]/g," ").replace(/\s+/g," ").trim()||String(t); }
 function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
