@@ -1334,6 +1334,10 @@ h1.mt{font-size:clamp(40px,5.6vw,78px);font-weight:900;line-height:1.08;letter-s
 
 /* ── CTA ── */
 .cta-sec{padding:100px 6%;background:linear-gradient(160deg,#0a1628 0%,#0F1F3D 50%,#0d2a1f 100%);position:relative;text-align:center;overflow:hidden}
+.cta-slideshow{position:absolute;inset:0;overflow:hidden;z-index:0}
+.cta-slide{position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:0;transition:opacity 1.6s ease;will-change:opacity}
+.cta-slide.active{opacity:.28}
 .cta-ov{position:absolute;inset:0;background:linear-gradient(135deg,rgba(15,31,61,.96) 0%,rgba(0,120,80,.72) 100%)}
 .cta-in{position:relative;z-index:1}
 .cta-sec h2{font-size:clamp(28px,3.5vw,48px);font-weight:900;color:var(--w);margin-bottom:14px;word-break:keep-all}
@@ -3205,6 +3209,13 @@ body.sticky-active .kakao-float{bottom:96px}
 </section>
 
 <section class="cta-sec" id="cta">
+  <div class="cta-slideshow" id="ctaSlideshow">
+    <div class="cta-slide active" style="background-image:url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600&q=80&auto=format&fit=crop')"></div>
+    <div class="cta-slide" style="background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80&auto=format&fit=crop')"></div>
+    <div class="cta-slide" style="background-image:url('https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=1600&q=80&auto=format&fit=crop')"></div>
+    <div class="cta-slide" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600&q=80&auto=format&fit=crop')"></div>
+    <div class="cta-slide" style="background-image:url('https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=1600&q=80&auto=format&fit=crop')"></div>
+  </div>
   <div class="cta-ov"></div>
   <div class="cta-in">
 
@@ -4000,7 +4011,7 @@ function toggleCol(id){
 
 /* ── 히어로 슬라이드쇼 ── */
 (function(){
-  const slides=document.querySelectorAll(".hero-slide");
+  const slides=document.querySelectorAll(".cta-slide");
   if(!slides.length) return;
   let si=0;
   function nextSlide(){
