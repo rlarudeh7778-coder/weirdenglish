@@ -811,6 +811,20 @@ function mergeProg(local,cloud){
   return out;
 }
 // 학생 진입 시 클라우드에서 기록 불러와 화면 갱신
+function isBlockedCached(s){ try{ return !!localStorage.getItem("we_blk_"+studentId(s)); }catch(e){ return false; } }
+function showBlockScreen(){
+  try{ if(typeof closeAI==="function") closeAI(); }catch(e){}
+  try{ if(typeof closeWelcome==="function") closeWelcome(); }catch(e){}
+  var sr=document.getElementById("studyRoom"); if(sr)sr.classList.add("hidden");
+  var ns=document.getElementById("noStudent"); if(ns)ns.classList.add("hidden");
+  var b=document.getElementById("blockScreen");
+  if(!b){ b=document.createElement("div"); b.id="blockScreen"; b.className="card"; b.style.cssText="text-align:center;padding:44px 24px;margin-top:40px";
+    b.innerHTML='<div style="font-size:52px">🔒</div><h2 style="font-size:21px;font-weight:900;margin:14px 0 8px;color:var(--navy)">수강이 종료되었어요</h2><p class="muted" style="font-size:14px">지금은 이 링크로 접속할 수 없어요.<br>계속 학습을 원하시면 선생님께 문의해 주세요 🙏</p>';
+    var w=document.querySelector(".wrap"); if(w)w.appendChild(b);
+  }
+  b.classList.remove("hidden");
+}
+
 function cloudSync(s){
   if(!CLOUD||!DB) return;
   whenAuth().then(function(){
@@ -818,6 +832,7 @@ function cloudSync(s){
       DB.collection("students").doc(studentId(s)).get().then(function(doc){
         if(!doc.exists) return;
         const data=doc.data();
+        if(data.blocked){ try{localStorage.setItem("we_blk_"+studentId(s),"1");}catch(e){} showBlockScreen(); return; }
         if(typeof AI_BLOCKED!=="undefined") AI_BLOCKED=!!data.aiBlocked; // 선생님 차단 반영
         const cloud=data.prog;
         if(!cloud) return;
@@ -1686,7 +1701,7 @@ function copyLink(enc,btn){
 }
 function delStudent(i){
   const a=students(); const s=a[i]; if(!s)return;
-  if(!confirm(s.name+"님을 삭제할까요?\n숙제 현황·진행 기록도 함께 삭제됩니다. (되돌릴 수 없어요)"))return;
+  if(!confirm(s.name+"님을 삭제할까요?\n삭제하면 이 학생은 링크로 접속할 수 없고, 기록도 삭제됩니다. (되돌릴 수 없어요)"))return;
   // 로컬 정리
   try{ localStorage.removeItem(progKey(s)); localStorage.removeItem("we_board_"+s.name+"_"+s.start); }catch(e){}
   // 클라우드 정리 (숙제 현황에서도 제거)
@@ -1700,7 +1715,7 @@ function cloudDeleteStudent(id){
     return ref.collection("days").get().then(function(snap){
       const ps=[]; snap.forEach(function(d){ ps.push(d.ref.delete()); });
       return Promise.all(ps);
-    }).then(function(){ return ref.delete(); }).catch(function(){});
+    }).then(function(){ return ref.set({blocked:true, prog:null, updatedAt:Date.now()},{merge:true}); }).catch(function(){});
   });
 }
 function previewLink(o){return location.origin+location.pathname+"?pv=1#"+encodeStudent(o);}
@@ -1760,6 +1775,7 @@ function loadDemo(){
   startStudy(demo,true);
 }
 function startStudy(s,entry){
+  if(typeof isBlockedCached==="function" && isBlockedCached(s)){ CUR=s; showBlockScreen(); return; }
   CUR=s;
   document.getElementById("noStudent").classList.add("hidden");
   document.getElementById("studyRoom").classList.remove("hidden");
@@ -2356,7 +2372,7 @@ function renderBoard(){
       if(snap.empty){ box.innerHTML='<div class="empty">아직 숙제를 완료한 학생이 없어요.<br>학생이 첫 숙제를 끝내면 여기에 실시간으로 떠요 🙂</div>'; return; }
       const tk=todayKey(); let html="";
       snap.forEach(function(doc){
-        const v=doc.data(); const d=dayNumber(v.start);
+        const v=doc.data(); if(v.blocked) return; const d=dayNumber(v.start);
         const conf=JSON.parse(localStorage.getItem("we_board_"+v.name+"_"+v.start)||'{"note":""}');
         const todayDone=(v.lastDate===tk);
         const left=daysLeft({start:v.start,months:v.months});
@@ -2378,7 +2394,7 @@ function renderBoard(){
           <textarea class="board-note" placeholder="${v.name}님 피드백 메모" onchange="saveCloudNote('${v.name}','${v.start}',this.value)">${conf.note||""}</textarea>
         </div>`;
       });
-      box.innerHTML=html;
+      box.innerHTML=html||'<div class="empty">아직 숙제를 완료한 학생이 없어요.</div>';
     }, function(err){ box.innerHTML='<div class="empty">현황을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>'; });
     });
     return;
@@ -2449,7 +2465,7 @@ function aiToggleBlock(id,block){
 }
 // 현황 보드에서 학생 삭제 (클라우드 + 로컬 명단/기록)
 function boardDelete(id,name){
-  if(!confirm((name||"이 학생")+"님을 삭제할까요?\n숙제 현황·기록이 모두 삭제됩니다. (되돌릴 수 없어요)"))return;
+  if(!confirm((name||"이 학생")+"님을 삭제할까요?\n삭제하면 이 학생은 링크로 접속할 수 없고, 기록도 삭제됩니다. (되돌릴 수 없어요)"))return;
   cloudDeleteStudent(id);
   // 로컬 학생 명단에서도 동일 id 제거
   try{
