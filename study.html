@@ -4,24 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F1F3D">
-<title>이상한영어 숙제방 🎒</title>
+<title>김규리쌤 공부방 🎒</title>
 <meta name="robots" content="noindex">
 <!-- 카톡 공유 미리보기 (썸네일) -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="이상한영어 숙제방 🎒">
+<meta property="og:title" content="김규리쌤 공부방 🎒">
 <meta property="og:description" content="오늘의 영어 숙제 · 발음 연습 · 나의 영어 여정 — 매일 한 문장씩!">
-<meta property="og:image" content="https://weirdenglish.co.kr/study-og.png">
+<meta property="og:image" content="https://zounioz0716-prog.github.io/englishhomework/study-og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:site_name" content="이상한영어">
+<meta property="og:site_name" content="김규리쌤 공부방">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="이상한영어 숙제방 🎒">
+<meta name="twitter:title" content="김규리쌤 공부방 🎒">
 <meta name="twitter:description" content="오늘의 영어 숙제 · 발음 연습 · 나의 영어 여정">
-<meta name="twitter:image" content="https://weirdenglish.co.kr/study-og.png">
+<meta name="twitter:image" content="https://zounioz0716-prog.github.io/englishhomework/study-og.png">
 <!-- iOS 홈 화면 추가 시 풀스크린 (PWA 강제설치는 사용 안 함) -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="이상한영어 숙제방">
+<meta name="apple-mobile-web-app-title" content="김규리쌤 공부방">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- 폰트·클라우드 서버에 미리 연결(handshake) → 첫 로딩 지연 감소 -->
@@ -399,7 +399,7 @@ body{font-size:16px}
 <body>
 
 <div class="topbar">
-  <div class="logo">이상한<span>영어</span> · 숙제방</div>
+  <div class="logo">김규리쌤 <span>공부방</span></div>
   <div class="role-switch hidden" id="roleSwitch">
     <button id="rsStudent" class="on" onclick="setRole('student')">🎒 학생</button>
     <button id="rsTeacher" onclick="setRole('teacher')">🧑‍🏫 선생님</button>
@@ -744,20 +744,20 @@ body{font-size:16px}
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 /* =================================================================
-   이상한영어 · 데일리 숙제방
+   김규리쌤 공부방 · 데일리 숙제방
    ================================================================= */
 const WEB3FORMS_KEY="ef0e3efd-8d61-4ddc-a211-6c9e29435f52"; // 숙제 완료 알림 메일 (랜딩페이지와 동일)
-const KAKAO_CHANNEL="http://pf.kakao.com/_Vgdzb";
+const KAKAO_CHANNEL="http://pf.kakao.com/_CHANGE_ME"; // 김규리쌤 카톡 채널 주소로 교체
 const DAY=86400000;
 
 /* ===== Firebase 설정 (비어있으면 클라우드 OFF, 기존 로컬 모드로 동작) ===== */
 const FIREBASE_CONFIG={
-  apiKey:"AIzaSyBymjs8TRH16hGRW_ubVMFTX0FRhvmakUY",
-  authDomain:"weirdenglish-2e382.firebaseapp.com",
-  projectId:"weirdenglish-2e382",
-  storageBucket:"weirdenglish-2e382.firebasestorage.app",
-  messagingSenderId:"1010598738337",
-  appId:"1:1010598738337:web:5bf9f8d84240646891b3e0"
+  apiKey:"AIzaSyDl4ODD-BFcxZ7gyWmw7QnnCF-1Snte2CM",
+  authDomain:"englishhomework-c93dd.firebaseapp.com",
+  projectId:"englishhomework-c93dd",
+  storageBucket:"englishhomework-c93dd.firebasestorage.app",
+  messagingSenderId:"512351671248",
+  appId:"1:512351671248:web:2c245735709a377b601fd5"
 };
 let CLOUD=false, DB=null, boardUnsub=null, AUTH_READY=null;
 function initCloud(){
@@ -1706,8 +1706,7 @@ function showLinkFor(i){
     <div class="ttl">🔗 ${s.name}님 개인 숙제 링크</div>
     <div id="lk${i}">${link}</div>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn sm" style="flex:1" onclick="copyLink('${encodeURIComponent(link)}',this)">복사하기</button>
-      <button class="btn sm kakao" style="flex:1" onclick="window.open('${KAKAO_CHANNEL}','_blank')">카톡 열기</button>
+      <button class="btn sm" style="flex:1" onclick="copyLink('${encodeURIComponent(link)}',this)">🔗 링크 복사하기</button>
     </div></div>`;
 }
 function copyLink(enc,btn){
@@ -2496,10 +2495,10 @@ function notifyTeacher(p,avg){
   if(!WEB3FORMS_KEY) return;
   const done=doneCount(p),tot=totalDays(CUR.months);
   const scoreTxt= avg!=null ? (avg+"점") : "미측정";
-  const msg=`[이상한영어 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n자동 발음 점수: ${scoreTxt}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n* 자동 점수는 음성인식 기반 참고용입니다. 학생이 카톡으로 녹음(음성메시지)을 보낼 수 있어요.`;
+  const msg=`[김규리쌤 공부방 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n자동 발음 점수: ${scoreTxt}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n* 자동 점수는 음성인식 기반 참고용입니다. 학생이 카톡으로 녹음(음성메시지)을 보낼 수 있어요.`;
   fetch("https://api.web3forms.com/submit",{
     method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
-    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()} · 발음 ${scoreTxt}`,from_name:"이상한영어 숙제방",message:msg})
+    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()} · 발음 ${scoreTxt}`,from_name:"김규리쌤 공부방",message:msg})
   }).catch(()=>{});
 }
 
@@ -2626,7 +2625,7 @@ function showExternalGuide(){
 function closeWelcome(){document.getElementById("welcomeModal").classList.remove("show");}
 
 /* ================= AI 회화 튜터 ================= */
-const AI_ENDPOINT="https://weirdenglish.vercel.app/api/tutor"; // Vercel (미국 지역)
+const AI_ENDPOINT="https://englishhomework-five.vercel.app/api/tutor"; // Vercel(미국)
 let AI_MSGS=[], AI_SYS="", AI_BUSY=false, AI_BLOCKED=false;
 function enOnly(t){ return String(t).replace(/\([^)]*\)/g," ").replace(/[가-힣]/g," ").replace(/\s+/g," ").trim()||String(t); }
 function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
