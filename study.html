@@ -614,6 +614,10 @@ body{font-size:16px}
 
       <div class="card">
         <div class="t-head"><h2>내 학생 <span class="muted" id="stuCount"></span></h2></div>
+        <div style="display:flex;gap:8px;margin:6px 0 12px;flex-wrap:wrap">
+          <button class="btn sm ghost" onclick="manualRestore()">☁️ 클라우드에서 학생 불러오기</button>
+          <button class="btn sm ghost" onclick="restoreFromBoard()">🔎 숙제기록으로 명단 복구</button>
+        </div>
         <div class="stu-list" id="stuList"></div>
       </div>
     </div>
@@ -1675,7 +1679,11 @@ function setRole(r){
   document.getElementById("rsTeacher").classList.toggle("on",r==="teacher");
   document.getElementById("studentView").classList.toggle("hidden",r!=="student");
   document.getElementById("teacherView").classList.toggle("hidden",r!=="teacher");
-  if(r==="teacher") renderStudents();
+  if(r==="teacher"){
+    renderStudents();
+    // 클라우드에서 학생 명단 복구 (다른 기기/브라우저에서도 보이게)
+    cloudLoadRoster(function(changed){ if(changed) renderStudents(); });
+  }
 }
 function setTab(t){
   ["stu","board","card","help"].forEach(x=>{
@@ -1699,9 +1707,44 @@ function addStudent(){
   const arr=students();
   arr.push({name,level,months,start});
   setStudents(arr);
+  cloudSaveRoster(arr);          // 클라우드에도 학생 명단 저장
   document.getElementById("fName").value="";
   renderStudents();
   showLinkFor(arr.length-1);
+}
+
+/* ===== 학생 명단 클라우드 동기화 =====
+   목적: 선생님이 다른 기기/브라우저로 접속해도 학생 목록이 보이게 */
+function cloudSaveRoster(arr){
+  try{
+    if(!CLOUD||!DB) return;
+    whenAuth().then(function(){
+      DB.collection("roster").doc("teacher").set(
+        { students: arr||[], updatedAt: Date.now() }, {merge:true}
+      ).catch(function(e){ console.warn("roster save fail", e&&e.code); });
+    });
+  }catch(e){}
+}
+/* 클라우드 명단을 불러와 로컬과 합치기 (이름+시작일 기준 중복 제거) */
+function cloudLoadRoster(cb){
+  try{
+    if(!CLOUD||!DB){ cb&&cb(false); return; }
+    whenAuth().then(function(){
+      DB.collection("roster").doc("teacher").get().then(function(doc){
+        if(!doc.exists){ cb&&cb(false); return; }
+        const cloud=(doc.data()&&doc.data().students)||[];
+        const local=students();
+        const key=function(x){ return (x.name||"")+"|"+(x.start||""); };
+        const map={};
+        // 클라우드 먼저 → 로컬이 덮어씀(로컬의 최신 dayAdj/extra 우선)
+        cloud.forEach(function(x){ map[key(x)]=x; });
+        local.forEach(function(x){ map[key(x)]=Object.assign({}, map[key(x)]||{}, x); });
+        const merged=Object.keys(map).map(function(k){ return map[k]; });
+        setStudents(merged);
+        cb&&cb(merged.length>local.length);
+      }).catch(function(e){ console.warn("roster load fail", e&&e.code); cb&&cb(false); });
+    });
+  }catch(e){ cb&&cb(false); }
 }
 function renderStudents(){
   const arr=students(); const box=document.getElementById("stuList");
@@ -1726,6 +1769,56 @@ function renderStudents(){
       <div id="link${i}"></div>`;
   }).join("");
 }
+/* ===== 명단 복구: 클라우드 roster ===== */
+function manualRestore(){
+  const box=document.getElementById("stuList");
+  const before=students().length;
+  box.innerHTML='<div class="empty">클라우드에서 불러오는 중…</div>';
+  cloudLoadRoster(function(){
+    renderStudents();
+    const after=students().length;
+    if(after>before) alert("학생 "+(after-before)+"명을 불러왔어요 🙂");
+    else if(after===0) alert("클라우드에 저장된 학생 명단이 없어요.\n아래 '숙제기록으로 명단 복구'를 눌러보세요.");
+    else alert("이미 최신 상태예요.");
+  });
+}
+
+/* ===== 명단 복구: 숙제 완료 기록(students 컬렉션)에서 되살리기 =====
+   학생들이 숙제를 한 기록은 클라우드에 남아있으므로, 그것으로 명단을 복원 */
+function restoreFromBoard(){
+  if(!CLOUD||!DB){ alert("클라우드에 연결되어 있지 않아요."); return; }
+  const box=document.getElementById("stuList");
+  box.innerHTML='<div class="empty">숙제 기록에서 학생을 찾는 중…</div>';
+  whenAuth().then(function(){
+    DB.collection("students").get().then(function(snap){
+      if(snap.empty){ renderStudents(); alert("숙제 기록이 없어요."); return; }
+      const local=students();
+      const key=function(x){ return (x.name||"")+"|"+(x.start||""); };
+      const map={}; local.forEach(function(x){ map[key(x)]=x; });
+      let added=0;
+      snap.forEach(function(doc){
+        const v=doc.data()||{};
+        if(!v.name||!v.start) return;
+        const k=v.name+"|"+v.start;
+        if(!map[k]){
+          map[k]={name:v.name, level:v.level||"왕초보",
+                  months:v.months||3, start:v.start};
+          added++;
+        }
+      });
+      const merged=Object.keys(map).map(function(k){ return map[k]; });
+      setStudents(merged);
+      cloudSaveRoster(merged);      // 복구한 명단을 클라우드에도 저장
+      renderStudents();
+      alert(added? ("학생 "+added+"명을 숙제 기록에서 복구했어요 🙂")
+                 : "새로 복구할 학생이 없어요. 이미 모두 있습니다.");
+    }).catch(function(e){
+      renderStudents();
+      alert("불러오지 못했어요. 잠시 후 다시 시도해 주세요.\n("+(e&&e.code||"error")+")");
+    });
+  });
+}
+
 /* ===== 선생님: 학생 일차 수동 지정 ===== */
 function editDayFor(i){
   const arr=students(); const s=arr[i]; if(!s) return;
@@ -1744,7 +1837,7 @@ function editDayFor(i){
     return Math.max(1, Math.floor((n-st)/DAY)+1);
   })();
   s.dayAdj = want - base;         // 오프셋 저장(날짜가 흘러도 상대 유지)
-  arr[i]=s; setStudents(arr); renderStudents();
+  arr[i]=s; setStudents(arr); cloudSaveRoster(arr); renderStudents();
   alert(s.name+"님의 숙제가 Day "+want+"로 설정되었어요.\n\n⚠️ 링크가 새로 만들어졌으니, 🔗 버튼을 눌러 새 링크를 학생에게 다시 보내주세요.");
   showLinkFor(i);
 }
@@ -1759,7 +1852,7 @@ function extraFor(i){
     cur);
   if(v===null) return;
   const n=Math.max(0, Math.min(3, parseInt(String(v).replace(/[^0-9]/g,""))||0));
-  s.extra=n; arr[i]=s; setStudents(arr); renderStudents();
+  s.extra=n; arr[i]=s; setStudents(arr); cloudSaveRoster(arr); renderStudents();
   alert(s.name+"님 추가 숙제: "+(n?n+"개 (현지 표현·심화)":"없음")+"\n\n⚠️ 🔗 버튼을 눌러 새 링크를 학생에게 다시 보내주세요.");
   showLinkFor(i);
 }
