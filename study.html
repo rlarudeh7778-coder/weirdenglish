@@ -502,7 +502,7 @@ body{font-size:16px}
               <div class="compare">
                 <div class="cmp-item">
                   <div class="ch">🗣️ 내 발음</div>
-                  <audio id="myAudio" controls></audio>
+                  <audio id="myAudio" playsinline webkit-playsinline controls></audio>
                 </div>
               </div>
               <button class="btn ghost sm" style="width:100%;margin-top:10px" onclick="resetRec()">↺ 다시 녹음</button>
@@ -1619,13 +1619,38 @@ function currentStudent(){
 function studentLink(o){return location.origin+location.pathname+"?"+encodeStudent(o);}
 
 /* ---------- 날짜/진행 ---------- */
+/* iOS 안전 날짜 파서: "2026-01-15" → Date (Safari는 T00:00:00 형식 파싱 실패 가능) */
+function parseYMD(v){
+  if(v instanceof Date) return isNaN(v)?null:v;
+  if(typeof v!=="string") return null;
+  const m=v.trim().match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  if(!m) { const d=new Date(v); return isNaN(d)?null:d; }
+  return new Date(+m[1], +m[2]-1, +m[3], 0,0,0,0);
+}
 function dayNumber(startISO){
-  const s=new Date(startISO+"T00:00:00"); const n=new Date(); n.setHours(0,0,0,0); s.setHours(0,0,0,0);
-  return Math.max(1, Math.floor((n-s)/DAY)+1);
+  const s=parseYMD(startISO);
+  if(!s) return 1;                       // 시작일이 깨졌으면 1일차
+  const n=new Date(); n.setHours(0,0,0,0); s.setHours(0,0,0,0);
+  const base=Math.max(1, Math.floor((n-s)/DAY)+1);
+  // 선생님이 일차를 수동 지정(오프셋)한 경우 반영
+  try{
+    const off=(typeof CUR!=="undefined" && CUR && CUR.dayAdj!=null) ? parseInt(CUR.dayAdj) : null;
+    if(off!=null && !isNaN(off)) return Math.max(1, base+off);
+  }catch(e){}
+  return base;
+}
+/* 특정 학생의 일차(오프셋 포함) — 선생님 화면용 */
+function dayNumberOf(st){
+  const s=parseYMD(st&&st.start);
+  if(!s) return 1;
+  const n=new Date(); n.setHours(0,0,0,0); s.setHours(0,0,0,0);
+  const base=Math.max(1, Math.floor((n-s)/DAY)+1);
+  const off=(st&&st.dayAdj!=null)?parseInt(st.dayAdj):null;
+  return (off!=null&&!isNaN(off))?Math.max(1,base+off):base;
 }
 function totalDays(months){return Math.max(28,(parseInt(months)||3)*28);}
 function daysLeft(s){ // 수강 종료까지 남은 일수
-  const end=new Date(s.start+"T00:00:00"); end.setMonth(end.getMonth()+(parseInt(s.months)||3));
+  const end=parseYMD(s.start)||new Date(); end.setMonth(end.getMonth()+(parseInt(s.months)||3));
   const n=new Date(); n.setHours(0,0,0,0); end.setHours(0,0,0,0);
   return Math.ceil((end-n)/DAY);
 }
@@ -1683,14 +1708,17 @@ function renderStudents(){
   document.getElementById("stuCount").textContent=arr.length?("· "+arr.length+"명"):"";
   if(!arr.length){box.innerHTML='<div class="empty">아직 등록된 학생이 없어요.<br>위에서 첫 학생을 등록해 보세요 🙂</div>';return;}
   box.innerHTML=arr.map((s,i)=>{
-    const p=loadProg(s); const d=dayNumber(s.start);
+    const p=loadProg(s); const d=dayNumberOf(s);
+    const adjTxt=(s.dayAdj?` <span class="muted">(수동 ${s.dayAdj>0?"+":""}${s.dayAdj})</span>`:"");
     return `<div class="stu">
       <div class="av">${(s.name||"?")[0]}</div>
       <div class="info">
         <div class="nm">${s.name} <span class="muted">· ${s.level}</span> <span class="dday ${daysLeft(s)<=7?'soon':''}">${ddayLabel(s)}</span></div>
-        <div class="dt">${s.months}개월 · 시작 ${s.start} · 오늘 Day ${d} · 완료 ${doneCount(p)}일</div>
+        <div class="dt">${s.months}개월 · 시작 ${s.start} · 오늘 Day ${d}${adjTxt} · 완료 ${doneCount(p)}일</div>
       </div>
       <div class="acts">
+        <button class="icon-btn" title="일차 수정" onclick="editDayFor(${i})">📅</button>
+        <button class="icon-btn" title="추가 숙제" onclick="extraFor(${i})">➕</button>
         <button class="icon-btn" title="링크" onclick="showLinkFor(${i})">🔗</button>
         <button class="icon-btn" title="미리보기" onclick="previewStudent(${i})">👁️</button>
         <button class="icon-btn" title="삭제" onclick="delStudent(${i})">🗑️</button>
@@ -1698,6 +1726,44 @@ function renderStudents(){
       <div id="link${i}"></div>`;
   }).join("");
 }
+/* ===== 선생님: 학생 일차 수동 지정 ===== */
+function editDayFor(i){
+  const arr=students(); const s=arr[i]; if(!s) return;
+  const cur=dayNumberOf(s);
+  const v=prompt(
+    s.name+"님의 숙제 일차를 지정하세요.\n\n현재: Day "+cur+
+    "\n(원하는 일차 숫자를 입력하면 그 일차로 맞춰집니다)",
+    cur);
+  if(v===null) return;
+  const want=parseInt(String(v).replace(/[^0-9]/g,""));
+  if(!want||want<1){ alert("1 이상의 숫자를 입력해 주세요."); return; }
+  // 날짜 기준 일차
+  const base=(function(){
+    const st=parseYMD(s.start); if(!st) return 1;
+    const n=new Date(); n.setHours(0,0,0,0); st.setHours(0,0,0,0);
+    return Math.max(1, Math.floor((n-st)/DAY)+1);
+  })();
+  s.dayAdj = want - base;         // 오프셋 저장(날짜가 흘러도 상대 유지)
+  arr[i]=s; setStudents(arr); renderStudents();
+  alert(s.name+"님의 숙제가 Day "+want+"로 설정되었어요.\n\n⚠️ 링크가 새로 만들어졌으니, 🔗 버튼을 눌러 새 링크를 학생에게 다시 보내주세요.");
+  showLinkFor(i);
+}
+
+/* ===== 선생님: 추가 숙제(현지 표현 등) 지정 ===== */
+function extraFor(i){
+  const arr=students(); const s=arr[i]; if(!s) return;
+  const cur=(s.extra||0);
+  const v=prompt(
+    s.name+"님에게 하루 추가로 줄 숙제 개수를 정하세요.\n\n"+
+    "0 = 기본(추가 없음)\n1~3 = 현지 표현·심화 문장을 그만큼 더 출제\n\n현재: "+cur+"개",
+    cur);
+  if(v===null) return;
+  const n=Math.max(0, Math.min(3, parseInt(String(v).replace(/[^0-9]/g,""))||0));
+  s.extra=n; arr[i]=s; setStudents(arr); renderStudents();
+  alert(s.name+"님 추가 숙제: "+(n?n+"개 (현지 표현·심화)":"없음")+"\n\n⚠️ 🔗 버튼을 눌러 새 링크를 학생에게 다시 보내주세요.");
+  showLinkFor(i);
+}
+
 function showLinkFor(i){
   const s=students()[i]; if(!s)return;
   const link=studentLink(s);
@@ -1818,12 +1884,31 @@ function startStudy(s,entry){
   const tk=todayKey();
   if(!p.assigned) p.assigned={};
   if(p.assigned[tk]==null){
-    p.assigned[tk]=(p.cursor||0)%lib.length;
-    p.cursor=((p.cursor||0)+1)%lib.length;
+    // 선생님이 일차를 지정한 경우 → 그 일차에 해당하는 패턴부터 출제
+    let base=(p.cursor||0);
+    if(s.dayAdj!=null && !isNaN(parseInt(s.dayAdj)) && !p.adjApplied){
+      base=Math.max(0, d-1);          // d = 화면에 표시되는 현재 일차
+      p.cursor=base; p.adjApplied=true;
+    }
+    p.assigned[tk]=base%lib.length;
+    p.cursor=(base+1)%lib.length;
     saveProg(s,p);
   }
   CARD=lib[p.assigned[tk]%lib.length];
   STEPS=(CARD.exp&&CARD.exp.length)?CARD.exp.slice():[[CARD.sent,CARD.trans]];
+  // ── 추가 숙제(현지 표현·심화): 선생님이 지정한 개수만큼 문장 더 붙이기 ──
+  try{
+    const ex=Math.max(0, Math.min(3, parseInt(s.extra)||0));
+    if(ex>0){
+      const baseIdx=p.assigned[tk]%lib.length;
+      for(let k=1;k<=ex;k++){
+        const c=lib[(baseIdx+k*7)%lib.length];   // 겹치지 않게 간격 두고 선택
+        if(!c) continue;
+        const pair=(c.exp&&c.exp[0])?[c.exp[0][0],c.exp[0][1]]:[c.sent,c.trans];
+        if(pair[0]) STEPS.push(pair);
+      }
+    }
+  }catch(e){}
   STEP=0;
   DAY_SCORES=[];
   renderCard();
@@ -1963,10 +2048,21 @@ async function toggleRec(){
   }
   try{
     const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRec=new MediaRecorder(stream);chunks=[];
+    // iOS Safari는 webm 미지원 → 지원되는 형식을 골라서 사용
+    let opts={};
+    try{
+      const cands=["audio/mp4","audio/aac","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"];
+      for(const t of cands){
+        if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)){ opts={mimeType:t}; break; }
+      }
+    }catch(e){}
+    try{ mediaRec=new MediaRecorder(stream,opts); }
+    catch(e){ mediaRec=new MediaRecorder(stream); }   // 옵션 실패 시 기본값
+    chunks=[];
     mediaRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
     mediaRec.onstop=()=>{
-      lastBlob=new Blob(chunks,{type:chunks[0]?chunks[0].type:"audio/webm"});
+      const mt=(mediaRec&&mediaRec.mimeType)||(chunks[0]&&chunks[0].type)||"audio/mp4";
+      lastBlob=new Blob(chunks,{type:mt});
       const url=URL.createObjectURL(lastBlob);
       document.getElementById("myAudio").src=url;
       document.getElementById("afterRec").classList.remove("hidden");
@@ -2222,7 +2318,7 @@ function renderReview(s){
     const idx=(p.assigned&&p.assigned[d]!=null)?p.assigned[d]:null; if(idx==null) continue;
     const c=lib[idx%lib.length]; if(!c||seen[c.tag]) continue; seen[c.tag]=1;
     const en=(c.exp&&c.exp[0])?c.exp[0][0]:c.sent, ko=(c.exp&&c.exp[0])?c.exp[0][1]:c.trans;
-    const daysAgo=Math.max(1,Math.round((new Date(tk+"T00:00:00")-new Date(d+"T00:00:00"))/DAY));
+    const daysAgo=Math.max(1,Math.round(((parseYMD(tk)||new Date())-(parseYMD(d)||new Date()))/DAY));
     REVIEW_ITEMS.push({en,ko,tag:c.tag,daysAgo});
   }
   // 이어 말하기 (중급·고급만)
