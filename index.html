@@ -1968,16 +1968,94 @@ body.sticky-active .kakao-float{bottom:96px}
   <span class="t-item"><span class="t-dot"></span>3개월 실력 보장제</span>
 </div></div>
 
-<section class="pain">
-  <h2 class="fu">혹시 이런 생각, 해보셨나요?</h2>
-  <p class="pain-sub fu">나만 그런 게 아닙니다.<br>수천 명이 같은 벽 앞에서 망설였습니다.</p>
-  <div class="pain-grid">
-    <div class="pain-c fu d1"><div class="pain-ico">😰</div><p>"초중고 10년 영어 공부했는데 왜 원어민 앞에서 말 한마디 못 할까요?"</p></div>
-    <div class="pain-c fu d2"><div class="pain-ico">📚</div><p>"학원 여러 곳 다녔는데 돈만 썼어요. 기억에 남는 게 없어요."</p></div>
-    <div class="pain-c fu d3"><div class="pain-ico">😔</div><p>"혼자 공부하면 작심삼일. 옆에서 관리해줬으면 좋겠어요."</p></div>
-    <div class="pain-c fu d4"><div class="pain-ico">😤</div><p>"TOEIC 점수는 있는데 정작 외국인 앞에선 입이 얼어붙어요."</p></div>
+<section class="pain" id="pain">
+  <div class="pain-aura" aria-hidden="true"></div>
+  <div class="pain-inner">
+    <span class="pain-eyebrow fu">지금, 여기서 막혀 있습니다</span>
+    <h2 class="fu">혹시 이런 생각, <span class="pain-hl">해보셨나요?</span></h2>
+    <p class="pain-sub fu">나만 그런 게 아닙니다.<br>수천 명이 같은 벽 앞에서 망설였습니다.</p>
+    <p class="pain-hint fu"><span class="ph-tap">👆</span> 카드를 눌러보세요 — 이상한영어의 해결 방법이 나옵니다</p>
+
+    <div class="pain-grid" id="painGrid">
+
+      <button type="button" class="pain-c fu d1" aria-label="첫 번째 고민의 해결 방법 보기">
+        <span class="pain-flip">
+          <span class="pain-face pain-front">
+            <span class="pain-tag">10년의 벽</span>
+            <span class="pain-ico">😰</span>
+            <span class="pain-q">"초중고 10년 영어 공부했는데<br>왜 원어민 앞에서 말 한마디 못 할까요?"</span>
+            <span class="pain-cue">해결 방법 보기 <em>→</em></span>
+          </span>
+          <span class="pain-face pain-back">
+            <span class="pain-sol-label">이상한영어는</span>
+            <span class="pain-sol">읽고 푸는 영어가 아니라 <b>입으로 뱉는 영어</b>로 바꿉니다. 매 수업 원어민과 실제로 말하고, 그 자리에서 바로 교정받습니다.</span>
+            <span class="pain-chip">✓ 원어민 발화 훈련</span>
+          </span>
+        </span>
+      </button>
+
+      <button type="button" class="pain-c fu d2" aria-label="두 번째 고민의 해결 방법 보기">
+        <span class="pain-flip">
+          <span class="pain-face pain-front">
+            <span class="pain-tag">사라진 학원비</span>
+            <span class="pain-ico">📚</span>
+            <span class="pain-q">"학원 여러 곳 다녔는데 돈만 썼어요.<br>기억에 남는 게 없어요."</span>
+            <span class="pain-cue">해결 방법 보기 <em>→</em></span>
+          </span>
+          <span class="pain-face pain-back">
+            <span class="pain-sol-label">이상한영어는</span>
+            <span class="pain-sol">30명 속에 묻히지 않습니다. <b>2:1 집중 관리</b>로 내 약점만 골라 교정하고, 성장 기록이 매주 남습니다.</span>
+            <span class="pain-chip">✓ 2:1 밀착 관리</span>
+          </span>
+        </span>
+      </button>
+
+      <button type="button" class="pain-c fu d3" aria-label="세 번째 고민의 해결 방법 보기">
+        <span class="pain-flip">
+          <span class="pain-face pain-front">
+            <span class="pain-tag">작심삼일</span>
+            <span class="pain-ico">😔</span>
+            <span class="pain-q">"혼자 공부하면 작심삼일.<br>옆에서 관리해줬으면 좋겠어요."</span>
+            <span class="pain-cue">해결 방법 보기 <em>→</em></span>
+          </span>
+          <span class="pain-face pain-back">
+            <span class="pain-sol-label">이상한영어는</span>
+            <span class="pain-sol">의지에 맡기지 않습니다. <b>매일 담당 매니저가 챙기는</b> 과제·피드백 루틴이 습관이 될 때까지 붙잡아 드립니다.</span>
+            <span class="pain-chip">✓ 매일 밀착 코칭</span>
+          </span>
+        </span>
+      </button>
+
+      <button type="button" class="pain-c fu d4" aria-label="네 번째 고민의 해결 방법 보기">
+        <span class="pain-flip">
+          <span class="pain-face pain-front">
+            <span class="pain-tag">얼어붙는 입</span>
+            <span class="pain-ico">😤</span>
+            <span class="pain-q">"TOEIC 점수는 있는데<br>정작 외국인 앞에선 입이 얼어붙어요."</span>
+            <span class="pain-cue">해결 방법 보기 <em>→</em></span>
+          </span>
+          <span class="pain-face pain-back">
+            <span class="pain-sol-label">이상한영어는</span>
+            <span class="pain-sol">점수가 아니라 <b>실제 상황</b>으로 연습합니다. 여행·회의·주문 같은 진짜 장면을 반복해 입이 먼저 반응하게 만듭니다.</span>
+            <span class="pain-chip">✓ 실전 상황 회화</span>
+          </span>
+        </span>
+      </button>
+
+    </div>
+
+    <div class="pain-bridge fu" id="painBridge">
+      <div class="pain-wall" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="pain-bridge-body">
+        <span class="pb-count"><b id="pbCount">0</b> / 4 확인</span>
+        <p class="pb-txt" id="pbTxt">이 중 하나라도 내 이야기 같다면, 방법은 이미 있습니다.</p>
+        <a href="#cta" class="pb-btn" onclick="scrollToForm(event)">
+          <span class="pb-btn-main">이상한영어가 그 벽을 같이 허물어 드립니다</span>
+          <em class="pb-btn-sub">무료 체험 신청하기 →</em>
+        </a>
+      </div>
+    </div>
   </div>
-  <div class="pain-then fu"><span class="pt-ico">👇</span> <span class="pt-txt">이상한영어가 그 벽을 같이 허물어 드립니다</span></div>
 </section>
 
 
@@ -4867,7 +4945,539 @@ nav.nav-solid .nav-cta:hover{background:#00695A !important;
 .cur-note-inline{display:inline-block;margin-top:8px;font-size:13.5px;color:var(--t3);line-height:1.6}
 .cur-note-inline strong{color:var(--g2);font-weight:800}
 @media(max-width:768px){.cur-note-inline{font-size:12px;margin-top:6px}}
+
+/* ══════════════════════════════════════════════════════════
+   PAIN → SOLUTION 섹션 리빌드 + 사이트 전역 모션 레이어
+   (2026-09-01)
+   · 버그: LUXE 레이어가 .pain-c 배경을 #FBFCFD로 덮어써
+     흰 카드 위에 흰 글씨가 되어 문구가 보이지 않던 문제 수정
+   · 흐름: 문제 공감 → 해결책 제시 → 동기 부여 → 문의 유도
+   ══════════════════════════════════════════════════════════ */
+
+/* ── 1. 섹션 골격 ── */
+.pain{position:relative;overflow:hidden;isolation:isolate;
+  background:linear-gradient(175deg,#0B1830 0%,var(--navy) 45%,#132648 100%) !important}
+.pain-inner{position:relative;z-index:2;max-width:1100px;margin:0 auto}
+
+/* 배경에서 천천히 도는 오라 — 정적인 화면에 숨을 넣어줌 */
+.pain-aura{position:absolute;inset:-20% -10%;z-index:1;pointer-events:none;
+  background:
+    radial-gradient(46% 38% at 18% 22%,rgba(0,201,167,.16),transparent 70%),
+    radial-gradient(42% 34% at 84% 74%,rgba(89,140,255,.13),transparent 70%);
+  filter:blur(18px);animation:painAura 18s ease-in-out infinite alternate}
+@keyframes painAura{
+  0%{transform:translate3d(0,0,0) scale(1)}
+  100%{transform:translate3d(-3%,2.5%,0) scale(1.09)}
+}
+
+/* ── 2. 헤더 타이포 ── */
+.pain-eyebrow{display:inline-flex;align-items:center;gap:9px;
+  font-size:11.5px;font-weight:700;letter-spacing:.19em;
+  color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:18px}
+.pain-eyebrow::before,.pain-eyebrow::after{content:"";display:block;height:1px;width:26px;
+  background:linear-gradient(90deg,transparent,var(--g))}
+.pain-eyebrow::after{background:linear-gradient(90deg,var(--g),transparent)}
+.pain h2{color:var(--w) !important}
+.pain-hl{position:relative;display:inline-block;color:var(--g)}
+.pain-hl::after{content:"";position:absolute;left:0;bottom:.06em;height:.42em;width:0;
+  background:rgba(0,201,167,.22);border-radius:3px;z-index:-1;
+  transition:width .9s cubic-bezier(.22,1,.36,1) .35s}
+.pain-hl.lit::after{width:100%}
+.pain-sub{color:rgba(255,255,255,.62) !important;margin-bottom:20px !important}
+
+.pain-hint{display:inline-flex;align-items:center;gap:8px;margin:0 auto 34px;
+  font-size:13px;font-weight:600;color:rgba(255,255,255,.5);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:50px;padding:9px 18px;word-break:keep-all}
+.ph-tap{display:inline-block;animation:phTap 1.9s ease-in-out infinite}
+@keyframes phTap{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+
+/* ── 3. 문제 카드 = 뒤집히는 해결책 카드 ──
+   LUXE 레이어의 !important 배경/보더/패딩을 여기서 되돌림 */
+.pain-c{
+  position:relative;display:block;width:100%;
+  perspective:1200px;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  border-radius:20px !important;
+  min-height:252px;
+  font:inherit;color:inherit;text-align:left;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  appearance:none;-webkit-appearance:none;
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+
+/* 앞/뒤 면은 절대배치라 카드 높이는 min-height가 잡습니다 */
+.pain-flip{position:absolute;inset:0;display:block;
+  transform-style:preserve-3d;
+  transition:transform .68s cubic-bezier(.5,.05,.2,1)}
+.pain-c.flipped .pain-flip{transform:rotateY(180deg)}
+
+.pain-face{position:absolute;inset:0;display:flex;flex-direction:column;
+  padding:24px 22px;border-radius:20px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  overflow:hidden;word-break:keep-all}
+
+/* 앞면 — 고민 */
+.pain-front{
+  background:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.12);
+  transition:border-color .3s ease,background .3s ease}
+.pain-c:hover .pain-front{border-color:rgba(0,201,167,.42);
+  background:linear-gradient(160deg,rgba(0,201,167,.12),rgba(255,255,255,.045))}
+/* 훑고 지나가는 광택 */
+.pain-front::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.13),transparent);
+  transform:skewX(-18deg);transition:left .75s ease;pointer-events:none}
+.pain-c:hover .pain-front::after{left:130%}
+
+.pain-tag{align-self:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.06em;
+  color:var(--g);background:rgba(0,201,167,.13);
+  border:1px solid rgba(0,201,167,.28);border-radius:50px;
+  padding:4px 11px;margin-bottom:14px}
+.pain-ico{font-size:30px;line-height:1;margin-bottom:12px;
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.pain-c:hover .pain-ico{transform:translateY(-3px) rotate(-6deg) scale(1.08)}
+.pain-q{flex:1;font-size:14px;line-height:1.75;font-weight:500;
+  color:rgba(255,255,255,.9)}
+.pain-cue{display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  font-size:11.5px;font-weight:700;color:rgba(255,255,255,.42);
+  transition:color .3s ease}
+.pain-cue em{font-style:normal;transition:transform .3s ease}
+.pain-c:hover .pain-cue{color:var(--g)}
+.pain-c:hover .pain-cue em{transform:translateX(4px)}
+
+/* 뒷면 — 해결책 */
+.pain-back{transform:rotateY(180deg);
+  background:linear-gradient(155deg,#00C9A7 0%,#00A98E 55%,#068C78 100%);
+  border:1px solid rgba(255,255,255,.28);
+  justify-content:center}
+.pain-back::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(70% 55% at 82% 8%,rgba(255,255,255,.3),transparent 66%)}
+.pain-sol-label{position:relative;font-size:11px;font-weight:800;letter-spacing:.14em;
+  color:rgba(4,45,38,.66);text-transform:uppercase;margin-bottom:10px}
+.pain-sol{position:relative;font-size:13.5px;line-height:1.8;font-weight:500;
+  color:#062A24}
+.pain-sol b{font-weight:800;color:#04211C;
+  box-shadow:inset 0 -.42em rgba(255,255,255,.4)}
+.pain-chip{position:relative;align-self:flex-start;margin-top:16px;
+  font-size:11.5px;font-weight:800;color:#04382F;
+  background:rgba(255,255,255,.72);border-radius:50px;padding:6px 13px}
+
+/* ── 4. 벽 허물기 브릿지 — 문제에서 해결로 넘어가는 전환 장치 ── */
+.pain-bridge{position:relative;margin-top:46px;padding-top:64px}
+.pain-wall{position:absolute;top:0;left:50%;transform:translateX(-50%);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:5px;
+  width:min(340px,78%);height:52px;pointer-events:none}
+.pain-wall i{display:block;border-radius:3px;
+  background:rgba(255,255,255,.16);
+  transform-origin:50% 100%;
+  animation:none}
+.pain-bridge.on .pain-wall i{animation:wallFall .95s cubic-bezier(.55,.06,.68,.19) forwards}
+.pain-bridge.on .pain-wall i:nth-child(1){animation-delay:.05s}
+.pain-bridge.on .pain-wall i:nth-child(2){animation-delay:.22s}
+.pain-bridge.on .pain-wall i:nth-child(3){animation-delay:.11s}
+.pain-bridge.on .pain-wall i:nth-child(4){animation-delay:.3s}
+.pain-bridge.on .pain-wall i:nth-child(5){animation-delay:.17s}
+.pain-bridge.on .pain-wall i:nth-child(6){animation-delay:.08s}
+.pain-bridge.on .pain-wall i:nth-child(7){animation-delay:.34s}
+.pain-bridge.on .pain-wall i:nth-child(8){animation-delay:.14s}
+.pain-bridge.on .pain-wall i:nth-child(9){animation-delay:.27s}
+.pain-bridge.on .pain-wall i:nth-child(10){animation-delay:.4s}
+.pain-bridge.on .pain-wall i:nth-child(11){animation-delay:.19s}
+.pain-bridge.on .pain-wall i:nth-child(12){animation-delay:.36s}
+@keyframes wallFall{
+  0%{opacity:1;transform:translateY(0) rotate(0)}
+  100%{opacity:0;transform:translateY(46px) rotate(24deg)}
+}
+
+.pain-bridge-body{display:flex;flex-direction:column;align-items:center;gap:14px}
+.pb-count{font-size:11.5px;font-weight:800;letter-spacing:.1em;
+  color:rgba(255,255,255,.45);
+  border:1px solid rgba(255,255,255,.14);border-radius:50px;padding:5px 14px;
+  transition:color .3s ease,border-color .3s ease}
+.pb-count b{color:var(--g);font-size:13px}
+.pain-bridge.all .pb-count{color:var(--g);border-color:rgba(0,201,167,.4)}
+.pb-txt{font-size:clamp(15px,1.8vw,19px);font-weight:700;color:rgba(255,255,255,.9);
+  line-height:1.65;word-break:keep-all;max-width:30ch;text-align:center;
+  transition:opacity .3s ease}
+.pb-txt.swap{opacity:0}
+
+.pb-btn{position:relative;overflow:hidden;display:inline-flex;flex-direction:column;
+  align-items:center;gap:5px;margin-top:4px;
+  background:linear-gradient(135deg,var(--g),#00A98E);
+  color:#04231D;text-decoration:none;border-radius:50px;
+  padding:16px 34px;box-shadow:0 10px 30px rgba(0,201,167,.26);
+  transition:transform .25s cubic-bezier(.22,1,.36,1),box-shadow .25s ease}
+.pb-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-20deg);animation:pbShine 3.6s ease-in-out infinite}
+@keyframes pbShine{0%{left:-60%}55%,100%{left:150%}}
+.pb-btn:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,201,167,.38)}
+.pb-btn:active{transform:translateY(0) scale(.985)}
+.pb-btn-main{position:relative;font-size:15px;font-weight:800;letter-spacing:-.02em;
+  word-break:keep-all;text-align:center}
+.pb-btn-sub{position:relative;font-style:normal;font-size:12px;font-weight:700;
+  color:rgba(4,35,29,.62)}
+/* 4장을 모두 확인하면 버튼이 한 번 더 손짓 */
+.pain-bridge.all .pb-btn{animation:pbCall 1.5s ease-in-out 3}
+@keyframes pbCall{
+  0%,100%{transform:translateY(0)}
+  40%{transform:translateY(-6px)}
+  70%{transform:translateY(-2px)}
+}
+
+/* ── 5. 반응형 ── */
+@media(max-width:900px){
+  .pain-c{padding:0 !important}
+}
+@media(max-width:768px){
+  .pain-hint{font-size:12px;padding:8px 15px;margin-bottom:24px}
+  .pain-c{min-height:252px}
+  .pain-face{padding:17px 15px;border-radius:18px}
+  .pain-tag{font-size:9.5px;padding:3px 9px;margin-bottom:10px}
+  .pain-ico{font-size:24px;margin-bottom:9px}
+  .pain-q{font-size:12.5px;line-height:1.65}
+  .pain-cue{font-size:10.5px;margin-top:10px}
+  .pain-sol{font-size:12px;line-height:1.7}
+  .pain-sol-label{font-size:9.5px;margin-bottom:7px}
+  .pain-chip{font-size:10px;padding:5px 10px;margin-top:11px}
+  .pain-bridge{margin-top:28px;padding-top:50px}
+  .pain-wall{height:42px;gap:4px}
+  .pb-txt{font-size:15px}
+  .pb-btn{padding:14px 24px;width:100%;max-width:340px}
+  .pb-btn-main{font-size:13.5px}
+  .pb-btn-sub{font-size:11.5px}
+}
+@media(max-width:400px){
+  .pain-c{min-height:300px}
+  .pain-q{font-size:11.5px;line-height:1.6}
+  .pain-face{padding:15px 13px}
+}
+
+/* 카드가 화면에 들어오기 전에는 3D 뒤집힘이 어색하므로 모션 최소화 존중 */
+@media (prefers-reduced-motion: reduce){
+  .pain-aura,.ph-tap,.pb-btn::after,.pain-bridge.all .pb-btn{animation:none !important}
+  .pain-flip{transition:none}
+  .pain-bridge.on .pain-wall i{animation:none;opacity:0}
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   MOTION LAYER II — 사이트 전역 생동감
+   ══════════════════════════════════════════════════════════ */
+
+/* ── A. 여정 레일: 문제 → 해결 → 증거 → 시작 (데스크톱) ──
+   지금 어디쯤 읽고 있는지 보여주며 마지막 단계(문의)로 시선을 끕니다 */
+.journey-rail{position:fixed;right:26px;left:auto;top:50%;bottom:auto;
+  transform:translateY(-50%);
+  width:auto;max-width:none;height:auto;margin:0;padding:0;background:none;
+  z-index:60;display:none;flex-direction:column;align-items:flex-end;gap:18px;
+  opacity:0;pointer-events:none;transition:opacity .45s ease}
+.journey-rail.show{opacity:1;pointer-events:auto}
+.jr-item{display:flex;align-items:center;gap:10px;justify-content:flex-end;
+  text-decoration:none;cursor:pointer;background:none;border:0;padding:0;font:inherit}
+.jr-label{font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--t3);
+  background:rgba(248,250,249,.92);backdrop-filter:blur(6px);
+  padding:4px 10px;border-radius:50px;box-shadow:0 2px 10px rgba(15,31,61,.08);
+  opacity:0;transform:translateX(8px);
+  transition:opacity .28s ease,transform .28s ease,color .28s ease;white-space:nowrap}
+.jr-dot{position:relative;width:9px;height:9px;border-radius:50%;
+  background:rgba(15,31,61,.2);flex:none;
+  transition:background .3s ease,transform .3s ease}
+.jr-item:hover .jr-label,.jr-item.on .jr-label{opacity:1;transform:translateX(0)}
+.jr-item.on .jr-label{color:var(--g2)}
+.jr-item.on .jr-dot{background:var(--g);transform:scale(1.35)}
+.jr-item.on .jr-dot::after{content:"";position:absolute;inset:-6px;border-radius:50%;
+  border:1.5px solid rgba(0,201,167,.4);animation:jrPing 2s ease-out infinite}
+@keyframes jrPing{
+  0%{transform:scale(.7);opacity:.9}
+  100%{transform:scale(1.35);opacity:0}
+}
+@media(min-width:1280px){.journey-rail{display:flex}}
+
+/* ── B. 전환 버튼만 상시 광택 ──
+   일반 .btn-g는 기존 hover shine을 그대로 두고,
+   실제 신청/상담으로 이어지는 버튼에만 계속 빛이 지나가게 해 시선을 모읍니다 */
+.cta-submit-btn,.sb-btn,.provoke-btn{position:relative;overflow:hidden}
+.cta-submit-btn::after,.provoke-btn::after{
+  content:"";position:absolute;top:0;left:-65%;width:38%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.34),transparent);
+  transform:skewX(-20deg);pointer-events:none;transition:none;
+  animation:ctaShine 4.2s ease-in-out infinite}
+@keyframes ctaShine{0%{left:-65%}50%,100%{left:160%}}
+.cta-submit-btn{transition:transform .22s cubic-bezier(.22,1,.36,1),box-shadow .22s ease}
+.cta-submit-btn:hover{transform:translateY(-2px)}
+
+/* ── C. 스크롤 리빌 변주 — 방향과 스케일을 섞어 리듬을 만듦 ── */
+.rv-l{opacity:0;transform:translateX(-34px);
+  transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.rv-r{opacity:0;transform:translateX(34px);
+  transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}
+.rv-pop{opacity:0;transform:scale(.92) translateY(16px);
+  transition:opacity .6s ease,transform .6s cubic-bezier(.34,1.5,.64,1)}
+.rv-l.on,.rv-r.on,.rv-pop.on{opacity:1;transform:none}
+
+/* ── D. 섹션 제목 밑줄이 스크롤에 맞춰 그려짐 ── */
+.sec-title{position:relative}
+.sec-title.drawn::after{content:"";position:absolute;left:50%;bottom:-14px;
+  height:3px;width:0;border-radius:2px;transform:translateX(-50%);
+  background:linear-gradient(90deg,var(--g),rgba(0,201,167,.15));
+  animation:drawLine .85s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes drawLine{to{width:62px}}
+
+/* ── E. 숫자 카운터가 올라가는 동안 살짝 부풀기 ── */
+.count-num{display:inline-block;transition:transform .25s ease}
+.count-num.ticking{transform:scale(1.06)}
+
+/* ── F. 하단 스티키 CTA — 페이지 중반부터 은은한 호흡 ── */
+.sb-btn{overflow:visible}
+.sticky-bar.urging .sb-btn::before{
+  content:"";position:absolute;inset:-4px;border-radius:50px;pointer-events:none;
+  border:2px solid rgba(0,201,167,.55);
+  animation:sbBreathe 2.4s cubic-bezier(.22,1,.36,1) infinite}
+@keyframes sbBreathe{
+  0%{transform:scale(.94);opacity:.85}
+  70%,100%{transform:scale(1.16);opacity:0}
+}
+
+/* ── G. 카드류 마우스 추종 하이라이트 ── */
+.fc,.qa-c,.road-card,.col-card,.price-tier{position:relative}
+.fc::before,.qa-c::before,.road-card::before,.col-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  opacity:0;transition:opacity .35s ease;
+  background:radial-gradient(190px circle at var(--mx,50%) var(--my,50%),
+    rgba(0,201,167,.13),transparent 62%)}
+.fc:hover::before,.qa-c:hover::before,.col-card:hover::before{opacity:1}
+
+@media (prefers-reduced-motion: reduce){
+  .cta-submit-btn::after,.provoke-btn::after,.jr-item.on .jr-dot::after,
+  .sticky-bar.urging .sb-btn::before{animation:none !important}
+  .rv-l,.rv-r,.rv-pop{opacity:1 !important;transform:none !important;transition:none !important}
+}
 </style>
+
+<!-- ═══ PAIN → SOLUTION 인터랙션 + 전역 모션 (2026-09-01) ═══ -->
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ───────────────────────────────────────────────
+     1. 문제 카드 → 해결책 뒤집기
+     고민에 공감시킨 뒤 곧바로 해결 방법을 보여주고,
+     확인한 개수에 따라 문의 유도 문구를 바꿉니다.
+     ─────────────────────────────────────────────── */
+  var grid   = document.getElementById("painGrid");
+  var bridge = document.getElementById("painBridge");
+  if(grid){
+    var cards   = [].slice.call(grid.querySelectorAll(".pain-c"));
+    var seen    = [];
+    var cntEl   = document.getElementById("pbCount");
+    var txtEl   = document.getElementById("pbTxt");
+    var MSG = [
+      "이 중 하나라도 내 이야기 같다면, 방법은 이미 있습니다.",
+      "그 벽, 이미 2,400명이 넘었습니다.",
+      "문제가 같다면 해답도 같습니다.",
+      "이제 남은 건 시작하는 것뿐입니다.",
+      "네 가지 모두 확인하셨네요. 지금이 시작할 때입니다."
+    ];
+
+    function setMsg(i){
+      if(!txtEl || txtEl.textContent === MSG[i]) return;
+      txtEl.classList.add("swap");
+      setTimeout(function(){
+        txtEl.textContent = MSG[i];
+        txtEl.classList.remove("swap");
+      }, reduce ? 0 : 260);
+    }
+
+    function flip(card){
+      var open = card.classList.toggle("flipped");
+      card.setAttribute("aria-pressed", open ? "true" : "false");
+      if(open && seen.indexOf(card) === -1){
+        seen.push(card);
+        if(cntEl) cntEl.textContent = seen.length;
+        setMsg(seen.length);
+        if(seen.length === cards.length && bridge) bridge.classList.add("all");
+      }
+    }
+
+    cards.forEach(function(card){
+      card.setAttribute("aria-pressed","false");
+      card.addEventListener("click", function(){ flip(card); });
+    });
+
+    /* 첫 카드를 한 번 살짝 뒤집어 "누를 수 있다"는 걸 알려줍니다 */
+    if(!reduce && "IntersectionObserver" in window && cards.length){
+      var hintIO = new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if(!e.isIntersecting) return;
+          hintIO.disconnect();
+          setTimeout(function(){
+            cards[0].classList.add("flipped");
+            setTimeout(function(){ cards[0].classList.remove("flipped"); }, 1250);
+          }, 900);
+        });
+      },{threshold:.5});
+      hintIO.observe(cards[0]);
+    }
+  }
+
+  /* 벽이 무너지는 연출 — 브릿지가 화면에 들어올 때 한 번 */
+  if(bridge && "IntersectionObserver" in window){
+    var wallIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ bridge.classList.add("on"); wallIO.unobserve(e.target); }
+      });
+    },{threshold:.4});
+    wallIO.observe(bridge);
+  }
+
+  /* 제목의 형광펜 밑줄이 등장과 함께 채워지도록 */
+  var hl = document.querySelector(".pain-hl");
+  if(hl && "IntersectionObserver" in window){
+    var hlIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ hl.classList.add("lit"); hlIO.unobserve(e.target); }
+      });
+    },{threshold:.6});
+    hlIO.observe(hl);
+  } else if(hl){ hl.classList.add("lit"); }
+
+
+  /* ───────────────────────────────────────────────
+     2. 여정 레일 — 문제 → 해결 → 증거 → 시작
+     읽는 사람이 지금 어느 단계에 있는지 보여주고,
+     마지막 "시작하기"로 자연스럽게 시선을 옮깁니다.
+     ─────────────────────────────────────────────── */
+  (function(){
+    if(window.innerWidth < 1280) return;
+    var steps = [
+      {id:"pain",       label:"내 고민"},
+      {id:"features",   label:"해결 방법"},
+      {id:"reviews",    label:"실제 후기"},
+      {id:"cta",        label:"시작하기"}
+    ].filter(function(s){ return document.getElementById(s.id); });
+    if(steps.length < 2) return;
+
+    /* <nav>는 사이트 헤더 스타일(nav{...})에 걸리므로 div + role 사용 */
+    var rail = document.createElement("div");
+    rail.className = "journey-rail";
+    rail.setAttribute("role","navigation");
+    rail.setAttribute("aria-label","페이지 진행 단계");
+    steps.forEach(function(s){
+      var a = document.createElement("a");
+      a.className = "jr-item";
+      a.href = "#" + s.id;
+      a.innerHTML = '<span class="jr-label">' + s.label + '</span><span class="jr-dot"></span>';
+      a.dataset.target = s.id;
+      rail.appendChild(a);
+    });
+    document.body.appendChild(rail);
+
+    var items = [].slice.call(rail.querySelectorAll(".jr-item"));
+    var ticking = false;
+    function update(){
+      ticking = false;
+      var y = window.scrollY || document.documentElement.scrollTop;
+      var mid = window.innerHeight * 0.42;
+      rail.classList.toggle("show", y > window.innerHeight * 0.75);
+      var active = -1;
+      steps.forEach(function(s, i){
+        var el = document.getElementById(s.id);
+        if(el && el.getBoundingClientRect().top <= mid) active = i;
+      });
+      items.forEach(function(it, i){ it.classList.toggle("on", i === active); });
+    }
+    window.addEventListener("scroll", function(){
+      if(!ticking){ ticking = true; requestAnimationFrame(update); }
+    }, {passive:true});
+    window.addEventListener("resize", update, {passive:true});
+    update();
+  })();
+
+
+  /* ───────────────────────────────────────────────
+     3. 섹션 제목 밑줄 그리기 + 리빌 변주
+     ─────────────────────────────────────────────── */
+  if("IntersectionObserver" in window){
+    var drawIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("drawn"); drawIO.unobserve(e.target); }
+      });
+    },{threshold:.5});
+    document.querySelectorAll(".sec-title").forEach(function(el){ drawIO.observe(el); });
+
+    var varIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add("on"); varIO.unobserve(e.target); }
+      });
+    },{threshold:.15, rootMargin:"0px 0px -6% 0px"});
+    document.querySelectorAll(".rv-l,.rv-r,.rv-pop").forEach(function(el){ varIO.observe(el); });
+  }
+
+
+  /* ───────────────────────────────────────────────
+     4. 카드 마우스 추종 하이라이트 (포인터 있는 기기만)
+     ─────────────────────────────────────────────── */
+  if(!reduce && window.matchMedia && window.matchMedia("(hover:hover)").matches){
+    document.querySelectorAll(".fc,.qa-c,.col-card").forEach(function(card){
+      card.addEventListener("mousemove", function(ev){
+        var r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", (ev.clientX - r.left) + "px");
+        card.style.setProperty("--my", (ev.clientY - r.top) + "px");
+      }, {passive:true});
+    });
+  }
+
+
+  /* ───────────────────────────────────────────────
+     5. 숫자 카운터가 올라가는 동안 살짝 부풀기
+     ─────────────────────────────────────────────── */
+  if(!reduce && "IntersectionObserver" in window){
+    var numIO = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return;
+        numIO.unobserve(e.target);
+        e.target.classList.add("ticking");
+        setTimeout(function(){ e.target.classList.remove("ticking"); }, 2100);
+      });
+    },{threshold:.4});
+    document.querySelectorAll(".count-num").forEach(function(el){ numIO.observe(el); });
+  }
+
+
+  /* ───────────────────────────────────────────────
+     6. 하단 스티키 CTA — 후기 구간을 지나면 은은히 호흡
+     충분히 설득된 시점에만 행동을 권합니다.
+     ─────────────────────────────────────────────── */
+  (function(){
+    var bar = document.getElementById("stickyBar");
+    var mark = document.getElementById("reviews");
+    if(!bar || !mark || reduce) return;
+    var ticking2 = false;
+    function check(){
+      ticking2 = false;
+      var vh = window.innerHeight;
+      var cta = document.getElementById("cta");
+      var passed = mark.getBoundingClientRect().top < vh;
+      var atForm = cta && cta.getBoundingClientRect().top < vh - 120;
+      bar.classList.toggle("urging", passed && !atForm);
+    }
+    window.addEventListener("scroll", function(){
+      if(!ticking2){ ticking2 = true; requestAnimationFrame(check); }
+    }, {passive:true});
+    check();
+  })();
+
+})();
+</script>
 
 <script type="text/javascript" src="//wcs.pstatic.net/wcslog.js"></script>
 <script type="text/javascript">
