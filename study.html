@@ -4,24 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F1F3D">
-<title>김규리쌤 공부방 🎒</title>
+<title>이상한영어 숙제방 🎒</title>
 <meta name="robots" content="noindex">
 <!-- 카톡 공유 미리보기 (썸네일) -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="김규리쌤 공부방 🎒">
+<meta property="og:title" content="이상한영어 숙제방 🎒">
 <meta property="og:description" content="오늘의 영어 숙제 · 발음 연습 · 나의 영어 여정 — 매일 한 문장씩!">
-<meta property="og:image" content="https://zounioz0716-prog.github.io/englishhomework/study-og.png">
+<meta property="og:image" content="https://weirdenglish.co.kr/study-og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:site_name" content="김규리쌤 공부방">
+<meta property="og:site_name" content="이상한영어">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="김규리쌤 공부방 🎒">
+<meta name="twitter:title" content="이상한영어 숙제방 🎒">
 <meta name="twitter:description" content="오늘의 영어 숙제 · 발음 연습 · 나의 영어 여정">
-<meta name="twitter:image" content="https://zounioz0716-prog.github.io/englishhomework/study-og.png">
+<meta name="twitter:image" content="https://weirdenglish.co.kr/study-og.png">
 <!-- iOS 홈 화면 추가 시 풀스크린 (PWA 강제설치는 사용 안 함) -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="김규리쌤 공부방">
+<meta name="apple-mobile-web-app-title" content="이상한영어 숙제방">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- 폰트·클라우드 서버에 미리 연결(handshake) → 첫 로딩 지연 감소 -->
@@ -399,7 +399,7 @@ body{font-size:16px}
 <body>
 
 <div class="topbar">
-  <div class="logo">김규리쌤 <span>공부방</span></div>
+  <div class="logo">이상한영어 <span>숙제방</span></div>
   <div class="role-switch hidden" id="roleSwitch">
     <button id="rsStudent" class="on" onclick="setRole('student')">🎒 학생</button>
     <button id="rsTeacher" onclick="setRole('teacher')">🧑‍🏫 선생님</button>
@@ -748,20 +748,20 @@ body{font-size:16px}
 <script defer src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>
 /* =================================================================
-   김규리쌤 공부방 · 데일리 숙제방
+   이상한영어 · 데일리 숙제방
    ================================================================= */
 const WEB3FORMS_KEY="ef0e3efd-8d61-4ddc-a211-6c9e29435f52"; // 숙제 완료 알림 메일 (랜딩페이지와 동일)
-const KAKAO_CHANNEL="http://pf.kakao.com/_CHANGE_ME"; // 김규리쌤 카톡 채널 주소로 교체
+const KAKAO_CHANNEL="http://pf.kakao.com/_Vgdzb";
 const DAY=86400000;
 
 /* ===== Firebase 설정 (비어있으면 클라우드 OFF, 기존 로컬 모드로 동작) ===== */
 const FIREBASE_CONFIG={
-  apiKey:"AIzaSyDl4ODD-BFcxZ7gyWmw7QnnCF-1Snte2CM",
-  authDomain:"englishhomework-c93dd.firebaseapp.com",
-  projectId:"englishhomework-c93dd",
-  storageBucket:"englishhomework-c93dd.firebasestorage.app",
-  messagingSenderId:"512351671248",
-  appId:"1:512351671248:web:2c245735709a377b601fd5"
+  apiKey:"AIzaSyBymjs8TRH16hGRW_ubVMFTX0FRhvmakUY",
+  authDomain:"weirdenglish-2e382.firebaseapp.com",
+  projectId:"weirdenglish-2e382",
+  storageBucket:"weirdenglish-2e382.firebasestorage.app",
+  messagingSenderId:"1010598738337",
+  appId:"1:1010598738337:web:5bf9f8d84240646891b3e0"
 };
 let CLOUD=false, DB=null, boardUnsub=null, AUTH_READY=null;
 function initCloud(){
@@ -1038,7 +1038,65 @@ const BASE_LIB={
  {"tag":"Could you send me ___?","ko":"~ 보내 주실래요?","sent":"Could you send me the file?","trans":"파일 보내 주실래요?","tips":["send me는 '쎈미'","끝을 올려요"],"exp":[["Could you send me the file?","파일 보내 주실래요?"],["Could you send me the report file?","보고서 파일 보내 주실래요?"],["Could you send me the report file by email?","이메일로 보고서 파일 보내 주실래요?"],["Could you send me the report file by email today?","오늘 이메일로 보고서 파일 보내 주실래요?"]]},
  {"tag":"Can I ask you a ___?","ko":"~ 하나 물어봐도 돼요?","sent":"Can I ask you a question?","trans":"질문 하나 해도 돼요?","tips":["ask you는 '애스큐'","끝을 올려요"],"exp":[["Can I ask you a question?","질문 하나 해도 돼요?"],["Can I ask you a quick question?","간단한 질문 하나 해도 돼요?"],["Can I ask you a quick question about work?","일 관련 질문 하나 해도 돼요?"],["Can I ask you a quick question about the schedule?","일정 관련 질문 하나 해도 돼요?"]]},
  {"tag":"Have a ___.","ko":"~ 보내세요.","sent":"Have a good day.","trans":"좋은 하루 보내세요.","tips":["Have a는 '해버'","끝을 내려요"],"exp":[["Have a good day.","좋은 하루 보내세요."],["Have a good day at work.","즐거운 근무 되세요."],["Have a good day, see you tomorrow.","좋은 하루 보내세요, 내일 봬요."],["Have a good day, and see you tomorrow morning.","좋은 하루 보내세요, 내일 아침에 봬요."]]},
- {"tag":"Could I take ___?","ko":"~ 좀 써도 될까요?","sent":"Could I take a break?","trans":"잠깐 쉬어도 될까요?","tips":["take는 '테익'","끝을 올려요"],"exp":[["Could I take a break?","잠깐 쉬어도 될까요?"],["Could I take a short break?","잠깐 좀 쉬어도 될까요?"],["Could I take a short break now?","지금 잠깐 좀 쉬어도 될까요?"],["Could I take a short break after this call?","이 통화 끝나고 잠깐 쉬어도 될까요?"]]}
+ {"tag":"Could I take ___?","ko":"~ 좀 써도 될까요?","sent":"Could I take a break?","trans":"잠깐 쉬어도 될까요?","tips":["take는 '테익'","끝을 올려요"],"exp":[["Could I take a break?","잠깐 쉬어도 될까요?"],["Could I take a short break?","잠깐 좀 쉬어도 될까요?"],["Could I take a short break now?","지금 잠깐 좀 쉬어도 될까요?"],["Could I take a short break after this call?","이 통화 끝나고 잠깐 쉬어도 될까요?"]]},
+ {"tag":"I'm from ___","ko":"저는 ~ 출신이에요","sent":"I'm from Korea.","trans":"한국에서 왔어요.","tips":["I'm from은 '아임프럼'","KOREA 뒤강세"],"exp":[["I'm from Korea.","한국에서 왔어요."],["I'm from Seoul, Korea.","한국 서울에서 왔어요."],["I'm from Seoul, Korea originally.","원래 한국 서울에서 왔어요."],["I'm originally from Seoul, but I live here now.","원래 서울 출신인데 지금은 여기 살아요."]]},
+ {"tag":"My name is ___","ko":"제 이름은 ~예요","sent":"My name is Jimin.","trans":"제 이름은 지민이에요.","tips":["My name is는 '마이네임이즈'","이름을 분명히 발음"],"exp":[["My name is Jimin.","제 이름은 지민이에요."],["My name is Jimin Kim.","제 이름은 김지민이에요."],["My name is Jimin, nice to meet you.","제 이름은 지민이고, 만나서 반가워요."],["My name is Jimin, and it's really nice to meet you.","제 이름은 지민이고, 만나서 정말 반가워요."]]},
+ {"tag":"I'm ___ years old","ko":"저는 ~살이에요","sent":"I'm thirty years old.","trans":"서른 살이에요.","tips":["years old는 '이어즈올드'","숫자 뒤강세"],"exp":[["I'm thirty years old.","서른 살이에요."],["I'm thirty years old this year.","올해로 서른 살이에요."],["I'll be thirty years old this year.","올해로 서른 살이 돼요."],["I'll be thirty years old this coming December.","이번 12월에 서른 살이 돼요."]]},
+ {"tag":"This is my ___","ko":"이건 제 ~예요","sent":"This is my bag.","trans":"이건 제 가방이에요.","tips":["This is는 '디스이즈'","my를 살짝 강조"],"exp":[["This is my bag.","이건 제 가방이에요."],["This is my new bag.","이건 제 새 가방이에요."],["This is my new bag from my mom.","이건 엄마가 사주신 새 가방이에요."],["This is my new bag, a gift from my mom.","이건 엄마가 선물해주신 새 가방이에요."]]},
+ {"tag":"I'm wearing ___","ko":"저는 ~을 입고 있어요","sent":"I'm wearing a jacket.","trans":"재킷을 입고 있어요.","tips":["wearing은 '웨어링'","JACKET 앞강세"],"exp":[["I'm wearing a jacket.","재킷을 입고 있어요."],["I'm wearing a warm jacket.","따뜻한 재킷을 입고 있어요."],["I'm wearing a warm jacket today.","오늘 따뜻한 재킷을 입고 있어요."],["I'm wearing a warm jacket because it's cold today.","오늘 추워서 따뜻한 재킷을 입고 있어요."]]},
+ {"tag":"I'm listening to ___","ko":"저는 ~을 듣고 있어요","sent":"I'm listening to music.","trans":"음악을 듣고 있어요.","tips":["listening to는 '리스닝투'","MUSIC 앞강세"],"exp":[["I'm listening to music.","음악을 듣고 있어요."],["I'm listening to music now.","지금 음악을 듣고 있어요."],["I'm listening to my favorite music now.","지금 제가 좋아하는 음악을 듣고 있어요."],["I'm listening to my favorite music right now to relax.","쉬려고 지금 제가 좋아하는 음악을 듣고 있어요."]]},
+ {"tag":"I like to ___","ko":"저는 ~하는 걸 좋아해요","sent":"I like to walk.","trans":"걷는 걸 좋아해요.","tips":["like to는 '라익투'","WALK를 강하게"],"exp":[["I like to walk.","걷는 걸 좋아해요."],["I like to walk every morning.","매일 아침 걷는 걸 좋아해요."],["I like to walk in the park every morning.","매일 아침 공원에서 걷는 걸 좋아해요."],["I like to walk in the park every morning before work.","출근 전 매일 아침 공원에서 걷는 걸 좋아해요."]]},
+ {"tag":"I want a ___","ko":"저는 ~을 원해요","sent":"I want a new phone.","trans":"새 핸드폰을 원해요.","tips":["want a는 '원터'","PHONE을 강하게"],"exp":[["I want a new phone.","새 핸드폰을 원해요."],["I want a new phone soon.","곧 새 핸드폰을 원해요."],["I want a new phone sometime this year.","올해 안에 새 핸드폰을 원해요."],["I want a new phone sometime later this year.","올해 하반기쯤 새 핸드폰을 원해요."]]},
+ {"tag":"Do you know ___?","ko":"~을 아세요?","sent":"Do you know him?","trans":"그를 아세요?","tips":["know는 '노우'","끝을 올려요"],"exp":[["Do you know him?","그를 아세요?"],["Do you know that man?","저 남자를 아세요?"],["Do you know that man over there?","저기 저 남자를 아세요?"],["Excuse me, do you know that man over there?","실례지만 저기 저 남자를 아세요?"]]},
+ {"tag":"Do you speak ___?","ko":"~ 하세요?(언어)","sent":"Do you speak English?","trans":"영어 하세요?","tips":["speak는 '스핔'","끝을 올려요"],"exp":[["Do you speak English?","영어 하세요?"],["Do you speak English a little?","영어 조금 하세요?"],["Excuse me, do you speak English a little?","실례지만 영어 조금 하세요?"],["Excuse me, do you speak English? I need some help.","실례지만 영어 하세요? 도움이 좀 필요해요."]]},
+ {"tag":"I speak a little ___","ko":"저는 ~을 조금 해요","sent":"I speak a little English.","trans":"영어를 조금 해요.","tips":["a little은 '어리를'","ENGLISH 앞강세"],"exp":[["I speak a little English.","영어를 조금 해요."],["I only speak a little English.","영어만 조금 해요."],["I only speak a little English, sorry.","죄송한데 영어만 조금 해요."],["Sorry, I only speak a little English, so please speak slowly.","죄송한데 영어를 조금만 해서 천천히 말씀해 주세요."]]},
+ {"tag":"I'm studying ___","ko":"저는 ~을 공부하고 있어요","sent":"I'm studying English.","trans":"영어를 공부하고 있어요.","tips":["studying은 '스터딩'","ENGLISH 앞강세"],"exp":[["I'm studying English.","영어를 공부하고 있어요."],["I'm studying English these days.","요즘 영어를 공부하고 있어요."],["I'm studying English every day these days.","요즘 매일 영어를 공부하고 있어요."],["I'm studying English every day these days to improve.","실력을 늘리려고 요즘 매일 영어를 공부하고 있어요."]]},
+ {"tag":"What's your ___?","ko":"~ 뭐예요?","sent":"What's your name?","trans":"이름이 뭐예요?","tips":["What's your는 '왓츄어'","이름 부분 강조"],"exp":[["What's your name?","이름이 뭐예요?"],["What's your name again?","이름이 뭐라고 하셨죠?"],["Sorry, what's your name again?","죄송한데 이름이 뭐라고 하셨죠?"],["Sorry, could you tell me what's your name again?","죄송한데 이름이 뭐라고 하셨는지 다시 말씀해 주실래요?"]]},
+ {"tag":"How was your ___?","ko":"~ 어땠어요?","sent":"How was your day?","trans":"오늘 하루 어땠어요?","tips":["How was는 '하우워즈'","DAY를 강하게"],"exp":[["How was your day?","오늘 하루 어땠어요?"],["How was your day today?","오늘 하루 어땠어요?"],["How was your day today, was it good?","오늘 하루 어땠어요, 좋았어요?"],["So, how was your day today? Was it a good one?","그래서 오늘 하루 어땠어요? 좋은 하루였어요?"]]},
+ {"tag":"I had a great ___","ko":"저는 정말 좋은 ~을 보냈어요","sent":"I had a great day.","trans":"정말 좋은 하루를 보냈어요.","tips":["had a는 '해러'","GREAT을 강하게"],"exp":[["I had a great day.","정말 좋은 하루를 보냈어요."],["I had a really great day.","정말로 좋은 하루를 보냈어요."],["I had a really great day today.","오늘 정말로 좋은 하루를 보냈어요."],["I had a really great day today, thanks for asking.","물어봐줘서 고마워요, 오늘 정말 좋은 하루를 보냈어요."]]},
+ {"tag":"I'm free on ___","ko":"저는 ~에 시간 있어요","sent":"I'm free on Sunday.","trans":"일요일에 시간 있어요.","tips":["free on은 '프리온'","SUNDAY 앞강세"],"exp":[["I'm free on Sunday.","일요일에 시간 있어요."],["I'm free on Sunday afternoon.","일요일 오후에 시간 있어요."],["I'm free on Sunday afternoon this week.","이번주 일요일 오후에 시간 있어요."],["I'm free on Sunday afternoon this week, are you?","이번주 일요일 오후에 시간 있는데, 당신은요?"]]},
+ {"tag":"Are you free ___?","ko":"~에 시간 있어요?","sent":"Are you free tomorrow?","trans":"내일 시간 있어요?","tips":["Are you는 '아유'","끝을 올려요"],"exp":[["Are you free tomorrow?","내일 시간 있어요?"],["Are you free tomorrow evening?","내일 저녁에 시간 있어요?"],["Are you free tomorrow evening at all?","내일 저녁에 혹시 시간 있어요?"],["Are you free at all tomorrow evening, maybe for dinner?","혹시 내일 저녁에 시간 있어요, 저녁 같이 할까요?"]]},
+ {"tag":"It's ___ o'clock","ko":"~시예요","sent":"It's three o'clock.","trans":"세 시예요.","tips":["o'clock은 '어클락'","숫자 강조"],"exp":[["It's three o'clock.","세 시예요."],["It's already three o'clock.","벌써 세 시예요."],["It's already three o'clock now.","지금 벌써 세 시예요."],["It's already three o'clock now, time to go.","지금 벌써 세 시니까 가야 할 시간이에요."]]},
+ {"tag":"I woke up at ___","ko":"저는 ~에 일어났어요","sent":"I woke up at seven.","trans":"일곱 시에 일어났어요.","tips":["woke up은 '워꺕'","SEVEN 강조"],"exp":[["I woke up at seven.","일곱 시에 일어났어요."],["I woke up at seven today.","오늘 일곱 시에 일어났어요."],["I woke up at seven o'clock today.","오늘 일곱 시 정각에 일어났어요."],["I woke up at seven o'clock today, earlier than usual.","오늘 평소보다 일찍 일곱 시에 일어났어요."]]},
+ {"tag":"My favorite food is ___","ko":"제가 제일 좋아하는 음식은 ~예요","sent":"My favorite food is pizza.","trans":"제가 제일 좋아하는 음식은 피자예요.","tips":["favorite food는 '페이버릿푸드'","PIZZA 앞강세"],"exp":[["My favorite food is pizza.","제가 제일 좋아하는 음식은 피자예요."],["My favorite food is cheese pizza.","제가 제일 좋아하는 음식은 치즈피자예요."],["My favorite food is definitely cheese pizza.","제가 제일 좋아하는 음식은 단연 치즈피자예요."],["My favorite food is definitely cheese pizza with extra cheese.","제가 제일 좋아하는 음식은 단연 치즈 듬뿍 든 피자예요."]]},
+ {"tag":"My favorite season is ___","ko":"제가 제일 좋아하는 계절은 ~예요","sent":"My favorite season is fall.","trans":"제가 제일 좋아하는 계절은 가을이에요.","tips":["favorite season은 '페이버릿시즌'","FALL을 강하게"],"exp":[["My favorite season is fall.","제가 제일 좋아하는 계절은 가을이에요."],["My favorite season is fall, actually.","사실 제가 제일 좋아하는 계절은 가을이에요."],["My favorite season is fall because it's cool.","시원해서 제가 제일 좋아하는 계절은 가을이에요."],["My favorite season is fall because the weather is so nice.","날씨가 정말 좋아서 제가 제일 좋아하는 계절은 가을이에요."]]},
+ {"tag":"I don't have any ___","ko":"저는 ~이 하나도 없어요","sent":"I don't have any plans.","trans":"계획이 하나도 없어요.","tips":["don't have any는 '돈해브애니'","PLANS를 강하게"],"exp":[["I don't have any plans.","계획이 하나도 없어요."],["I don't have any plans today.","오늘 계획이 하나도 없어요."],["I don't have any plans for today.","오늘은 계획이 하나도 없어요."],["I don't have any plans for today, so I can relax.","오늘 계획이 하나도 없어서 쉴 수 있어요."]]},
+ {"tag":"I just finished ___","ko":"저는 방금 ~을 끝냈어요","sent":"I just finished work.","trans":"방금 일을 끝냈어요.","tips":["just finished는 '저스트피니시트'","WORK를 강하게"],"exp":[["I just finished work.","방금 일을 끝냈어요."],["I just finished my work.","방금 제 일을 끝냈어요."],["I just finished my work for today.","오늘 할 일을 방금 끝냈어요."],["I just finished all my work for today, finally.","드디어 오늘 할 일을 다 끝냈어요."]]},
+ {"tag":"I'm about to leave for ___","ko":"저는 지금 막 ~로 출발하려고 해요","sent":"I'm about to leave for home.","trans":"지금 막 집으로 출발하려고 해요.","tips":["about to는 '어바웃투'","LEAVE를 강하게"],"exp":[["I'm about to leave for home.","지금 막 집으로 출발하려고 해요."],["I'm about to leave for home now.","지금 막 집으로 출발하려고 해요."],["I'm about to leave for home right now.","지금 바로 집으로 출발하려고 해요."],["I'm about to leave for home right now, see you soon.","지금 바로 집으로 출발하려고 하니까 곧 봐요."]]},
+ {"tag":"I just got back from ___","ko":"저는 방금 ~에서 돌아왔어요","sent":"I just got back from work.","trans":"방금 일에서 돌아왔어요.","tips":["got back은 '갓백'","WORK를 강하게"],"exp":[["I just got back from work.","방금 일에서 돌아왔어요."],["I just got back from work now.","방금 막 일에서 돌아왔어요."],["I just got back from work a minute ago.","방금 전에 일에서 돌아왔어요."],["I just got back from work a minute ago, so I'm tired.","방금 전에 일에서 돌아와서 피곤해요."]]},
+ {"tag":"I have a question about ___","ko":"저는 ~에 대해 질문이 있어요","sent":"I have a question about this.","trans":"이것에 대해 질문이 있어요.","tips":["question about는 '퀘스천어바웃'","THIS를 강하게"],"exp":[["I have a question about this.","이것에 대해 질문이 있어요."],["I have a small question about this.","이것에 대해 작은 질문이 있어요."],["I have a small question about this part.","이 부분에 대해 작은 질문이 있어요."],["Sorry, I have a small question about this part.","죄송한데 이 부분에 대해 작은 질문이 있어요."]]},
+ {"tag":"I don't know ___ yet","ko":"저는 아직 ~을 몰라요","sent":"I don't know yet.","trans":"아직 몰라요.","tips":["don't know는 '돈노우'","YET을 강하게"],"exp":[["I don't know yet.","아직 몰라요."],["I don't know yet, sorry.","죄송한데 아직 몰라요."],["I don't know that yet, sorry.","죄송한데 그건 아직 몰라요."],["I don't know that yet, sorry, can I check?","죄송한데 그건 아직 몰라서, 확인해봐도 될까요?"]]},
+ {"tag":"I'm getting used to ___","ko":"저는 ~에 적응하고 있어요","sent":"I'm getting used to it.","trans":"거기에 적응하고 있어요.","tips":["used to는 '유즈투'","IT을 강하게"],"exp":[["I'm getting used to it.","거기에 적응하고 있어요."],["I'm slowly getting used to it.","천천히 거기에 적응하고 있어요."],["I'm slowly getting used to this place.","천천히 이곳에 적응하고 있어요."],["I'm slowly getting used to this new place now.","이제 이 새 곳에 천천히 적응하고 있어요."]]},
+ {"tag":"I'm allergic to ___","ko":"저는 ~에 알레르기가 있어요","sent":"I'm allergic to peanuts.","trans":"땅콩에 알레르기가 있어요.","tips":["allergic to는 '얼러직투'","PEANUTS 앞강세"],"exp":[["I'm allergic to peanuts.","땅콩에 알레르기가 있어요."],["I'm a little allergic to peanuts.","땅콩에 알레르기가 조금 있어요."],["I'm actually a little allergic to peanuts.","사실 땅콩에 알레르기가 조금 있어요."],["Actually, I'm a little allergic to peanuts, so no peanuts please.","사실 땅콩 알레르기가 조금 있어서 땅콩은 빼주세요."]]},
+ {"tag":"I feel sick to my ___","ko":"저는 ~이 아파요/안 좋아요","sent":"I feel sick to my stomach.","trans":"속이 안 좋아요.","tips":["sick to는 '씩투'","STOMACH를 강하게"],"exp":[["I feel sick to my stomach.","속이 안 좋아요."],["I feel a little sick to my stomach.","속이 좀 안 좋아요."],["I feel a little sick to my stomach today.","오늘 속이 좀 안 좋아요."],["I feel a little sick to my stomach today, I need to rest.","오늘 속이 좀 안 좋아서 쉬어야겠어요."]]},
+ {"tag":"I caught a ___","ko":"저는 ~에 걸렸어요","sent":"I caught a cold.","trans":"감기에 걸렸어요.","tips":["caught a는 '캇터'","COLD를 강하게"],"exp":[["I caught a cold.","감기에 걸렸어요."],["I caught a bad cold.","심한 감기에 걸렸어요."],["I caught a bad cold this week.","이번 주에 심한 감기에 걸렸어요."],["I caught a really bad cold this week, unfortunately.","안타깝게도 이번 주에 심한 감기에 걸렸어요."]]},
+ {"tag":"I should ___ more","ko":"저는 ~을 더 해야 해요","sent":"I should sleep more.","trans":"잠을 더 자야 해요.","tips":["should는 '슈드'","SLEEP을 강하게"],"exp":[["I should sleep more.","잠을 더 자야 해요."],["I should sleep more these days.","요즘 잠을 더 자야 해요."],["I should really sleep more these days.","요즘 정말 잠을 더 자야 해요."],["I should really sleep more these days, I'm always tired.","요즘 항상 피곤해서 잠을 더 자야 해요."]]},
+ {"tag":"I'm not into ___","ko":"저는 ~에 관심 없어요","sent":"I'm not into sports.","trans":"운동에 관심 없어요.","tips":["not into는 '낫인투'","SPORTS를 강하게"],"exp":[["I'm not into sports.","운동에 관심 없어요."],["I'm really not into sports.","운동에 정말 관심 없어요."],["I'm just not really into sports.","그냥 운동에 별로 관심 없어요."],["I'm just not really into sports, but I like watching movies.","운동엔 별로 관심 없는데 영화 보는 건 좋아해요."]]},
+ {"tag":"I'm a big fan of ___","ko":"저는 ~의 열혈 팬이에요","sent":"I'm a big fan of coffee.","trans":"저는 커피 열혈 팬이에요.","tips":["big fan은 '빅팬'","COFFEE 앞강세"],"exp":[["I'm a big fan of coffee.","저는 커피 열혈 팬이에요."],["I'm a really big fan of coffee.","저는 정말 커피 열혈 팬이에요."],["I'm a really big fan of good coffee.","저는 좋은 커피의 정말 열혈 팬이에요."],["Honestly, I'm a really big fan of good coffee in the morning.","솔직히 저는 아침에 마시는 좋은 커피의 열혈 팬이에요."]]},
+ {"tag":"I'm not used to ___","ko":"저는 ~이 익숙하지 않아요","sent":"I'm not used to this.","trans":"이게 익숙하지 않아요.","tips":["not used to는 '낫유즈투'","THIS를 강하게"],"exp":[["I'm not used to this.","이게 익숙하지 않아요."],["I'm still not used to this.","아직도 이게 익숙하지 않아요."],["I'm still not used to this place.","아직도 이곳이 익숙하지 않아요."],["I'm still not used to this place, but I'm trying.","아직도 이곳이 익숙하지 않지만 노력하고 있어요."]]},
+ {"tag":"Let's talk about ___","ko":"~에 대해 이야기해요","sent":"Let's talk about it.","trans":"그것에 대해 이야기해요.","tips":["talk about는 '토커바웃'","IT을 강하게"],"exp":[["Let's talk about it.","그것에 대해 이야기해요."],["Let's talk about it later.","나중에 그것에 대해 이야기해요."],["Let's talk about it a little later.","조금 이따가 그것에 대해 이야기해요."],["Let's talk about it a little later, is that okay?","조금 이따가 그것에 대해 이야기해도 될까요?"]]},
+ {"tag":"Let's meet at ___","ko":"~에서 만나요","sent":"Let's meet at the cafe.","trans":"카페에서 만나요.","tips":["meet at은 '밑앳'","CAFE를 강하게"],"exp":[["Let's meet at the cafe.","카페에서 만나요."],["Let's meet at the cafe today.","오늘 카페에서 만나요."],["Let's meet at the cafe near the station.","역 근처 카페에서 만나요."],["Let's meet at the cafe near the station around noon.","정오쯤 역 근처 카페에서 만나요."]]},
+ {"tag":"I promise to ___","ko":"저는 ~하기로 약속해요","sent":"I promise to call.","trans":"전화하기로 약속해요.","tips":["promise to는 '프라미스투'","CALL을 강하게"],"exp":[["I promise to call.","전화하기로 약속해요."],["I promise to call you.","당신에게 전화하기로 약속해요."],["I promise to call you tonight.","오늘 밤 전화하기로 약속해요."],["I promise to call you tonight without fail.","오늘 밤 꼭 전화하기로 약속해요."]]},
+ {"tag":"I regret ___","ko":"저는 ~을 후회해요","sent":"I regret that.","trans":"그걸 후회해요.","tips":["regret은 '리그렛'","THAT을 강하게"],"exp":[["I regret that.","그걸 후회해요."],["I really regret that.","그걸 정말 후회해요."],["I really regret saying that.","그렇게 말한 걸 정말 후회해요."],["I really regret saying that to her.","그녀에게 그렇게 말한 걸 정말 후회해요."]]},
+ {"tag":"I appreciate ___","ko":"저는 ~에 감사해요","sent":"I appreciate it.","trans":"그거 감사해요.","tips":["appreciate는 '어프리시에잍'","IT을 강하게"],"exp":[["I appreciate it.","그거 감사해요."],["I really appreciate it.","그거 정말 감사해요."],["I really appreciate your help.","도와주셔서 정말 감사해요."],["I really appreciate your help today, thank you so much.","오늘 도와주셔서 정말 감사하고, 정말 고마워요."]]},
+ {"tag":"I'm curious about ___","ko":"저는 ~이 궁금해요","sent":"I'm curious about that.","trans":"그게 궁금해요.","tips":["curious about은 '큐리어스어바웃'","THAT을 강하게"],"exp":[["I'm curious about that.","그게 궁금해요."],["I'm a little curious about that.","그게 조금 궁금해요."],["I'm a little curious about that topic.","그 주제가 조금 궁금해요."],["Actually, I'm a little curious about that topic too.","사실 저도 그 주제가 조금 궁금해요."]]},
+ {"tag":"I'm confident about ___","ko":"저는 ~에 자신 있어요","sent":"I'm confident about this.","trans":"이거 자신 있어요.","tips":["confident about은 '컨피던트어바웃'","THIS를 강하게"],"exp":[["I'm confident about this.","이거 자신 있어요."],["I'm quite confident about this.","이거 꽤 자신 있어요."],["I'm quite confident about this plan.","이 계획 꽤 자신 있어요."],["I'm quite confident about this plan working out.","이 계획이 잘 될 거라고 꽤 자신 있어요."]]},
+ {"tag":"I'm nervous about ___","ko":"저는 ~이 긴장돼요","sent":"I'm nervous about it.","trans":"그게 긴장돼요.","tips":["nervous about은 '너버스어바웃'","IT을 강하게"],"exp":[["I'm nervous about it.","그게 긴장돼요."],["I'm a bit nervous about it.","그게 좀 긴장돼요."],["I'm a bit nervous about tomorrow.","내일이 좀 긴장돼요."],["I'm a bit nervous about tomorrow, to be honest.","솔직히 내일이 좀 긴장돼요."]]},
+ {"tag":"I can't stop ___","ko":"저는 ~을 멈출 수가 없어요","sent":"I can't stop laughing.","trans":"웃음을 멈출 수가 없어요.","tips":["can't stop은 '캔트스탑'","LAUGHING을 강하게"],"exp":[["I can't stop laughing.","웃음을 멈출 수가 없어요."],["I just can't stop laughing.","그냥 웃음을 멈출 수가 없어요."],["I just can't stop laughing right now.","지금 그냥 웃음을 멈출 수가 없어요."],["I just can't stop laughing right now, it's too funny.","너무 웃겨서 지금 웃음을 멈출 수가 없어요."]]},
+ {"tag":"I'd better ___","ko":"저는 ~하는 게 낫겠어요","sent":"I'd better go.","trans":"가는 게 낫겠어요.","tips":["I'd better는 '아이드베터'","GO를 강하게"],"exp":[["I'd better go.","가는 게 낫겠어요."],["I'd better go now.","지금 가는 게 낫겠어요."],["I'd better go home now.","지금 집에 가는 게 낫겠어요."],["I'd better go home now, it's getting late.","늦어져서 지금 집에 가는 게 낫겠어요."]]},
+ {"tag":"I'll try to ___","ko":"저는 ~하도록 노력할게요","sent":"I'll try to help.","trans":"도와주도록 노력할게요.","tips":["try to는 '트라이투'","HELP를 강하게"],"exp":[["I'll try to help.","도와주도록 노력할게요."],["I'll try to help you.","당신을 도와주도록 노력할게요."],["I'll try to help you out.","당신을 도와주려고 노력할게요."],["I'll try my best to help you out.","최선을 다해 당신을 도와주려고 노력할게요."]]},
+ {"tag":"I've never ___","ko":"저는 한 번도 ~해본 적이 없어요","sent":"I've never been there.","trans":"거기 한 번도 가본 적이 없어요.","tips":["never been은 '네버빈'","THERE를 강하게"],"exp":[["I've never been there.","거기 한 번도 가본 적이 없어요."],["I've never actually been there.","사실 거기 한 번도 가본 적이 없어요."],["I've never actually been there before.","사실 전에 거기 한 번도 가본 적이 없어요."],["I've never actually been there before, is it nice?","사실 전에 거기 한 번도 못 가봤는데, 좋아요?"]]},
+ {"tag":"I've always wanted to ___","ko":"저는 항상 ~하고 싶었어요","sent":"I've always wanted to travel.","trans":"항상 여행하고 싶었어요.","tips":["always wanted는 '올웨이즈원티드'","TRAVEL을 강하게"],"exp":[["I've always wanted to travel.","항상 여행하고 싶었어요."],["I've always wanted to travel more.","항상 여행을 더 하고 싶었어요."],["I've always wanted to travel more often.","항상 여행을 더 자주 하고 싶었어요."],["I've always wanted to travel more often, but I'm always busy.","항상 여행을 더 자주 하고 싶었지만 늘 바빠요."]]},
+ {"tag":"It made me ___","ko":"그게 저를 ~하게 만들었어요","sent":"It made me happy.","trans":"그게 저를 행복하게 만들었어요.","tips":["made me는 '메이드미'","HAPPY를 강하게"],"exp":[["It made me happy.","그게 저를 행복하게 만들었어요."],["It really made me happy.","그게 저를 정말 행복하게 만들었어요."],["It really made me so happy today.","그게 오늘 저를 정말 행복하게 만들었어요."],["It really made me so happy today, thank you.","그게 오늘 저를 정말 행복하게 만들어서 고마워요."]]},
+ {"tag":"It's my first time ___","ko":"저는 처음 ~해요","sent":"It's my first time here.","trans":"여기 처음이에요.","tips":["first time은 '퍼스트타임'","HERE를 강하게"],"exp":[["It's my first time here.","여기 처음이에요."],["It's my first time here today.","오늘 여기 처음이에요."],["It's actually my first time here today.","사실 오늘 여기 처음이에요."],["It's actually my first time here today, so please be nice.","사실 오늘 여기 처음이라 잘 부탁드려요."]]},
+ {"tag":"It's not a big deal ___","ko":"~은 큰일 아니에요","sent":"It's not a big deal.","trans":"큰일 아니에요.","tips":["big deal은 '빅딜'","DEAL을 강하게"],"exp":[["It's not a big deal.","큰일 아니에요."],["It's really not a big deal.","정말 큰일 아니에요."],["It's really not a big deal at all.","정말 전혀 큰일 아니에요."],["It's really not a big deal at all, don't worry.","정말 전혀 큰일 아니니까 걱정 마세요."]]},
+ {"tag":"I couldn't help but ___","ko":"저는 ~할 수밖에 없었어요","sent":"I couldn't help but laugh.","trans":"웃을 수밖에 없었어요.","tips":["couldn't help but은 '쿠든트헬프벗'","LAUGH를 강하게"],"exp":[["I couldn't help but laugh.","웃을 수밖에 없었어요."],["I just couldn't help but laugh.","그냥 웃을 수밖에 없었어요."],["I just couldn't help but laugh at that.","그거 보고 그냥 웃을 수밖에 없었어요."],["I just couldn't help but laugh at that, it was so funny.","너무 웃겨서 그냥 웃을 수밖에 없었어요."]]},
+ {"tag":"I keep ___ing","ko":"저는 계속 ~해요","sent":"I keep forgetting.","trans":"계속 잊어버려요.","tips":["keep은 '킵'","FORGETTING을 강하게"],"exp":[["I keep forgetting.","계속 잊어버려요."],["I keep forgetting things lately.","요즘 계속 물건을 잊어버려요."],["I keep forgetting things lately, sorry.","죄송한데 요즘 계속 물건을 잊어버려요."],["I keep forgetting things lately, sorry, I'm so busy.","너무 바빠서 요즘 계속 물건을 잊어버려요, 죄송해요."]]},
+ {"tag":"I'm supposed to ___","ko":"저는 ~하기로 되어 있어요","sent":"I'm supposed to meet him.","trans":"그를 만나기로 되어 있어요.","tips":["supposed to는 '서포즈드투'","MEET을 강하게"],"exp":[["I'm supposed to meet him.","그를 만나기로 되어 있어요."],["I'm supposed to meet him today.","오늘 그를 만나기로 되어 있어요."],["I'm supposed to meet him at noon.","정오에 그를 만나기로 되어 있어요."],["I'm supposed to meet him at noon, so I have to go.","정오에 그를 만나기로 되어 있어서 가야 해요."]]},
+ {"tag":"I ended up ___ing","ko":"결국 ~하게 됐어요","sent":"I ended up staying home.","trans":"결국 집에 있게 됐어요.","tips":["ended up은 '엔디덥'","STAYING을 강하게"],"exp":[["I ended up staying home.","결국 집에 있게 됐어요."],["I ended up staying home all day.","결국 하루 종일 집에 있게 됐어요."],["I ended up just staying home all day.","결국 그냥 하루 종일 집에 있게 됐어요."],["I ended up just staying home all day because of the rain.","비가 와서 결국 그냥 하루 종일 집에 있게 됐어요."]]},
+ {"tag":"I might as well ___","ko":"저는 그냥 ~하는 게 낫겠어요","sent":"I might as well go.","trans":"그냥 가는 게 낫겠어요.","tips":["might as well은 '마잇애즈웰'","GO를 강하게"],"exp":[["I might as well go.","그냥 가는 게 낫겠어요."],["I might as well go now.","그냥 지금 가는 게 낫겠어요."],["I might as well just go now.","그냥 지금 가는 게 낫겠어요."],["I might as well just go now since it's getting late.","늦어져서 그냥 지금 가는 게 낫겠어요."]]},
+ {"tag":"I take it that ___","ko":"제 생각엔 ~인 것 같아요","sent":"I take it that's a yes.","trans":"그건 좋다는 뜻인가 봐요.","tips":["take it은 '테이킷'","YES를 강하게"],"exp":[["I take it that's a yes.","그건 좋다는 뜻인가 봐요."],["I take it that's a yes, then.","그럼 그건 좋다는 뜻인가 봐요."],["I take it that's a yes, then, right?","그럼 그건 좋다는 뜻이죠?"],["So I take it that's a yes then, am I right?","그럼 그건 좋다는 뜻인가요, 맞죠?"]]},
+ {"tag":"As far as I know, ___","ko":"제가 알기로는 ~예요","sent":"As far as I know, it's fine.","trans":"제가 알기로는 괜찮아요.","tips":["as far as는 '애즈파아즈'","FINE을 강하게"],"exp":[["As far as I know, it's fine.","제가 알기로는 괜찮아요."],["As far as I know, it's all fine.","제가 알기로는 다 괜찮아요."],["As far as I know, everything is fine.","제가 알기로는 다 괜찮아요."],["As far as I know, everything is fine so far.","제가 알기로는 지금까지는 다 괜찮아요."]]}
 ],
 "초급":[
  {"tag":"I've been ___ing","ko":"~해오고 있어요","sent":"I've been waiting.","trans":"기다리고 있었어요.","tips":["I've been은 '아입빈'","WAIT-ing 앞강세"],"exp":[["I've been waiting.","기다리고 있었어요."],["I've been waiting for you.","당신을 기다리고 있었어요."],["I've been waiting for you for an hour.","한 시간째 당신을 기다리고 있었어요."],["I've been waiting for you for an hour outside.","밖에서 한 시간째 당신을 기다리고 있었어요."]]},
@@ -1557,6 +1615,8 @@ const BASE_LIB={
 ]
 };
 
+const LEVEL_DAY_ORDER={"왕초보":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,170,17,108,18,171,19,109,20,172,21,110,22,173,23,111,174,24,25,112,175,26,27,176,113,28,29,177,114,30,31,178,115,32,179,33,116,34,180,35,117,36,181,37,118,38,182,39,40,119,183,41,184,120,42,43,185,121,44,45,186,122,46,47,187,123,48,49,188,124,50,189,51,52,125,190,53,54,126,191,55,56,127,192,57,58,128,193,59,194,129,60,61,195,62,130,63,196,64,131,65,197,66,132,198,67,68,133,199,69,70,134,200,71,72,135,201,73,74,202,136,75,203,76,137,77,204,78,138,79,205,80,139,81,206,82,140,83,207,84,141,208,85,86,209,142,87,88,210,143,89,90,211,144,91,92,212,145,93,213,94,146,95,214,96,97,147,215,98,99,148,216,100,101,149,217,102,218,150,103,104,219,151,105,106,220,152,107,159,221,160,153,161,222,162,154,223,163,164,155,224,165,166,156,225,167,168,157,226,169,227,158]};
+
 const GREETINGS=["좋은 아침이에요 ☀️","오늘도 화이팅이에요 💪","반가워요 ✨","멋진 하루 보내고 있나요? 🌿","오늘의 한 걸음, 시작해볼까요? 🚀"];
 const CHEERS=[
  {b:"완벽해요, %s님! 🎉",s:"방금 그 발음, 진짜 좋았어요."},
@@ -1865,7 +1925,8 @@ function showLinkFor(i){
     <div class="ttl">🔗 ${s.name}님 개인 숙제 링크</div>
     <div id="lk${i}">${link}</div>
     <div style="display:flex;gap:8px;margin-top:10px">
-      <button class="btn sm" style="flex:1" onclick="copyLink('${encodeURIComponent(link)}',this)">🔗 링크 복사하기</button>
+      <button class="btn sm" style="flex:1" onclick="copyLink('${encodeURIComponent(link)}',this)">복사하기</button>
+      <button class="btn sm kakao" style="flex:1" onclick="window.open('${KAKAO_CHANNEL}','_blank')">카톡 열기</button>
     </div></div>`;
 }
 function copyLink(enc,btn){
@@ -1983,8 +2044,12 @@ function startStudy(s,entry){
       base=Math.max(0, d-1);          // d = 화면에 표시되는 현재 일차
       p.cursor=base; p.adjApplied=true;
     }
-    p.assigned[tk]=base%lib.length;
-    p.cursor=(base+1)%lib.length;
+    // 레벨별 난이도 배분 순서(LEVEL_DAY_ORDER)가 있으면 그 순서대로, 없으면 배열 순서 그대로.
+    // 주의: lib 배열의 물리적 순서/기존 인덱스는 절대 바꾸지 않음 — 이미 숙제를 완료한 학생의
+    // 복습 기록(p.assigned에 저장된 인덱스)이 엉뚱한 패턴을 가리키는 사고를 방지하기 위함.
+    const order=LEVEL_DAY_ORDER[s.level];
+    p.assigned[tk]= order ? order[base%order.length] : (base%lib.length);
+    p.cursor=(base+1)%(order?order.length:lib.length);
     saveProg(s,p);
   }
   CARD=lib[p.assigned[tk]%lib.length];
@@ -2684,10 +2749,10 @@ function notifyTeacher(p,avg){
   if(!WEB3FORMS_KEY) return;
   const done=doneCount(p),tot=totalDays(CUR.months);
   const scoreTxt= avg!=null ? (avg+"점") : "미측정";
-  const msg=`[김규리쌤 공부방 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n자동 발음 점수: ${scoreTxt}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n* 자동 점수는 음성인식 기반 참고용입니다. 학생이 카톡으로 녹음(음성메시지)을 보낼 수 있어요.`;
+  const msg=`[이상한영어 숙제 완료]\n\n학생: ${CUR.name} (${CUR.level})\n날짜: ${todayKey()}\n오늘 패턴: ${CARD.tag} — ${CARD.sent}\n자동 발음 점수: ${scoreTxt}\n진행: ${done}/${tot}일 · 연속 ${p.streak}일\n\n* 자동 점수는 음성인식 기반 참고용입니다. 학생이 카톡으로 녹음(음성메시지)을 보낼 수 있어요.`;
   fetch("https://api.web3forms.com/submit",{
     method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
-    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()} · 발음 ${scoreTxt}`,from_name:"김규리쌤 공부방",message:msg})
+    body:JSON.stringify({access_key:WEB3FORMS_KEY,subject:`[숙제완료] ${CUR.name}님 · ${todayKey()} · 발음 ${scoreTxt}`,from_name:"이상한영어 숙제방",message:msg})
   }).catch(()=>{});
 }
 
@@ -2814,7 +2879,7 @@ function showExternalGuide(){
 function closeWelcome(){document.getElementById("welcomeModal").classList.remove("show");}
 
 /* ================= AI 회화 튜터 ================= */
-const AI_ENDPOINT="https://englishhomework-five.vercel.app/api/tutor"; // Vercel(미국)
+const AI_ENDPOINT="https://weirdenglish.vercel.app/api/tutor"; // Vercel (미국 지역)
 let AI_MSGS=[], AI_SYS="", AI_BUSY=false, AI_BLOCKED=false;
 function enOnly(t){ return String(t).replace(/\([^)]*\)/g," ").replace(/[가-힣]/g," ").replace(/\s+/g," ").trim()||String(t); }
 function escapeHtml(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>"); }
