@@ -4636,22 +4636,22 @@ nav.nav-solid .nav-cta:hover{background:#00695A !important;
 
   /* ── PAIN: 2열 유지 ── */
   .pain-grid{grid-template-columns:1fr 1fr;gap:9px}
-  .pain-c{padding:15px 12px}
-  .pain-c p{font-size:12px;line-height:1.6}
-  .pain-ico{font-size:21px;margin-bottom:7px}
-  .pain-then{margin-top:22px}
 
-  /* ── STORY: 원장 소개 + Q&A 가로형 ── */
+  /* ── STORY: 원장 소개 + Q&A 세로형 ──
+     가로 2분할(38%)은 인물 사진이 심하게 잘려 세로 적층으로 복귀 */
   .dir-intro{margin-bottom:34px;gap:20px}
   .dir-photo-wrap{max-width:208px}
-  .qa-grid{gap:12px}
-  .qa-card{display:grid;grid-template-columns:38% 1fr;align-items:stretch}
-  .qa-img-wrap{height:auto;min-height:150px}
-  .qa-q-badge{font-size:10px;padding:3px 8px;top:10px;left:10px}
-  .qa-num-big{font-size:11.5px;line-height:1.35;left:12px;right:12px;bottom:12px}
-  .qa-body{padding:15px 15px}
-  .qa-title{font-size:14.5px;line-height:1.35;margin-bottom:7px}
-  .qa-text{font-size:12px;line-height:1.65}
+  .qa-grid{gap:14px;justify-items:center}
+  /* 1단일 때 카드가 태블릿 폭까지 늘어나면 사진이 과하게 커지므로 폭을 제한 */
+  .qa-card{display:flex;flex-direction:column;align-items:stretch;
+    width:100%;max-width:460px}
+  /* 원본 사진이 3:2에 가까워 같은 비율로 잡으면 잘림이 거의 없습니다 */
+  .qa-img-wrap{width:100%;height:auto;aspect-ratio:3/2;min-height:0}
+  .qa-q-badge{font-size:10px;padding:4px 10px;top:12px;left:12px}
+  .qa-num-big{font-size:12.5px;line-height:1.35;left:14px;right:14px;bottom:13px}
+  .qa-body{padding:18px 17px}
+  .qa-title{font-size:16px;line-height:1.35;margin-bottom:8px}
+  .qa-text{font-size:13px;line-height:1.7}
   .story-after{margin-top:34px;grid-template-columns:repeat(3,1fr);gap:6px;padding:18px 10px}
   .after-item{padding:6px 4px;border-bottom:none !important}
   .after-ico{font-size:19px;margin-bottom:6px}
