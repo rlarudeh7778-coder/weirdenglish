@@ -83,9 +83,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:300;display:flex;align-items:cen
 h1.mt{font-size:clamp(40px,5.6vw,78px);font-weight:900;line-height:1.08;letter-spacing:-2.5px;margin-bottom:28px;word-break:keep-all;color:var(--w)}
 .h1s{display:block;margin-bottom:6px}
 .h1r{color:var(--red);text-shadow:0 0 40px rgba(255,45,45,.35)}
-.rot-wrap{overflow:hidden;height:1.2em;display:inline-block;vertical-align:bottom}
+.rot-wrap{overflow:hidden;height:1.16em;display:inline-block;vertical-align:top}
 .rot-inner{display:flex;flex-direction:column;transition:transform .55s cubic-bezier(.77,0,.18,1)}
-.rot-inner span{display:block;line-height:1.2}
+.rot-inner>span{display:block;line-height:1.16;white-space:nowrap}
+.rot-inner .rp{display:inline;font-style:normal;color:var(--w)}
 .h1n{color:var(--w)}
 .hero-sub{font-size:18px;color:rgba(255,255,255,.78);line-height:1.9;margin-bottom:36px;word-break:keep-all;max-width:500px;position:relative;z-index:1}
 .hero-sub strong{color:var(--g)}
@@ -1902,8 +1903,8 @@ body.sticky-active .kakao-float{bottom:96px}
     <h1 class="mt fu d1">
       <span class="h1s">영어 때문에</span>
       <span><span class="h1r"><span class="rot-wrap"><span class="rot-inner" id="rotText">
-        <span>포기한 꿈</span><span>놓친 기회</span><span>두려움</span><span>창피함</span><span>포기한 꿈</span>
-      </span></span></span><span class="h1n">이<br>있으신가요?</span></span>
+        <span>포기한 꿈<i class="rp">이</i></span><span>놓친 기회<i class="rp">가</i></span><span>두려움<i class="rp">이</i></span><span>창피함<i class="rp">이</i></span><span>포기한 꿈<i class="rp">이</i></span>
+      </span></span></span><span class="h1n"><br>있으신가요?</span></span>
     </h1>
     <p class="hero-sub fu d2">초중고 10년 영어공부도 원어민 앞에선 한마디 못하셨나요?<br>이상한영어는 <strong>3개월이면 입이 트이고, 6개월이면 원어민과 대화</strong>가 시작됩니다.</p>
     <div class="cta-row fu d3">
@@ -3451,10 +3452,48 @@ else{if(isDec)el.textContent=(t/10).toFixed(1)+sf;else el.textContent=t.toLocale
 const cO=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.querySelectorAll(".count-num").forEach(aC);cO.unobserve(en.target);}});},{threshold:.3});
 document.querySelectorAll(".hero-stats,.stat-cards,.story-after").forEach(s=>cO.observe(s));
 
-/* 슬라이딩 타이틀 */
-const rotI=["포기한 꿈","놓친 기회","두려움","창피함"];
-let rIdx=0;const rEl=document.getElementById("rotText");
-setInterval(()=>{rIdx=(rIdx+1)%rotI.length;rEl.style.transform=`translateY(-${rIdx*1.2}em)`;},2200);
+/* 슬라이딩 타이틀
+   이동 거리를 1.2em으로 고정하면 CSS의 line-height와 어긋나 단어가 반씩
+   잘려 보입니다. 매번 실제 렌더 높이를 재서 딱 한 칸씩만 올립니다.
+   (.rot-wrap의 height와 .rot-inner span의 line-height는 같은 값이어야 합니다) */
+(function(){
+  var el = document.getElementById("rotText");
+  if(!el) return;
+  var items = [].slice.call(el.children);  /* 마지막 항목은 첫 항목의 복제(무한 루프용) */
+  if(items.length < 2) return;
+  var idx = 0;
+
+  function step(){ return items[0].getBoundingClientRect().height; }
+
+  function place(px, animate){
+    if(!animate) el.style.transition = "none";
+    el.style.transform = "translateY(-" + px + "px)";
+    if(!animate){ void el.offsetHeight; el.style.transition = ""; }
+  }
+
+  function go(){
+    var s = step();
+    if(!s) return;
+    idx++;
+    place(idx * s, true);
+    if(idx >= items.length - 1){
+      /* 복제본에 닿으면 애니메이션 없이 되감아 끊김 없이 이어지게 */
+      setTimeout(function(){ idx = 0; place(0, false); }, 620);
+    }
+  }
+
+  /* 폰트 로드·화면 회전으로 글자 크기가 바뀌면 현재 칸에 다시 맞춤 */
+  function resync(){ var s = step(); if(s) place(idx * s, false); }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(resync);
+  var rz;
+  window.addEventListener("resize", function(){
+    clearTimeout(rz); rz = setTimeout(resync, 150);
+  }, {passive:true});
+
+  if(!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)){
+    setInterval(go, 2200);
+  }
+})();
 
 /* 후킹 문구 */
 /* old hook block removed */
@@ -4505,8 +4544,8 @@ section{padding-left:clamp(24px,5vw,72px) !important;padding-right:clamp(24px,5v
 
 /* 회전 텍스트 강조 — 깨진 밑줄 제거, 색만으로 (정렬 안정) */
 .h1r{box-shadow:none !important;color:#FF6B6B !important}
-.rot-wrap{height:1.06em !important;vertical-align:top !important}
-.rot-inner span{line-height:1.06 !important}
+.rot-wrap{vertical-align:top !important}
+.rot-inner>span{line-height:1.16 !important}
 
 /* 원어민 배지 — 실제 클래스 .hero-native-badge */
 .hero-native-badge{
