@@ -99,7 +99,6 @@ h1.mt{font-size:clamp(40px,5.6vw,78px);font-weight:900;line-height:1.08;letter-s
 .stat-n{font-family:"Montserrat",sans-serif;font-size:30px;font-weight:900;color:var(--w)}
 .stat-n .accent{color:var(--g)}
 .stat-l{font-size:11px;color:rgba(255,255,255,.5);font-weight:500;margin-top:2px}
-.stat-divider{width:1px;background:rgba(255,255,255,.15);align-self:stretch}
 .hero-right{position:relative;display:flex;justify-content:center;align-items:center;z-index:2}
 .hero-visual-wrap{position:relative;width:100%;max-width:400px;display:flex;flex-direction:column;gap:16px}
 
@@ -1807,7 +1806,6 @@ body.sticky-active .kakao-float{bottom:96px}
   .stat-cards{grid-template-columns:1fr 1fr}
   .hero-stats{gap:12px}
   .stat-n{font-size:19px}
-  .stat-divider{display:none}
   .hero-stats>div{min-width:30%}
   .rc{width:235px;min-width:235px}
   .marquee-row::before,.marquee-row::after{width:14px}
@@ -1917,9 +1915,7 @@ body.sticky-active .kakao-float{bottom:96px}
     </div>
     <div class="hero-stats fu d4">
       <div><div class="stat-n"><span class="count-num" data-target="2400" data-suffix="+">0</span></div><div class="stat-l">누적 수강생</div></div>
-      <div class="stat-divider"></div>
       <div><div class="stat-n"><span class="count-num" data-target="96" data-decimal="1">0</span></div><div class="stat-l">평균 만족도</div></div>
-      <div class="stat-divider"></div>
       <div><div class="stat-n"><span class="count-num" data-target="94" data-suffix="%">0</span></div><div class="stat-l">3개월 내 재등록</div></div>
     </div>
   </div>
@@ -4442,11 +4438,15 @@ h1.mt{
   color:rgba(255,255,255,.62) !important;font-weight:600 !important;
   margin-bottom:28px !important}
 .eyebrow .dot{display:none !important}
-/* 히어로 통계 — 카드 느낌 제거, 얇은 구분선 편집형 */
+/* 히어로 통계 — 카드 느낌 제거, 얇은 구분선 편집형
+   구분선은 항목의 border-right로만 그립니다.
+   (예전에는 별도의 .stat-divider 요소가 있었는데, 이 규칙의 padding이 그 요소에도
+    걸리면서 폭 1px 배경이 padding까지 칠해져 회색 덩어리로 보였습니다) */
 .hero-stats{
   gap:0 !important;margin-top:44px !important;
   border-top:1px solid rgba(255,255,255,.13);padding-top:26px !important}
-.hero-stats > *{padding-right:clamp(24px,3vw,52px);margin-right:clamp(24px,3vw,52px);
+.hero-stats > *{
+  padding-right:clamp(24px,3vw,52px);margin-right:clamp(24px,3vw,52px);
   border-right:1px solid rgba(255,255,255,.1)}
 .hero-stats > *:last-child{border-right:none;margin-right:0;padding-right:0}
 .stat-n{font-size:clamp(24px,2.1vw,32px) !important;font-weight:700 !important;
@@ -4522,8 +4522,11 @@ section{padding-left:clamp(24px,5vw,72px) !important;padding-right:clamp(24px,5v
   .hero{padding:112px 24px 72px !important;grid-template-columns:1fr !important}
   h1.mt{font-size:clamp(38px,10.5vw,56px) !important}
   .hero-sub{max-width:100% !important}
-  .hero-stats{flex-wrap:wrap;gap:18px 0 !important}
-  .hero-stats > *{padding-right:20px;margin-right:20px}
+  /* 줄바꿈되면 줄 끝에 구분선만 남아 어색하므로 3열로 고정 */
+  .hero-stats{display:grid !important;grid-template-columns:repeat(3,1fr);
+    gap:0 !important;flex-wrap:nowrap}
+  .hero-stats > *{
+    padding-right:clamp(8px,3vw,18px) !important;margin-right:clamp(8px,3vw,18px) !important}
   nav{height:64px !important}
   .fc,.road-card,.price-tier,.qa-c,.pain-c{padding:26px 22px !important}
 }
