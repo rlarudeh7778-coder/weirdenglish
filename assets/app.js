@@ -312,7 +312,7 @@
     });
     if (ctx.conditions.m) tl.timeScale(1.6);
     routes.forEach((r, i) => {
-      tl.to(masks[i], { strokeDashoffset: 0, duration: 1 }, i)
+      tl.to(masks[i], { strokeDashoffset: 0, autoRound: false, duration: 1 }, i)   // autoRound:false — 0~1 사이 값이 정수로 반올림돼 한 번에 튀어나오지 않게
         .to(plane, { motionPath: { path: r, align: r, alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 1 }, i)
         .to(pins[i + 1], { autoAlpha: 1, y: 0, duration: 0.25 }, i + 0.85);
     });
@@ -349,6 +349,20 @@
       .to(track, { x: () => -dist() }, 0)
       .to('#rail', { scaleX: 1 }, 0);
     return () => wrap.classList.remove('pan');
+  });
+
+  /* 5-1. 휴대폰 「그다음은 이렇게 성장합니다」: 우상향 선이 그려지고, 종이비행기가 선을 타고 오르며, 단계 점·이름이 차례로(들어올 때 한 번).
+     움직임이 꺼지면 다 그려진 그래프가 그대로 보인다(CSS 기본값). */
+  mm.add(PHONE_MQ, () => {
+    const box = $('#growChart'), line = $('.gc-line', box), plane = $('.gc-plane', box);
+    const ride = (end) => ({ path: line, align: line, alignOrigin: [0.5, 0.5], autoRotate: true, start: 0, end });
+    gsap.set(plane, { motionPath: ride(0) });   // 출발 전엔 선의 시작점에서 기다린다
+    gsap.timeline({ scrollTrigger: { trigger: box, start: 'top 75%', toggleActions: 'play none none none' } })
+      .fromTo(line, { strokeDashoffset: 1 }, { strokeDashoffset: 0, autoRound: false, duration: 1.8, ease: 'power1.inOut' }, 0)
+      .to(plane, { motionPath: ride(1), duration: 1.8, ease: 'power1.inOut' }, 0)
+      .fromTo($('.gc-area', box), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9 }, 0.7)
+      .fromTo($$('.gc-dot', box), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.35, stagger: 0.55, ease: 'back.out(2.2)' }, 0.05)
+      .fromTo($$('.gc-tag', box), { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.55 }, 0.6);
   });
 
   /* 6. 나머지: 진행 띠 · 쪽제목 · 나타나기 · 숫자 · 잉크 글씨 · 교정 칸 · 휴대폰 아래 버튼 */

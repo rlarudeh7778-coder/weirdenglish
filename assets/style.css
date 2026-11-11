@@ -477,6 +477,22 @@ h1,h2,h3,h4,p,figure{margin:0}
 .grow .when{font-family:var(--f-serif);font-weight:800;font-size:clamp(40px,4.6vw,64px);line-height:1;letter-spacing:-.04em}
 .grow h3{font-family:var(--f-serif);font-weight:700;font-size:clamp(20px,1.9vw,26px);letter-spacing:-.025em;line-height:1.35}
 .grow .grow-text{color:var(--ink-2)}
+/* 성장 그래프(휴대폰 전용 — PC 는 위 목록): 우상향 선이 그려지고 종이비행기가 선을 타고 오른다(app.js) */
+.grow-chart{display:none;margin:28px 0 0;padding:22px 14px 12px;border-radius:var(--r);background:var(--sheet);border:1px solid var(--line)}
+.grow-chart-cap{padding:0 6px 10px;font-family:var(--f-serif);font-weight:700;font-size:22px;line-height:1.35;letter-spacing:-.025em}
+.grow-chart-cap em{font-style:normal;color:var(--pen-ink)}
+.grow-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.gc-grid{fill:none;stroke:var(--line);stroke-dasharray:3 5}
+.gc-axis{fill:none;stroke:var(--ink-3);stroke-opacity:.45}
+.gc-s1{stop-color:var(--pen);stop-opacity:.26}
+.gc-s2{stop-color:var(--pen);stop-opacity:0}
+.gc-line{fill:none;stroke:var(--pen);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
+.gc-dot{fill:var(--sheet);stroke:var(--pen);stroke-width:3}
+.gc-dot.end{fill:var(--pen)}
+.gc-tag{font-size:12.5px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--sheet);stroke-width:5px;stroke-linejoin:round}
+.gc-x{font-size:11px;font-weight:600;fill:var(--ink-3);text-anchor:middle}
+.gc-plane{filter:drop-shadow(0 3px 4px rgb(var(--shadow-rgb) / .35))}
+.gc-plane polygon{stroke:#9DB2CA;stroke-width:3;stroke-linejoin:round}
 .margin-note{margin-top:40px;display:grid;gap:10px;padding:28px 32px;border-radius:var(--r);background:var(--sheet);border:1px dashed color-mix(in srgb,var(--pen) 55%,transparent);max-width:820px}
 .margin-note .pen{font-size:32px}
 .margin-note .note-text{color:var(--ink-2)}
@@ -721,6 +737,9 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
   .step .wk{font-size:48px}
   .step h3{margin-top:0;padding-top:0;font-size:20px}
   .step > :not(.wk):not(h3){grid-column:1 / -1}
+  /* 성장: 목록 대신 우상향 그래프 */
+  .grow-list{display:none}
+  .grow-chart{display:block}
 
   /* 첫 화면: 책은 없다(움직임 줄이기·스크립트 없음에서도) */
   :is(.hero.is-flat,.no-js .hero) .stage{display:none}
