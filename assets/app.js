@@ -447,7 +447,9 @@
 
   function initForm() {
     const form = $('#applyForm'), btn = $('#submitBtn'), msg = $('#formMsg');
-    const F = { name: $('#f-name'), phone: $('#f-phone'), level: $('#f-level'), worry: $('#f-worry'), agree: $('#f-agree') };
+    const F = { name: $('#f-name'), phone: $('#f-phone'), level: $('#f-level'), book: $('#f-book'), worry: $('#f-worry'), agree: $('#f-agree') };
+    // 책 칸의 「체험 예약하고 이 책 받기」: 신청서의 받고 싶은 책을 골라 두고, 화면 이동은 공통 #앵커 처리가 맡는다
+    $$('[data-book]').forEach((a) => a.addEventListener('click', () => { F.book.value = a.dataset.book; }));
     const say = (key, text) => {
       $('#e-' + key).textContent = text;
       const field = F[key].closest('.field');
@@ -472,7 +474,7 @@
 
       btn.disabled = true;
       btn.firstChild.textContent = '신청 접수 중… ';
-      const message = '=== 이상한영어 무료체험 신청 ===\n\n이름: ' + name + '\n연락처: ' + phone + '\n영어 레벨: ' + level +
+      const message = '=== 이상한영어 무료체험 신청 ===\n\n이름: ' + name + '\n연락처: ' + phone + '\n영어 레벨: ' + level + '\n체험 선물 전자책: ' + F.book.selectedOptions[0].textContent +
         '\n현재 고민/편한 시간: ' + (worry || '미입력') + '\n\n신청 시각: ' + new Date().toLocaleString('ko-KR');
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), SEND_TIMEOUT_MS);

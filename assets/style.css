@@ -419,9 +419,7 @@ h1,h2,h3,h4,p,figure{margin:0}
 .vol-title{font-family:var(--f-serif);font-weight:700;font-size:24px;line-height:1.3;letter-spacing:-.02em}
 .vol-text{color:var(--ink-2);font-size:15.5px}
 .vol-spec{color:var(--ink-3);font-size:13.5px}
-.vol-dl{margin-top:10px}
-.vol-dl small{font-size:12px;font-weight:500;opacity:.72}
-.vol-dl:hover i{transform:translateY(2px)}
+.vol-pick{margin-top:10px}
 .album-grid{display:grid;gap:56px 48px;margin-top:48px}
 @media (min-width:860px){.album-grid{grid-template-columns:1fr 1fr}.album-item:nth-child(even){margin-top:120px}}
 .album-item{display:grid;gap:22px}
