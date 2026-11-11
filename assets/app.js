@@ -197,12 +197,16 @@
     const pw = () => book.offsetWidth / 2;
     const px = () => pw() / 2;          // 펼친 책에서 마지막 쪽 가운데까지
     const circle = (r) => () => `circle(${r}% at ${innerWidth / 2 + px()}px ${hero.offsetHeight / 2}px)`;
+    // 장 순서: 오른쪽 더미는 위(표지)부터. 넘긴 장은 반쯤 넘어가 수직이 된 순간 왼쪽 더미 맨 위로 — 나중에 넘긴 장이 위에 눕는다
     leaves.forEach((l, i) => gsap.set(l, { zIndex: N - i }));
 
-    const heroPose = { x: () => innerWidth * 0.22 - (pw() * S) / 2, y: 0, scale: S, rotationX: 8, rotationY: -22 };
+    // 첫 화면: 책이 제목 쪽으로 돌아앉아 금박 책등(두께)이 보인다
+    const heroPose = { x: () => innerWidth * 0.22 - (pw() * S) / 2, y: 0, scale: S, rotationX: 8, rotationY: 26 };
     const closedPose = { x: () => -pw() / 2, y: 0, scale: 1, rotationX: 0, rotationY: 0 };
 
-    const T = { open: 0.9, turn: 2.3, fold: 3.6, fly: 4.4, sky: 5.3 };
+    const T = { open: 0.9, turn: 2.3, riffle: 3.15, fold: 4.6, fly: 5.4, sky: 6.3 };
+    // 속지가 스르르: 바깥 마디가 먼저 들리고(-) 내려앉을 땐 늦게 따라온다(+). 휜 각도·간격은 앞뒤 장이 서로 파고들지 않게 시험한 값
+    const RIFFLE = { dur: 0.75, gap: 0.13, b: [0, -22, -8, 16, 0], c: [0, -26, -10, 20, 0], sh: [0, 0.22, 0.34, 0.18, 0] };
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
       scrollTrigger: {
@@ -220,13 +224,23 @@
       .to(copy, { autoAlpha: 0, x: -60, duration: 0.6, ease: 'power1.in' }, 0)
       .to(book, { x: 0, y: 0, duration: 1, ease: 'power1.inOut' }, T.open);
 
+    let soft = 0;
     leaves.forEach((leaf, i) => {
-      const at = i === 0 ? T.open : T.turn + (i - 1) * 1.45;
-      const [front, back] = leaf.children;
-      tl.to(leaf, { rotationY: -180, duration: 1, ease: 'power1.inOut' }, at)
-        .to(front, { '--shade': 0.6, duration: 0.5, ease: 'power1.in' }, at)
-        .fromTo(back, { '--shade': 0.6 }, { '--shade': 0, duration: 0.5, ease: 'power1.out', immediateRender: false }, at + 0.5)
-        .set(leaf, { zIndex: 10 + i }, at + 0.5);
+      const riffle = leaf.classList.contains('riffle');
+      const at = riffle ? T.riffle + (soft++) * RIFFLE.gap : i === 0 ? T.open : T.turn + (i - 1) * 1.45;
+      const dur = riffle ? RIFFLE.dur : 1;
+      tl.to(leaf, { rotationY: -180, duration: dur, ease: 'power1.inOut' }, at)
+        .set(leaf, { zIndex: 10 + i }, at + dur / 2);
+      if (riffle) {   // 종이 속지: 세 마디가 따로 휘고, 휜 만큼 그늘이 진다
+        const [, b, c] = $$('.seg', leaf);
+        tl.to(b, { keyframes: { rotationY: RIFFLE.b, easeEach: 'sine.inOut' }, duration: dur }, at)
+          .to(c, { keyframes: { rotationY: RIFFLE.c, easeEach: 'sine.inOut' }, duration: dur }, at)
+          .to(leaf, { keyframes: { '--sh': RIFFLE.sh, easeEach: 'sine.inOut' }, duration: dur }, at);
+      } else {        // 표지·1장: 빳빳하게, 넘어가며 앞면은 어두워지고 뒷면은 밝아진다
+        const [front, back] = leaf.children;
+        tl.to(front, { '--shade': 0.6, duration: 0.5, ease: 'power1.in' }, at)
+          .fromTo(back, { '--shade': 0.6 }, { '--shade': 0, duration: 0.5, ease: 'power1.out', immediateRender: false }, at + 0.5);
+      }
     });
 
     // 포기한 것들에 빨간 펜이 그어진다
