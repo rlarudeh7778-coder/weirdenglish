@@ -450,6 +450,17 @@
     const nav = $('#earNav'), result = $('#earResult'), live = $('#earLive');
     const levels = $$('#f-level option').map((o) => o.value).filter(Boolean);
     const relayout = () => motion && ScrollTrigger.refresh();   // 카드 높이가 바뀌면 아래 고정 구간 위치를 다시 잰다
+    // 새로 나타난 버튼·재생 칸이 휴대폰 아래 고정 바(#mbar)에 가리거나 머리글 밑에 숨으면 보이는 데까지 부드럽게 옮긴다.
+    // (가려진 「다음 소리 듣기」 대신 바의 「무료 체험 신청」이 눌려 신청서까지 날아갔다가 다시 올라와야 했던 원인)
+    const bar = $('#mbar');
+    const keepInView = (el) => {
+      const r = el.getBoundingClientRect();
+      const floor = innerHeight - (bar.classList.contains('show') ? bar.offsetHeight : 0) - 16, ceil = HEADER() + 12;
+      const dy = r.bottom > floor ? Math.min(r.bottom - floor, r.top - ceil) : r.top < ceil ? r.top - ceil : 0;
+      if (dy === 0) return;
+      if (lenis) lenis.scrollTo(scrollY + dy);
+      else scrollBy({ top: dy, behavior: reduce ? 'auto' : 'smooth' });
+    };
     let cur = 0, score = 0, playing = null;
 
     $$('.ear-wave', ear).forEach((w) => {   // 소리 막대: 정해진 모양(무작위 없음)
@@ -491,6 +502,7 @@
         if (cur < qs.length - 1) { nav.hidden = false; $('#earNext').focus({ preventScroll: true }); }
         else finish();
         relayout();
+        keepInView(cur < qs.length - 1 ? nav : $('.ear-actions', result));
       }));
     });
 
@@ -513,6 +525,7 @@
       show(cur + 1);
       $('.ear-play', qs[cur]).focus({ preventScroll: true });
       relayout();
+      keepInView($('.ear-player', qs[cur]));
     });
     $('#earRetry').addEventListener('click', () => {
       score = 0;
@@ -526,6 +539,7 @@
       show(0);
       $('.ear-play', qs[0]).focus({ preventScroll: true });
       relayout();
+      keepInView($('.ear-player', qs[0]));
     });
     $('#earApply').addEventListener('click', () => {   // 화면 이동은 공통 #앵커 처리(Lenis)가 맡는다
       const sel = $('#f-level');
