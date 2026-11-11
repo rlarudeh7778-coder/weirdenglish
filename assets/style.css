@@ -173,15 +173,18 @@ h1,h2,h3,h4,p,figure{margin:0}
 .lost li::after{content:"";position:absolute;left:-2%;right:-3%;top:55%;height:.12em;border-radius:1em;background:var(--pen);transform:rotate(-1.2deg) scaleX(var(--cross,1));transform-origin:left}
 .sol-kicker{font-size:clamp(12px,3cqi,15px);font-weight:700;color:var(--pen-ink)}
 .sol-big{font-family:var(--f-sans);font-weight:700;font-size:clamp(17px,min(6.6cqi,5.4cqb),36px);line-height:1.34;letter-spacing:-.03em}
-.cover{background:linear-gradient(160deg,var(--cover),var(--cover-2));color:var(--on-cover)}
+/* 표지: 검은 가죽 양장본 + 금박 글씨·안쪽 금박 테두리(휴대폰 첫 방문 표지와 같은 결). 물건 색이라 밝은/어두운 화면에서 같다 */
+.cover{background:radial-gradient(120% 90% at 30% 18%,#2B2C33,#141519 55%,#09090B);color:#E9D5A1}
+.cover .pg::before{content:"";position:absolute;inset:4.5%;border:1px solid rgb(207 169 94 / .45);border-radius:2px;pointer-events:none}
+.cover :is(.cover-top,.cover-title,.cover-foot){background:linear-gradient(135deg,#F4E4B8,#CFA95E 45%,#8E6B2F 72%,#EAD39C);-webkit-background-clip:text;background-clip:text;color:transparent}
 .cover::before{background:repeating-linear-gradient(90deg,rgb(255 255 255 / .025) 0 1px,transparent 1px 3px),linear-gradient(var(--spine),rgb(0 0 0 / .35),transparent 7%)}
 .cover .pg{justify-content:space-between}
 .cover-top{font-size:clamp(10px,2.8cqi,13px);letter-spacing:.18em;opacity:.72}
-.cover-title{font-family:var(--f-sans);font-weight:800;font-size:clamp(44px,min(19cqi,14cqb),110px);line-height:1.02;letter-spacing:-.05em}
+.cover-title{font-family:var(--f-sans);font-weight:900;font-size:clamp(40px,min(15.5cqi,11.5cqb),96px);line-height:1.08;letter-spacing:-.05em}
 .cover-title span{position:relative;display:inline-block}
-.cover-title span::after{content:"";position:absolute;left:0;right:-4%;bottom:-.1em;height:.12em;border-radius:1em;background:var(--pen);transform:rotate(-2deg)}
+.cover-title span::after{content:"";position:absolute;left:0;right:0;bottom:-.14em;height:.05em;background:linear-gradient(90deg,#CFA95E,#F4E4B8 60%,#8E6B2F)}
 .cover-line{margin-top:min(5cqi,4cqb);display:flex;flex-direction:column;gap:2px}
-.cover-line s{font-family:var(--f-sans);font-size:clamp(13px,min(4.2cqi,3.6cqb),20px);opacity:.7;text-decoration-color:var(--pen);text-decoration-thickness:2px}
+.cover-line s{font-family:var(--f-sans);font-size:clamp(13px,min(4.2cqi,3.6cqb),20px);color:#CDBB8F;opacity:.75;text-decoration-color:var(--pen);text-decoration-thickness:2px}
 .cover-line .pen{font-size:clamp(22px,min(7.4cqi,6cqb),38px);color:#FF8A7F}
 .cover-foot{display:flex;justify-content:space-between;align-items:flex-end;font-size:clamp(11px,3cqi,14px);opacity:.8}
 .cover-foot b{font-family:var(--f-sans);font-weight:600}
