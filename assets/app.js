@@ -392,36 +392,45 @@
   /* 휴대폰 연출 — 화면에 들어오면 클래스만 붙이고, 움직임·순서·시간은 CSS(style.css 「휴대폰 전용」)가 정한다.
      스크롤 위치를 미리 재지 않으므로(IntersectionObserver) 주소창이 접히거나 글꼴이 늦게 와도 어긋나지 않는다. */
   function initPhone() {
+    // 두 방식 중 하나: html.sd(머리 스크립트가 정함) = 스크롤 연동 CSS 가 여행 사진·지도·2:1 을 움직인다 / 아니면 화면에 들어올 때 시간 기준 재생
+    const sd = root.classList.contains('sd');
     const watch = (els, opts, fn) => { const io = new IntersectionObserver((es) => es.forEach((e) => fn(e, io)), opts); els.forEach((el) => io.observe(el)); };
     const once = (e, io) => { if (!e.isIntersecting) return; io.unobserve(e.target); e.target.classList.add('in'); };
+    const kitePic = () => $('#plane svg').cloneNode(true);
 
     // 첫 화면: 버튼 아래 종이비행기가 떠 있다가, 조금 내리면 뾰옹 날아간다(다시 올리면 돌아온다)
     watch([$('#heroCopy')], { threshold: 0.9 }, (e) => $('#stage').classList.toggle('lift', e.intersectionRatio < 0.9));   // 문구가 10% 밀려 올라가면(약 40px)
-    // 하늘 문구 · 2:1 동그라미와 두 선생님 메모: 들어오면 한 번
-    watch([$('#sky'), $('#ratioStage')], { threshold: 0.4 }, once);
-
-    // 여행 장면: 들어오면 .in(글이 떠오르고 사진이 천천히 흐르고 종이비행기가 가로지른다), 다음 장면이 올라오면 앞 장면 .past(스르르 사라짐)
-    const scenes = $$('#journey .scene');
-    scenes.forEach((sc) => { const kite = $('#plane svg').cloneNode(true); kite.classList.add('scene-plane'); sc.appendChild(kite); });
+    watch([$('#sky')], { threshold: 0.4 }, once);
     $$('#sceneDesert .fp').forEach((fp, i) => fp.style.setProperty('--i', i));
-    watch(scenes, { threshold: 0.3 }, (e) => {
-      e.target.classList.toggle('in', e.isIntersecting);
-      const k = scenes.indexOf(e.target);
-      if (k > 0) scenes[k - 1].classList.toggle('past', e.isIntersecting);
-    });
 
-    // 여행 지도: 지구본이 화면에 보이면 #mapStage.in — 빙그르르 → 지구본 속으로 → 지도 → 경로(순서는 CSS 지연 시간)
+    // 지도: 보이는 동안만 도시가 깜박이고 지구본 둘레 종이비행기가 돈다(시간 기준, 작은 그림 하나)
     const stage = $('#mapStage'), globe = $('#globe');
-    watch([stage], { threshold: 0 }, (e) => stage.classList.toggle('live', e.isIntersecting));   // 도시 깜박임은 보일 때만
+    let orbit = null;
     if (motion) {
       globe.hidden = false;
       gsap.registerPlugin(MotionPathPlugin);
-      const kite = $('.globe-plane', globe);
-      const ride = (start, end) => ({ path: '#orbitPath', align: '#orbitPath', alignOrigin: [0.5, 0.5], autoRotate: true, start, end });
-      gsap.set(kite, { motionPath: ride(0.85, 0.85) });
-      const fly = gsap.to(kite, { motionPath: ride(0.85, 1.3), duration: 2.2, ease: 'power1.in', paused: true });   // 지구본 앞쪽을 가로질러(시간 기준, 한 번)
-      watch([globe], { threshold: 0.6 }, (e, io) => { if (!e.isIntersecting) return; io.unobserve(globe); stage.classList.add('in'); fly.play(); });
-    } else watch([stage], { threshold: 0.3 }, once);
+      orbit = gsap.to($('.globe-plane', globe), { motionPath: { path: '#orbitPath', align: '#orbitPath', alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 9, ease: 'none', repeat: -1, paused: true });
+    }
+    watch([stage], { threshold: 0 }, (e) => { stage.classList.toggle('live', e.isIntersecting); if (orbit) { if (e.isIntersecting) orbit.play(); else orbit.pause(); } });
+
+    if (sd) {
+      // 움직임은 전부 CSS(스크롤 타임라인). 여기서는 사진 사이·빨간 불 사이를 나는 종이비행기 그림만 꽂는다
+      $('#journey .j-fly').appendChild(kitePic());
+      $('#mapBox .map-kite').appendChild(kitePic());
+    } else {
+      // 2:1 동그라미와 두 선생님 메모: 들어오면 한 번
+      watch([$('#ratioStage')], { threshold: 0.4 }, once);
+      // 여행 장면: 들어오면 .in(글이 떠오르고 사진이 천천히 흐르고 종이비행기가 가로지른다), 다음 장면이 올라오면 앞 장면 .past(스르르 사라짐)
+      const scenes = $$('#journey .scene');
+      scenes.forEach((sc) => { const kite = kitePic(); kite.classList.add('scene-plane'); sc.appendChild(kite); });
+      watch(scenes, { threshold: 0.3 }, (e) => {
+        e.target.classList.toggle('in', e.isIntersecting);
+        const k = scenes.indexOf(e.target);
+        if (k > 0) scenes[k - 1].classList.toggle('past', e.isIntersecting);
+      });
+      // 지도: 지구본이 화면에 보이면 #mapStage.in — 빙그르르 → 지구본 속으로 → 지도 → 경로(순서는 CSS 지연 시간)
+      watch([motion ? globe : stage], { threshold: motion ? 0.6 : 0.3 }, (e, io) => { if (!e.isIntersecting) return; io.unobserve(e.target); stage.classList.add('in'); });
+    }
 
     // 성장 그래프: 들어오면 한 번 — 선이 그려지며 종이비행기가 선을 타고 오르고, 단계 점·이름이 차례로(시간 기준)
     if (motion) {

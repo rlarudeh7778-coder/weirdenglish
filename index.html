@@ -31,8 +31,8 @@
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/noto-kr.woff2?v=cee5a2a0" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/style.css?v=1eda12e4">
-<script>(function(d){d.classList.replace('no-js','js');try{if(!sessionStorage.getItem('weIntro')){sessionStorage.setItem('weIntro','1');d.classList.add('intro-on')}}catch(e){}})(document.documentElement)</script>
+<link rel="stylesheet" href="assets/style.css?v=dd70ddba">
+<script>(function(d){d.classList.replace('no-js','js');try{if(CSS.supports('animation-timeline: view()')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('sd')}catch(e){}try{if(!sessionStorage.getItem('weIntro')){sessionStorage.setItem('weIntro','1');d.classList.add('intro-on')}}catch(e){}})(document.documentElement)</script>
 </head>
 <body>
 <div class="intro" id="intro" aria-hidden="true">
@@ -183,7 +183,7 @@
 <!-- 제2장 : 여행지 장면 -->
 <section class="journey" id="journey" data-chapter="제2장|여행지에서 쓰는 영어">
   <h2 class="sr-only">여행지에서 필요한 영어 한 문장</h2>
-  <article class="scene" id="sceneDesert">
+  <article class="scene" style="--k:0" id="sceneDesert">
     <picture><source media="(max-width:767px) and (orientation:portrait)" srcset="assets/travel/m/desert.webp?v=afcdba98"><img class="scene-img" src="assets/travel/desert.webp?v=a1d3ebcb" alt="노을 진 사막 모래언덕 위를 걷는 낙타 행렬" width="1376" height="768"></picture>
     <svg class="prints" viewBox="0 0 1376 768" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><filter id="fpBlur"><feGaussianBlur stdDeviation="1.6"/></filter></defs><g filter="url(#fpBlur)"><ellipse class="fp" cx="1030.6" cy="785.0" rx="25.0" ry="10.0" transform="rotate(-75.4 1030.6 785.0)"/><ellipse class="fp" cx="1078.7" cy="734.0" rx="22.2" ry="8.9" transform="rotate(-83.3 1078.7 734.0)"/><ellipse class="fp" cx="1047.7" cy="680.5" rx="19.6" ry="7.9" transform="rotate(-91.6 1047.7 680.5)"/><ellipse class="fp" cx="1072.5" cy="631.6" rx="17.3" ry="6.9" transform="rotate(-99.9 1072.5 631.6)"/><ellipse class="fp" cx="1037.4" cy="596.9" rx="15.1" ry="6.0" transform="rotate(-107.7 1037.4 596.9)"/><ellipse class="fp" cx="1044.4" cy="552.9" rx="13.1" ry="5.2" transform="rotate(-114.8 1044.4 552.9)"/><ellipse class="fp" cx="1010.5" cy="530.5" rx="11.2" ry="4.5" transform="rotate(-121.0 1010.5 530.5)"/><ellipse class="fp" cx="1006.4" cy="494.2" rx="9.6" ry="3.8" transform="rotate(-126.2 1006.4 494.2)"/><ellipse class="fp" cx="976.7" cy="479.7" rx="8.2" ry="3.3" transform="rotate(-130.6 976.7 479.7)"/><ellipse class="fp" cx="967.8" cy="452.0" rx="6.9" ry="2.8" transform="rotate(-134.1 967.8 452.0)"/><ellipse class="fp" cx="944.1" cy="443.0" rx="5.9" ry="2.4" transform="rotate(-136.9 944.1 443.0)"/><ellipse class="fp" cx="935.4" cy="423.5" rx="5.0" ry="2.0" transform="rotate(-139.1 935.4 423.5)"/><ellipse class="fp" cx="918.8" cy="419.3" rx="4.4" ry="1.7" transform="rotate(-140.7 918.8 419.3)"/><ellipse class="fp" cx="914.1" cy="407.1" rx="3.9" ry="1.6" transform="rotate(-141.9 914.1 407.1)"/><ellipse class="fp" cx="905.1" cy="407.7" rx="3.6" ry="1.4" transform="rotate(-142.5 905.1 407.7)"/><ellipse class="fp" cx="906.7" cy="401.8" rx="3.5" ry="1.4" transform="rotate(-142.7 906.7 401.8)"/></g></svg>
     <div class="wrap scene-copy">
@@ -193,7 +193,7 @@
       <p class="scene-say"><span class="en">"Is it far from here?"</span><span class="ko">여기서 멀어요? 낙타 투어 가이드에게 묻는 한 문장</span></p>
     </div>
   </article>
-  <article class="scene">
+  <article class="scene" style="--k:1">
     <picture><source media="(max-width:767px) and (orientation:portrait)" srcset="assets/travel/m/paris.webp?v=41604fc9"><img class="scene-img" src="assets/travel/paris.webp?v=3d52d882" alt="센강 너머로 보이는 파리 에펠탑" width="1376" height="768" loading="lazy"></picture>
     <div class="wrap scene-copy">
       <p class="scene-place">PARIS · 에펠탑</p>
@@ -202,7 +202,7 @@
       <p class="scene-say"><span class="en">"A table for two, please."</span><span class="ko">두 명 자리 부탁해요. 파리 카페에 들어서며</span></p>
     </div>
   </article>
-  <article class="scene">
+  <article class="scene" style="--k:2">
     <picture><source media="(max-width:767px) and (orientation:portrait)" srcset="assets/travel/m/newyork.webp?v=002adc52"><img class="scene-img" src="assets/travel/newyork.webp?v=5fe02972" alt="노란 택시가 달리는 해질녘 뉴욕 맨해튼 거리" width="1376" height="768" loading="lazy"></picture>
     <div class="wrap scene-copy">
       <p class="scene-place">NEW YORK · 맨해튼</p>
@@ -211,7 +211,7 @@
       <p class="scene-say"><span class="en">"Excuse me, how do I get to Times Square?"</span><span class="ko">타임스스퀘어에 어떻게 가나요? 길 위에서 묻는 한 문장</span></p>
     </div>
   </article>
-  <article class="scene">
+  <article class="scene" style="--k:3">
     <picture><source media="(max-width:767px) and (orientation:portrait)" srcset="assets/travel/m/vegas.webp?v=04930d35"><img class="scene-img" src="assets/travel/vegas.webp?v=756b35ba" alt="블루아워의 라스베이거스 분수와 호텔 불빛" width="1376" height="768" loading="lazy"></picture>
     <div class="wrap scene-copy">
       <p class="scene-place">LAS VEGAS · 스트립</p>
@@ -220,11 +220,13 @@
       <p class="scene-say"><span class="en">"What do you recommend?"</span><span class="ko">뭘 추천하세요? 메뉴판 앞에서 쓰는 한 문장</span></p>
     </div>
   </article>
+  <div class="j-fly" aria-hidden="true"></div>
   <div class="journey-end" aria-hidden="true"></div>
 </section>
 
 <!-- 제2장 : 여행 지도 -->
 <section class="mapsec" id="map" data-chapter="제2장|여행 지도">
+  <div class="map-scroll">
   <div class="map-stage" id="mapStage">
     <div class="globe" id="globe" aria-hidden="true" hidden>
       <svg class="globe-orbit" viewBox="0 0 100 100"><path class="orbit-trail" d="M1 50A49 17 0 0 1 99 50"/></svg>
@@ -283,8 +285,10 @@
         <span class="city" style="left:28.74%;top:66.99%;--t:0.70"></span>
         <span class="city" style="left:7.08%;top:42.32%;--t:1.07"></span>
         <span class="city" style="left:45.17%;top:11.45%;--t:1.44"></span>
+        <span class="map-kite" aria-hidden="true"></span>
       </div>
     </div>
+  </div>
   </div>
   <div class="wrap" style="padding-bottom:clamp(88px,13vh,150px)">
     <div class="phr-head" data-reveal><h3>여행 영어, 딱 30문장이면 충분합니다</h3><button class="text-link" type="button" data-col="col3">여행 영어 칼럼 전문 읽기 <i class="ph ph-arrow-right"></i></button></div>
@@ -898,7 +902,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="assets/app.js?v=0fa4d509"></script>
+<script src="assets/app.js?v=5b0db354"></script>
 <script src="https://wcs.pstatic.net/wcslog.js"></script>
 <script>if(!window.wcs_add) window.wcs_add = {}; wcs_add["wa"] = "2569d2bd4a9d2c0"; if(window.wcs) { wcs_do(); }</script>
 </body>

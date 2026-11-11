@@ -61,6 +61,7 @@ h1,h2,h3,h4,p,figure{margin:0}
 /* 후킹·강조 문구: 같은 글꼴 그대로 빨간 펜 색만(사진 위 문구는 밝은 산호색) */
 .hl{font-style:normal;color:var(--pen-ink)}
 .scene-hope .hl{color:#FFA197}
+.sky-title .hl{color:var(--pen);font-weight:900}
 .h2{font-family:var(--f-sans);font-weight:700;font-size:clamp(30px,4.4vw,54px);line-height:1.22;letter-spacing:-.025em}
 .lead{color:var(--ink-2);font-size:clamp(16px,1.4vw,19px);max-width:62ch;margin-top:20px}
 .eyebrow{display:inline-block;font-size:13px;font-weight:600;letter-spacing:.14em;color:var(--ink-3);margin-bottom:18px}
@@ -807,43 +808,48 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
   .js .sky-copy{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .8s var(--ease)}
   .js .sky.in .sky-copy{opacity:1;transform:none}
 
-  /* 여행 장면: 겹쳐 쌓기는 sticky. 들어오면 글이 떠오르고 사진이 천천히 흐르고 종이비행기가 가로지른다. 다음 장면이 오면 스르르 */
-  .scene-img{will-change:auto;transition:opacity 1s ease}
-  .js .scene-copy{opacity:0;transform:translateY(40px);transition:opacity .8s ease .1s,transform .9s var(--ease) .1s}
-  .js .scene.in .scene-copy{opacity:1;transform:none}
-  .scene.in:not(.past) :is(.scene-img,.prints){animation:scenePan 16s ease-in-out infinite alternate}   /* 발자국 그림도 사진과 같이 흘러야 모래 위에서 미끄러지지 않는다 */
-  .prints{transition:opacity 1s ease}
-  .js .scene.in.past :is(.scene-img,.scene-copy,.prints){opacity:0}
+  /* 여행 사진·지도·2:1 은 두 방식 중 하나만 쓴다: html.sd(스크롤 연동 CSS — 아래 따로 블록) / html:not(.sd)(화면에 들어오면 시간 기준 재생).
+     html.sd 는 머리 스크립트가 「스크롤 연동 지원 + 움직임 줄이기 아님」일 때 붙이고 app.js 도 이것만 본다. 여기는 공통 모양 */
+  .scene-img{will-change:auto}
   .scene-plane{display:none}
-  .scene.in:not(.past) .scene-plane{display:block;animation:kite 7s linear .6s infinite both}
-  .js .fp{opacity:0;transition:opacity .35s ease calc(var(--i,0) * 90ms + .5s)}
-  .js .scene.in .fp{opacity:1}
-
-  /* 여행 지도: 지구본이 보이면 #mapStage.in — 빙그르르 더 빨리(1.3초) → 지구본 속으로 커지며 사라짐 → 지도 → 경로·도시 차례로 */
-  #mapStage:not(.in) .globe-strip{animation-play-state:running}   /* 다가오는 동안 천천히 돌고, .in 부터는 아래 「더 빨리」 한 바퀴가 이어받는다 */
+  .scene-copy{padding-bottom:calc(96px + env(safe-area-inset-bottom))}   /* 아래 고정 바(무료 체험 신청)에 영어 문장이 가리지 않게 */
+  .scene-say{background:rgb(8 16 30 / .84);border-color:rgb(255 255 255 / .2)}
+  .scene-say .en{font-size:clamp(19px,5.4vw,22px);font-weight:700;line-height:1.35}
+  .scene-say .ko{font-size:14px;color:#D7E3F0}
   .globe-ball{box-shadow:none}   /* 큰 흐림 그림자는 크기가 바뀔 때 조각조각 깨져 보였다 → 그라데이션 빛(계산 없음)으로 */
   .globe::before{content:"";position:absolute;inset:-14%;border-radius:50%;background:radial-gradient(closest-side,rgb(120 180 240 / .5),rgb(120 180 240 / 0))}
-  .globe-spin{transition:transform 1.4s cubic-bezier(.5,0,.75,0)}
-  #mapStage.in .globe-spin{transform:translateX(-33.3333%)}
-  .globe{transition:transform .8s cubic-bezier(.55,0,.8,.2) 1.3s,opacity .6s ease 1.5s}
-  #mapStage.in .globe{transform:scale(3.2);opacity:0}
-  .js #mapStage .wrap{opacity:0;transform:scale(.94);transition:opacity .6s ease 1.8s,transform .7s var(--ease) 1.8s}
-  .js #mapStage.in .wrap{opacity:1;transform:none}
-  .js #mapStage .route-mask{stroke-dashoffset:1;transition:stroke-dashoffset .42s ease-in-out calc(2.3s + var(--k,0) * .4s)}
-  .js #mapStage.in .route-mask{stroke-dashoffset:0}
-  .js #mapStage .city.stop:not(.home){opacity:.3;transform:scale(.5);transition:opacity .3s ease calc(2.65s + var(--k,0) * .4s),transform .45s cubic-bezier(.34,1.56,.64,1) calc(2.65s + var(--k,0) * .4s)}
-  .js #mapStage.in .city.stop{opacity:1;transform:none}
   #mapPlane{display:none}
+  .ratio-stage{min-height:0;padding:64px 16px 48px}   /* 2:1 위아래 빈칸 줄이기(화면 한 장 높이 고정을 푼다) */
 
-  /* 2:1: 들어오면 2 에 빨간 동그라미가 그려지고, 「원어민 + 한국인 선생님」 「오직 당신 한 사람」 메모가 차례로(PC 와 같은 내용) */
-  .js .ratio-stage .ring{--a:0deg;transition:--a 1.2s cubic-bezier(.65,0,.35,1) .2s}
-  .js .ratio-stage.in .ring{--a:360deg}
-  .js .ratio-stage .ann{opacity:0;transition:opacity .5s ease}
-  .js .ratio-stage.in .ann{opacity:1}
-  .js .ratio-stage.in #ann2{transition-delay:1.2s}
-  .js .ratio-stage.in #ann1{transition-delay:1.6s}
-  .js #ratioCopy{opacity:0;transform:translateY(14px);transition:opacity .6s ease 1.9s,transform .6s var(--ease) 1.9s}
-  .js .ratio-stage.in #ratioCopy{opacity:1;transform:none}
+  /* -- 시간 기준(스크롤 연동을 못 쓰는 브라우저) -- */
+  html:not(.sd) .scene-img{transition:opacity 1s ease}
+  .js:not(.sd) .scene-copy{opacity:0;transform:translateY(40px);transition:opacity .8s ease .1s,transform .9s var(--ease) .1s}
+  .js:not(.sd) .scene.in .scene-copy{opacity:1;transform:none}
+  html:not(.sd) .scene.in:not(.past) :is(.scene-img,.prints){animation:scenePan 16s ease-in-out infinite alternate}
+  html:not(.sd) .prints{transition:opacity 1s ease}
+  .js:not(.sd) .scene.in.past :is(.scene-img,.scene-copy,.prints){opacity:0}
+  html:not(.sd) .scene.in:not(.past) .scene-plane{display:block;animation:kite 7s linear .6s infinite both}
+  .js:not(.sd) .fp{opacity:0;transition:opacity .35s ease calc(var(--i,0) * 90ms + .5s)}
+  .js:not(.sd) .scene.in .fp{opacity:1}
+  html:not(.sd) #mapStage:not(.in) .globe-strip{animation-play-state:running}
+  html:not(.sd) .globe-spin{transition:transform 1.4s cubic-bezier(.5,0,.75,0)}
+  html:not(.sd) #mapStage.in .globe-spin{transform:translateX(-33.3333%)}
+  html:not(.sd) .globe{transition:transform .8s cubic-bezier(.55,0,.8,.2) 1.3s,opacity .6s ease 1.5s}
+  html:not(.sd) #mapStage.in .globe{transform:scale(3.2);opacity:0}
+  .js:not(.sd) #mapStage .wrap{opacity:0;transform:scale(.94);transition:opacity .6s ease 1.8s,transform .7s var(--ease) 1.8s}
+  .js:not(.sd) #mapStage.in .wrap{opacity:1;transform:none}
+  .js:not(.sd) #mapStage .route-mask{stroke-dashoffset:1;transition:stroke-dashoffset .42s ease-in-out calc(2.3s + var(--k,0) * .4s)}
+  .js:not(.sd) #mapStage.in .route-mask{stroke-dashoffset:0}
+  .js:not(.sd) #mapStage .city.stop:not(.home){opacity:.3;transform:scale(.5);transition:opacity .3s ease calc(2.65s + var(--k,0) * .4s),transform .45s cubic-bezier(.34,1.56,.64,1) calc(2.65s + var(--k,0) * .4s)}
+  .js:not(.sd) #mapStage.in .city.stop{opacity:1;transform:none}
+  .js:not(.sd) .ratio-stage .ring{--a:0deg;transition:--a 1.2s cubic-bezier(.65,0,.35,1) .2s}
+  .js:not(.sd) .ratio-stage.in .ring{--a:360deg}
+  .js:not(.sd) .ratio-stage .ann{opacity:0;transition:opacity .5s ease}
+  .js:not(.sd) .ratio-stage.in .ann{opacity:1}
+  .js:not(.sd) .ratio-stage.in #ann2{transition-delay:1.2s}
+  .js:not(.sd) .ratio-stage.in #ann1{transition-delay:1.6s}
+  .js:not(.sd) #ratioCopy{opacity:0;transform:translateY(14px);transition:opacity .6s ease 1.9s,transform .6s var(--ease) 1.9s}
+  .js:not(.sd) .ratio-stage.in #ratioCopy{opacity:1;transform:none}
 }
 /* 동그라미가 그려지는 각도: 등록해 두면 CSS 만으로 부드럽게 바뀐다(등록 못 하는 브라우저는 끝 모양으로 바로) */
 @property --a{syntax:"<angle>";inherits:false;initial-value:360deg}
@@ -856,6 +862,65 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
 }
 @keyframes ribbon{to{transform:scaleX(1)}}
 @keyframes passPop{0%{opacity:0;transform:scale(.2)}60%{opacity:1;transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* ================= 휴대폰 스크롤 연동(html.sd) =================
+   화면을 붙잡는 건 sticky(브라우저가 굴림), 그 안의 움직임은 스크롤 타임라인 CSS — 스크립트가 매 프레임 따라가지 않아 손가락 스크롤과 엇박자가 없다.
+   여행 사진: 한 화면에 겹쳐 두고 내려가는 만큼 사진이 어두워졌다(검정) → 다음 사진이 밝아진다. 그 사이를 종이비행기가 잇는다.
+   지도: 지구본 빙그르르 → 지구본 속으로 → 지도 → 종이비행기가 빨간 불 사이를 차례로 날며 경로가 그려지고 불이 켜진다.
+   2:1: 내려가는 만큼 2 에 빨간 동그라미가 그려지고 두 선생님 메모가 나온다. */
+.j-fly,.map-kite{display:none}
+@media (max-width:767px){
+  html.sd .journey{height:400svh;background:#030507;view-timeline:--journey block}
+  html.sd .scene{position:sticky;top:0;height:100svh;min-height:0;--r0:calc(var(--k) * 25% + 2%);--r1:calc(var(--k) * 25% + 23%);
+    animation:sceneMid linear both;animation-timeline:--journey;animation-range:contain var(--r0) contain var(--r1)}
+  html.sd .scene + .scene{margin-top:-100svh}
+  html.sd .scene:first-of-type{animation-name:sceneFirst}
+  html.sd .scene:last-of-type{animation-name:sceneLast}
+  html.sd :is(.scene-img,.prints){animation:sceneZoom linear both;animation-timeline:--journey;animation-range:contain var(--r0) contain var(--r1)}
+  html.sd .scene-copy{animation:sceneCopy linear both;animation-timeline:--journey;animation-range:contain var(--r0) contain var(--r1)}
+  html.sd .fp{animation:fpIn linear both;animation-timeline:--journey;animation-range:contain calc(1% + var(--i,0) * .9%) contain calc(2.2% + var(--i,0) * .9%)}
+  html.sd .journey-end{display:none}
+  html.sd .j-fly{display:block;position:sticky;top:0;height:100svh;margin-top:-100svh;z-index:3;overflow:hidden;pointer-events:none}
+  html.sd .j-fly svg{position:absolute;left:0;top:0;width:56px;height:56px;overflow:visible;animation:jFly linear both;animation-timeline:--journey;animation-range:contain 0% contain 100%}
+
+  html.sd .map-scroll{height:260svh;view-timeline:--map block}
+  html.sd #mapStage{position:sticky;top:0;height:100svh;min-height:0}
+  html.sd #mapStage.live .globe-strip{animation-play-state:running}
+  html.sd .globe-spin{animation:globeSpinS linear both;animation-timeline:--map;animation-range:contain 0% contain 30%}
+  html.sd .globe{animation:globeDiveS linear both;animation-timeline:--map;animation-range:contain 16% contain 32%}
+  html.sd #mapStage .wrap{animation:mapIn linear both;animation-timeline:--map;animation-range:contain 24% contain 36%}
+  html.sd .route-mask{animation:routeDraw linear both;animation-timeline:--map;animation-range:contain calc(37% + var(--k) * 5.5%) contain calc(42.5% + var(--k) * 5.5%)}
+  html.sd .city.stop:not(.home){animation:stopOn linear both;animation-timeline:--map;animation-range:contain calc(41.5% + var(--k) * 5.5%) contain calc(42.5% + var(--k) * 5.5%)}
+  html.sd .map-box{container-type:size}
+  html.sd .map-kite{display:block;position:absolute;left:0;top:0;width:24px;height:24px;margin:-12px 0 0 -12px;z-index:3;pointer-events:none;
+    animation:mapTour linear both;animation-timeline:--map;animation-range:contain 37% contain 97.5%}
+  html.sd .map-kite svg{width:100%;height:100%;overflow:visible;transform:rotate(34deg)}   /* 그림의 코끝(오른쪽 위)을 진행 방향(오른쪽)으로 */
+
+  html.sd .ratio-stage{view-timeline:--ratio block}
+  html.sd .ratio-stage .ring{animation:ringDraw linear both;animation-timeline:--ratio;animation-range:entry 55% cover 48%}
+  html.sd #ann2{animation:annIn linear both;animation-timeline:--ratio;animation-range:cover 44% cover 52%}
+  html.sd #ann1{animation:annIn linear both;animation-timeline:--ratio;animation-range:cover 50% cover 58%}
+  html.sd #ratioCopy{animation:copyUp linear both;animation-timeline:--ratio;animation-range:cover 52% cover 62%}
+}
+@keyframes sceneMid{0%{opacity:0}19%,81%{opacity:1}100%{opacity:0}}
+@keyframes sceneFirst{0%,81%{opacity:1}100%{opacity:0}}
+@keyframes sceneLast{0%{opacity:0}19%,100%{opacity:1}}
+@keyframes sceneZoom{from{transform:scale(1.12)}to{transform:scale(1)}}
+@keyframes sceneCopy{0%,16%{opacity:0;transform:translateY(36px)}34%,100%{opacity:1;transform:none}}
+@keyframes fpIn{from{opacity:0}to{opacity:1}}
+@keyframes jFly{
+  0%,19%{transform:translate(-80px,72svh) rotate(-14deg);opacity:0}20%{opacity:1}
+  31%{transform:translate(calc(100vw + 40px),18svh) rotate(-24deg);opacity:1}31.1%,44%{transform:translate(-80px,72svh) rotate(-14deg);opacity:0}45%{opacity:1}
+  56%{transform:translate(calc(100vw + 40px),18svh) rotate(-24deg);opacity:1}56.1%,69%{transform:translate(-80px,72svh) rotate(-14deg);opacity:0}70%{opacity:1}
+  81%{transform:translate(calc(100vw + 40px),18svh) rotate(-24deg);opacity:1}81.1%,100%{transform:translate(-80px,72svh) rotate(-14deg);opacity:0}}
+@keyframes globeSpinS{to{transform:translateX(-33.3333%)}}
+@keyframes globeDiveS{0%{transform:none;opacity:1}100%{transform:scale(3.2);opacity:0}}
+@keyframes mapIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+@keyframes routeDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes stopOn{from{opacity:.3;transform:scale(.5)}to{opacity:1;transform:none}}
+@keyframes ringDraw{from{--a:0deg}to{--a:360deg}}
+@keyframes annIn{from{opacity:0}to{opacity:1}}
+@keyframes copyUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
 /* ================= 휴대폰 첫 방문 표지 =================
    검은 양장본(금박 글씨)이 나타나 → 표지가 왼쪽 경첩으로 열리고 → 첫 장이 보인 뒤 → 책 속으로 들어가듯 페이지가 나온다.
@@ -886,3 +951,8 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
 @keyframes coverOpen{to{transform:rotateY(-160deg)}}
 @keyframes introDive{to{transform:scale(1.35)}}
 @keyframes introOut{to{opacity:0;visibility:hidden}}
+
+/* @@지도 비행 시작 */
+/* _build/map_cities.py 가 만든다 — 손으로 고치지 말 것 */
+@keyframes mapTour{0.00%{transform:translate(82.87cqw,30.23cqh) rotate(141deg)}4.55%{transform:translate(81.92cqw,33.95cqh) rotate(111deg)}9.09%{transform:translate(80.97cqw,41.56cqh) rotate(180deg)}13.64%{transform:translate(79.32cqw,43.16cqh) rotate(140deg)}18.18%{transform:translate(77.67cqw,47.93cqh) rotate(-125deg)}22.73%{transform:translate(74.14cqw,39.27cqh) rotate(-146deg)}27.27%{transform:translate(70.61cqw,36.90cqh) rotate(-155deg)}31.82%{transform:translate(67.75cqw,36.02cqh) rotate(169deg)}36.36%{transform:translate(64.89cqw,39.43cqh) rotate(-138deg)}40.91%{transform:translate(61.60cqw,35.13cqh) rotate(-167deg)}45.45%{transform:translate(58.31cqw,35.82cqh) rotate(-99deg)}50.00%{transform:translate(57.85cqw,30.42cqh) rotate(-105deg)}54.55%{transform:translate(57.39cqw,27.70cqh) rotate(-145deg)}59.09%{transform:translate(55.28cqw,25.82cqh) rotate(-176deg)}63.64%{transform:translate(53.18cqw,27.03cqh) rotate(-121deg)}68.18%{transform:translate(51.88cqw,23.25cqh) rotate(-140deg)}72.73%{transform:translate(50.58cqw,21.98cqh) rotate(-112deg)}77.27%{transform:translate(50.28cqw,20.66cqh) rotate(-127deg)}81.82%{transform:translate(49.97cqw,20.09cqh) rotate(-155deg)}86.36%{transform:translate(40.54cqw,16.95cqh) rotate(170deg)}90.91%{transform:translate(31.10cqw,27.91cqh) rotate(-153deg)}95.45%{transform:translate(25.56cqw,25.48cqh) rotate(172deg)}100.00%{transform:translate(20.03cqw,31.26cqh) rotate(142deg)}}
+/* @@지도 비행 끝 */
