@@ -298,25 +298,37 @@
     return () => added.forEach((n) => n.remove());
   });
 
-  /* 3. 여행 지도: 경로가 그려지고 비행기가 도시를 따라 난다 */
+  /* 3. 여행 지도: 큰 지구본이 빙그르르 돌다가, 그 속으로 들어가듯 커지며 사라지고 지도 화면이 나타난다.
+     이어서 경로가 그려지고 비행기가 도시를 따라 난다. PC·휴대폰 모두 화면을 붙잡는다(휴대폰은 짧게). */
   mm.add({ d: WIDE_MQ, m: PHONE_MQ }, (ctx) => {
+    const stage = $('#mapStage'), content = $('.wrap', stage), globe = $('#globe'), spin = $('#globeSpin'), kite = $('.globe-plane', globe);
     const box = $('#mapBox'), masks = $$('.route-mask', box), routes = $$('.route', box), pins = $$('.pin', box), plane = $('#mapPlane');
+    globe.hidden = false;
     gsap.set(masks, { strokeDashoffset: 1 });
     gsap.set(pins.slice(1), { autoAlpha: 0, y: 8 });
-    // PC 는 화면을 붙잡고 스크롤에 맞춰 그리고, 휴대폰은 화면에 들어올 때 한 번 저절로 그린다(스크롤 중 지도 전체를 다시 그리지 않게)
+    // 지구본 둘레를 도는 종이비행기: 앞쪽(아래 반)은 또렷하게, 뒤쪽(위 반)은 작고 흐리게. 화면에 있을 때만 돈다
+    const orbit = gsap.timeline({ repeat: -1, paused: true, defaults: { ease: 'none' } })
+      .to(kite, { motionPath: { path: '#orbitPath', align: '#orbitPath', alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 10 }, 0)
+      .to(kite, { autoAlpha: 0.15, scale: 0.7, duration: 0.6 }, 2.2)
+      .to(kite, { autoAlpha: 1, scale: 1, duration: 0.6 }, 7.2);
+    ScrollTrigger.create({ trigger: stage, start: 'top bottom', end: 'bottom top',
+      onToggle: (s) => { globe.classList.toggle('on', s.isActive); if (s.isActive) orbit.play(); else orbit.pause(); } });
+
+    const G = 1.6;   // 지구본 구간(스크롤 길이 비율). 그 뒤 경로 하나당 1
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
-      scrollTrigger: ctx.conditions.d
-        ? { trigger: '#mapStage', start: 'top top', end: '+=160%', pin: true, scrub: 0.6, anticipatePin: 1 }
-        : { trigger: box, start: 'top 70%', toggleActions: 'play none none none' },
+      scrollTrigger: { trigger: stage, start: 'top top', end: ctx.conditions.d ? '+=230%' : '+=150%', pin: true, scrub: 0.6, anticipatePin: 1 },
     });
-    if (ctx.conditions.m) tl.timeScale(1.6);
+    tl.fromTo(spin, { xPercent: 0 }, { xPercent: -100 / 3, duration: G, ease: 'power1.in' }, 0)                         // 한 바퀴 더, 점점 빠르게
+      .fromTo(globe, { scale: 1, autoAlpha: 1 }, { scale: 3.2, autoAlpha: 0, duration: 0.7, ease: 'power2.in' }, G - 0.7)   // 지구본 속으로
+      .fromTo(content, { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power2.out' }, G - 0.45);
     routes.forEach((r, i) => {
-      tl.to(masks[i], { strokeDashoffset: 0, autoRound: false, duration: 1 }, i)   // autoRound:false — 0~1 사이 값이 정수로 반올림돼 한 번에 튀어나오지 않게
-        .to(plane, { motionPath: { path: r, align: r, alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 1 }, i)
-        .to(pins[i + 1], { autoAlpha: 1, y: 0, duration: 0.25 }, i + 0.85);
+      tl.to(masks[i], { strokeDashoffset: 0, autoRound: false, duration: 1 }, G + i)   // autoRound:false — 0~1 사이 값이 정수로 반올림돼 한 번에 튀어나오지 않게
+        .to(plane, { motionPath: { path: r, align: r, alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 1 }, G + i)
+        .to(pins[i + 1], { autoAlpha: 1, y: 0, duration: 0.25 }, G + i + 0.85);
     });
     tl.to({}, { duration: 0.3 });
+    return () => { orbit.kill(); globe.classList.remove('on'); globe.hidden = true; };
   });
 
   /* 4. 2:1 — 빨간 펜 동그라미와 메모가 차례로 */
