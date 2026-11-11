@@ -1,6 +1,15 @@
 /* 이상한영어 리뉴얼 샘플 v2 · 책 한 장을 넘기면 종이비행기가 날아오르고 하늘이 펼쳐진다
    모양 규칙(한 곳): 종이·사진·카드 = 4px, 버튼·칩 = 둥근 알약, 입력칸 = 밑줄
    바탕은 하늘색 그라데이션, 강조색은 빨간 펜(--pen) 하나, 버튼은 잉크색. */
+/* @@글꼴 시작 */
+/* 글꼴: 이 사이트에 나오는 글자·아이콘만 남겨 직접 올린다(_build/fonts.py 가 만든 블록 — 손으로 고치지 말 것) */
+@font-face{font-family:"Pretendard Variable";src:url(fonts/pretendard.woff2?v=0864dd3d) format("woff2");font-weight:45 920;font-display:swap}
+@font-face{font-family:"Hahmlet";src:url(fonts/hahmlet.woff2?v=55b45255) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Nanum Pen Script";src:url(fonts/nanum-pen.woff2?v=e3ba27ef) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Phosphor";src:url(fonts/phosphor.woff2?v=ae9dd5e6) format("woff2");font-weight:400;font-display:block}
+.ph{font-family:"Phosphor"!important;speak:never;font-style:normal;font-weight:400;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.ph.ph-airplane-takeoff:before{content:"\e504"}.ph.ph-airplane-tilt:before{content:"\e5d6"}.ph.ph-arrow-counter-clockwise:before{content:"\e038"}.ph.ph-arrow-right:before{content:"\e06c"}.ph.ph-arrow-up-right:before{content:"\e092"}.ph.ph-article:before{content:"\e0a8"}.ph.ph-caret-down:before{content:"\e136"}.ph.ph-chat-circle-dots:before{content:"\e16c"}.ph.ph-check-circle:before{content:"\e184"}.ph.ph-eye-slash:before{content:"\e224"}.ph.ph-instagram-logo:before{content:"\e2d0"}.ph.ph-list:before{content:"\e2f0"}.ph.ph-pause:before{content:"\e39e"}.ph.ph-pause-circle:before{content:"\e3a0"}.ph.ph-phone:before{content:"\e3b8"}.ph.ph-play:before{content:"\e3d0"}.ph.ph-shuffle:before{content:"\e422"}.ph.ph-subtitles:before{content:"\e1a8"}.ph.ph-timer:before{content:"\e492"}.ph.ph-x:before{content:"\e4f6"}.ph.ph-youtube-logo:before{content:"\e4fc"}
+/* @@글꼴 끝 */
 
 :root{
   --sky-top:#9CCBF2; --sky-mid:#CFE6FA; --bg:#EEF6FD; --bg-2:#E1EEFA; --sheet:#FBFDFF; --sheet-2:#F1F6FB;
@@ -145,9 +154,6 @@ h1,h2,h3,h4,p,figure{margin:0}
 .base{z-index:0;border-radius:0 var(--r) var(--r) 0;box-shadow:1px 1px 0 var(--edge),3px 2px 0 var(--sheet-2),4px 3px 0 var(--edge),6px 4px 0 var(--sheet-2),7px 5px 0 var(--edge),24px 34px 60px -18px rgb(var(--shadow-rgb) / .45)}
 .plane{position:relative;grid-area:1/1;width:var(--pw);height:var(--ph);pointer-events:none;visibility:hidden;z-index:3;filter:drop-shadow(0 30px 30px rgb(var(--shadow-rgb) / .28))}
 .plane svg{width:100%;height:100%;overflow:visible}
-/* 휴대폰(767px 이하, html.m-hero): 책 없이 종이비행기만 — 버튼 아래에서 떠 있다가 스크롤하면 날아오른다(app.js buildTakeoff) */
-.m-hero .book{display:none}
-.m-hero .plane{width:min(44vw,190px);height:min(44vw,190px);filter:drop-shadow(0 22px 22px rgb(var(--shadow-rgb) / .3))}
 
 .pg{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:9cqi 9cqi 7cqi 11cqi}
 .back .pg{padding:9cqi 11cqi 7cqi 9cqi}
@@ -181,7 +187,8 @@ h1,h2,h3,h4,p,figure{margin:0}
 .next-page .pg-q{font-size:clamp(18px,min(7.8cqi,6.2cqb),44px)}
 .next-page .pen{font-size:clamp(22px,min(7cqi,6cqb),36px)}
 
-/* 낱장 모드(움직임 줄이기 · 라이브러리 없음) */
+/* 낱장 모드(움직임 줄이기 · 라이브러리 없음) — 책이 보이는 768px 이상에서만 */
+@media (min-width:768px){
 :is(.book--flat,.no-js .book){width:min(100%,560px)!important;height:auto!important;perspective:none;display:flex;flex-direction:column;gap:16px;margin:0 auto}
 :is(.book--flat,.no-js .book) .leaf,:is(.book--flat,.no-js .book) .base{position:relative;inset:auto;left:auto;top:auto;width:100%;height:auto;transform:none!important;display:flex;flex-direction:column;gap:16px;box-shadow:none}
 :is(.book--flat,.no-js .book) .face{position:relative;inset:auto;transform:none;backface-visibility:visible;-webkit-backface-visibility:visible;aspect-ratio:.9;border-radius:var(--r);box-shadow:0 14px 40px -24px rgb(var(--shadow-rgb) / .5)}
@@ -191,6 +198,7 @@ h1,h2,h3,h4,p,figure{margin:0}
 :is(.hero.is-flat,.no-js .hero) .plane{display:none}
 :is(.hero.is-flat,.no-js .hero) .sky{position:relative;inset:auto;min-height:90svh;clip-path:none;order:3}
 :is(.hero.is-flat,.no-js .hero) .sky-copy{position:relative;inset:auto;min-height:90svh}
+}
 
 /* ---------- 2. 여행지 장면(겹쳐 쌓이는 화면) ---------- */
 .journey{position:relative;--dwell:55svh}
@@ -213,7 +221,7 @@ h1,h2,h3,h4,p,figure{margin:0}
 
 /* ---------- 3. 여행 지도 ---------- */
 .mapsec{position:relative}
-.map-stage{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:calc(var(--header) + 32px) 0 48px}
+.map-stage{position:relative;overflow:hidden;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:calc(var(--header) + 32px) 0 48px}
 /* 지구본(지도로 들어가기 전): 점무늬 세계가 옆으로 흐르는 공 + 둥근 음영·대기 빛 + 둘레를 도는 종이비행기.
    무늬 띠는 지구본 너비의 6배(무늬 한 장 = 2배, 3장) — 저절로 도는 한 바퀴(CSS)와 스크롤로 더 도는 한 바퀴(app.js)를 합쳐도 끝이 보이지 않는다.
    위치·크기·투명도만 바꿔 화면을 다시 그리지 않는다. 움직임이 꺼지면 hidden 그대로(지도만). */
@@ -224,7 +232,7 @@ h1,h2,h3,h4,p,figure{margin:0}
 .globe-ball::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle at 32% 26%,rgb(255 255 255 / .36),rgb(255 255 255 / 0) 40%),radial-gradient(circle,rgb(0 0 0 / 0) 56%,rgb(4 16 36 / .6))}
 .globe-spin{position:absolute;top:0;left:0;width:600%;height:100%}
-.globe-strip{width:100%;height:100%;background:url(travel/globe.webp) repeat-x 0 50% / calc(100% / 3) 100%;animation:globeIdle 36s linear infinite paused}
+.globe-strip{width:100%;height:100%;background:url(travel/globe.webp?v=3e14cfbd) repeat-x 0 50% / calc(100% / 3) 100%;animation:globeIdle 36s linear infinite paused}
 .globe.on .globe-strip{animation-play-state:running}
 @keyframes globeIdle{to{transform:translateX(-33.3333%)}}
 .globe-orbit{position:absolute;left:-16%;top:-16%;width:132%;height:132%;overflow:visible;transform:rotate(-14deg)}
@@ -716,7 +724,7 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
 
 @media (min-width:768px){.js [data-reveal]{opacity:0;transform:translateY(28px)}}   /* 나타나기는 PC 만(app.js 와 같은 기준) */
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;animation-delay:0s!important;transition-delay:0s!important}
   .js [data-reveal]{opacity:1;transform:none}
   .js .ink-text .w{--o:1}
   .mq-row{animation:none;flex-wrap:wrap;width:auto}
@@ -759,9 +767,6 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
   .grow-list{display:none}
   .grow-chart{display:block}
 
-  /* 첫 화면: 책은 없다(움직임 줄이기·스크립트 없음에서도) */
-  :is(.hero.is-flat,.no-js .hero) .stage{display:none}
-
   /* 여행 장면: 제목 대신 희망 한 줄 */
   .scene-title{display:none}
   .scene-hope{display:block;margin-top:10px;font-family:var(--f-serif);font-weight:800;font-size:clamp(28px,8.2vw,36px);line-height:1.24;letter-spacing:-.035em;color:#fff;text-shadow:0 2px 24px rgb(0 0 0 / .35)}
@@ -774,5 +779,105 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
     transition:max-height .5s var(--ease),padding .5s var(--ease),opacity .35s ease,border-color .3s,visibility 0s .5s}
   .js .pass.open .pass-stub{max-height:340px;padding-block:20px 22px;opacity:1;visibility:visible;border-top-color:var(--line);transition-delay:0s}
   .js .pass.open .pass-ok .pen{display:inline-block;animation:passPop .55s var(--ease) .2s both}
+
+  /* ---- 움직임: 휴대폰은 화면 붙잡기·스크롤 연동이 없다. app.js(initPhone)가 화면에 들어오면 .in·.lift·.past 를 붙이고
+     움직임은 아래 CSS(시간 기준, 위치·크기·투명도만)가 한다. GPU 가 직접 처리해 손가락 스크롤과 엇박자가 나지 않는다 ---- */
+  .cloud,.plane,.scene-plane,.globe-plane,.gc-plane{filter:none}   /* 움직이는 것에 흐림·그림자 필터를 걸면 매 프레임 다시 계산한다 */
+  .prints{mix-blend-mode:normal}
+
+  /* 첫 화면: 문구 → 종이비행기(둥실, 조금 내리면 뾰옹) → 하늘 구간이 차례로 이어진다 */
+  .hero{height:auto;min-height:190svh;display:grid;grid-template-rows:auto minmax(220px,1fr) auto}
+  .hero-copy{grid-row:1;height:auto}
+  .stage{grid-row:2;position:relative;inset:auto;perspective:none}
+  .book{display:none}
+  .plane{visibility:visible;width:min(44vw,190px);height:min(44vw,190px);transition:transform .9s cubic-bezier(.55,0,.8,.2),opacity .6s ease .25s}
+  .plane svg{animation:bob 2.8s ease-in-out infinite alternate}
+  .stage.lift .plane{transform:translate(72vw,-70svh) rotate(-24deg) scale(1.8);opacity:0}
+  .stage.lift .plane svg{animation:none}
+  .sky,.js .sky{grid-row:3;position:relative;inset:auto;min-height:90svh;clip-path:none}
+  .sky-copy{position:relative;inset:auto;min-height:90svh}
+  .js .sky-copy{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .8s var(--ease)}
+  .js .sky.in .sky-copy{opacity:1;transform:none}
+
+  /* 여행 장면: 겹쳐 쌓기는 sticky. 들어오면 글이 떠오르고 사진이 천천히 흐르고 종이비행기가 가로지른다. 다음 장면이 오면 스르르 */
+  .scene-img{will-change:auto;transition:opacity 1s ease}
+  .js .scene-copy{opacity:0;transform:translateY(40px);transition:opacity .8s ease .1s,transform .9s var(--ease) .1s}
+  .js .scene.in .scene-copy{opacity:1;transform:none}
+  .scene.in:not(.past) :is(.scene-img,.prints){animation:scenePan 16s ease-in-out infinite alternate}   /* 발자국 그림도 사진과 같이 흘러야 모래 위에서 미끄러지지 않는다 */
+  .prints{transition:opacity 1s ease}
+  .js .scene.in.past :is(.scene-img,.scene-copy,.prints){opacity:0}
+  .scene-plane{display:none}
+  .scene.in:not(.past) .scene-plane{display:block;animation:kite 7s linear .6s infinite both}
+  .js .fp{opacity:0;transition:opacity .35s ease calc(var(--i,0) * 90ms + .5s)}
+  .js .scene.in .fp{opacity:1}
+
+  /* 여행 지도: 지구본이 보이면 #mapStage.in — 빙그르르 더 빨리(1.3초) → 지구본 속으로 커지며 사라짐 → 지도 → 경로·도시 차례로 */
+  #mapStage:not(.in) .globe-strip{animation-play-state:running}   /* 다가오는 동안 천천히 돌고, .in 부터는 아래 「더 빨리」 한 바퀴가 이어받는다 */
+  .globe-ball{box-shadow:none}   /* 큰 흐림 그림자는 크기가 바뀔 때 조각조각 깨져 보였다 → 그라데이션 빛(계산 없음)으로 */
+  .globe::before{content:"";position:absolute;inset:-14%;border-radius:50%;background:radial-gradient(closest-side,rgb(120 180 240 / .5),rgb(120 180 240 / 0))}
+  .globe-spin{transition:transform 1.4s cubic-bezier(.5,0,.75,0)}
+  #mapStage.in .globe-spin{transform:translateX(-33.3333%)}
+  .globe{transition:transform .8s cubic-bezier(.55,0,.8,.2) 1.3s,opacity .6s ease 1.5s}
+  #mapStage.in .globe{transform:scale(3.2);opacity:0}
+  .js #mapStage .wrap{opacity:0;transform:scale(.94);transition:opacity .6s ease 1.8s,transform .7s var(--ease) 1.8s}
+  .js #mapStage.in .wrap{opacity:1;transform:none}
+  .js #mapStage .route-mask{stroke-dashoffset:1;transition:stroke-dashoffset 1s ease-in-out}
+  .js #mapStage.in .route-mask{stroke-dashoffset:0}
+  #rm0 .route-mask{transition-delay:2.3s}#rm1 .route-mask{transition-delay:3s}#rm2 .route-mask{transition-delay:3.7s}#rm3 .route-mask{transition-delay:4.4s}
+  .js #mapStage .pin:not(.home){opacity:0;transform:translate(-50%,calc(-100% - 4px));transition:opacity .4s ease,transform .4s var(--ease)}
+  .js #mapStage.in .pin:not(.home){opacity:1;transform:translate(-50%,calc(-100% - 12px))}
+  #mapStage .pin[data-stop="1"]{transition-delay:3.1s}#mapStage .pin[data-stop="2"]{transition-delay:3.8s}
+  #mapStage .pin[data-stop="3"]{transition-delay:4.5s}#mapStage .pin[data-stop="4"]{transition-delay:5.2s}
+  #mapPlane{display:none}
+
+  /* 2:1: 들어오면 2 에 빨간 동그라미가 그려지고, 「원어민 + 한국인 선생님」 「오직 당신 한 사람」 메모가 차례로(PC 와 같은 내용) */
+  .js .ratio-stage .ring{--a:0deg;transition:--a 1.2s cubic-bezier(.65,0,.35,1) .2s}
+  .js .ratio-stage.in .ring{--a:360deg}
+  .js .ratio-stage .ann{opacity:0;transition:opacity .5s ease}
+  .js .ratio-stage.in .ann{opacity:1}
+  .js .ratio-stage.in #ann2{transition-delay:1.2s}
+  .js .ratio-stage.in #ann1{transition-delay:1.6s}
+  .js #ratioCopy{opacity:0;transform:translateY(14px);transition:opacity .6s ease 1.9s,transform .6s var(--ease) 1.9s}
+  .js .ratio-stage.in #ratioCopy{opacity:1;transform:none}
 }
+/* 동그라미가 그려지는 각도: 등록해 두면 CSS 만으로 부드럽게 바뀐다(등록 못 하는 브라우저는 끝 모양으로 바로) */
+@property --a{syntax:"<angle>";inherits:false;initial-value:360deg}
+@keyframes bob{to{transform:translateY(-10px) rotate(4deg)}}
+@keyframes scenePan{from{transform:scale(1.12) translateX(4%)}to{transform:scale(1.12) translateX(-4%)}}
+@keyframes kite{from{transform:translate(-70px,62svh) rotate(-8deg)}to{transform:translate(calc(100vw + 70px),14svh) rotate(-18deg)}}
+/* 휴대폰 진행 띠: 스크롤 위치를 CSS 가 직접 읽는다(지원 안 하는 브라우저는 띠 없이) */
+@supports (animation-timeline:scroll()){
+  @media (max-width:767px){.ribbon span{animation:ribbon linear both;animation-timeline:scroll(root)}}
+}
+@keyframes ribbon{to{transform:scaleX(1)}}
 @keyframes passPop{0%{opacity:0;transform:scale(.2)}60%{opacity:1;transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* ================= 휴대폰 첫 방문 표지 =================
+   검은 양장본(금박 글씨)이 나타나 → 표지가 왼쪽 경첩으로 열리고 → 첫 장이 보인 뒤 → 책 속으로 들어가듯 페이지가 나온다.
+   시간 기준 CSS(위치·크기·투명도만) 2.5초. 누르면 바로 넘어간다. 같은 창 첫 방문에만(머리 스크립트), 움직임 줄이기면 안 띄운다. */
+.intro{display:none}
+@media (max-width:767px) and (prefers-reduced-motion:no-preference){
+  html.intro-on .intro{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#0B0C0F;perspective:1600px;touch-action:none;
+    animation:introOut .6s ease 2.05s forwards}
+  .intro-book{position:relative;width:min(74vw,320px);aspect-ratio:3/4.2;transform-style:preserve-3d;
+    animation:introIn .6s cubic-bezier(.16,1,.3,1) both,introDive .65s cubic-bezier(.55,0,.8,.2) 1.95s forwards}
+  .intro-page{position:absolute;inset:0;border-radius:2px 6px 6px 2px;background:#F3F6FA;color:#0F2238;display:flex;flex-direction:column;justify-content:center;padding:14% 12%;
+    box-shadow:inset 10px 0 16px -10px rgb(0 0 0 / .35)}
+  .intro-page::after{content:"";position:absolute;right:18%;bottom:-9%;width:12px;height:12%;background:var(--pen);clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%)}
+  .intro-epi{font-family:var(--f-serif);font-weight:700;font-size:clamp(20px,6vw,26px);line-height:1.42;letter-spacing:-.03em}
+  .intro-sign{align-self:flex-end;margin-top:16px;font-family:var(--f-pen);color:var(--pen);font-size:26px;transform:rotate(-3deg)}
+  .intro-cover{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;animation:coverOpen 1.15s cubic-bezier(.6,0,.25,1) .75s forwards}
+  .intro-front,.intro-back{position:absolute;inset:0;border-radius:2px 6px 6px 2px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .intro-front{display:flex;flex-direction:column;padding:12% 11%;background:radial-gradient(120% 90% at 30% 18%,#2B2C33,#141519 55%,#09090B);
+    box-shadow:inset 7px 0 0 rgb(255 255 255 / .05),inset 12px 0 18px -8px rgb(0 0 0 / .9),0 34px 60px -22px rgb(0 0 0 / .85)}
+  .intro-front p{background:linear-gradient(135deg,#F4E4B8,#CFA95E 45%,#8E6B2F 72%,#EAD39C);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .intro-series{font-size:11px;font-weight:700;letter-spacing:.18em}
+  .intro-title{margin-top:auto;font-family:var(--f-serif);font-weight:800;font-size:clamp(48px,15vw,64px);line-height:1.04;letter-spacing:-.05em}
+  .intro-sub{margin-top:14px;font-size:13px;font-weight:600}
+  .intro-author{margin-top:auto;align-self:flex-end;font-family:var(--f-serif);font-size:14px}
+  .intro-back{transform:rotateY(180deg);background:linear-gradient(90deg,#16243C,#203457)}
+}
+@keyframes introIn{from{opacity:0;transform:translateY(18px) scale(.96)}}
+@keyframes coverOpen{to{transform:rotateY(-160deg)}}
+@keyframes introDive{to{transform:scale(1.35)}}
+@keyframes introOut{to{opacity:0;visibility:hidden}}

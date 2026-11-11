@@ -14,6 +14,7 @@
   const PAN_MQ = '(min-width: 1024px)';   // 커리큘럼 가로 넘김 기준
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const phone = matchMedia(PHONE_MQ);   // 휴대폰 판정은 이것 하나를 같이 쓴다
   const motion = !reduce && window.gsap && window.ScrollTrigger && window.MotionPathPlugin;
 
   /* ---------- 머리글 쪽제목 ---------- */
@@ -30,7 +31,7 @@
 
   /* ---------- 부드러운 스크롤 + 앵커 ---------- */
   let lenis = null;
-  if (motion && window.Lenis) {
+  if (motion && window.Lenis && !phone.matches) {   // 휴대폰은 브라우저 자체 스크롤 그대로(손가락 스크롤은 원래 매끄럽다)
     lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((t) => lenis.raf(t * 1000));
@@ -103,7 +104,6 @@
 
   /* ---------- 떠나기 전 걱정(휴대폰): 걱정을 누르면 해결이 펼쳐진다. 접고 펴는 모양은 CSS 휴대폰 블록, PC 는 늘 펼쳐 둔다 ---------- */
   (() => {
-    const phone = matchMedia(PHONE_MQ);
     const items = $$('#worry .pass').map((pass, i) => {
       const head = $('.pass-main', pass), stub = $('.pass-stub', pass);
       stub.id = 'passStub' + i;
@@ -129,6 +129,17 @@
     setMode();
   })();
 
+  /* ---------- 휴대폰 첫 방문 표지(모양·시간은 CSS): 끝나거나 누르면 걷어 낸다 ---------- */
+  // 스크립트가 늦게 돌아도 놓치지 않게 「끝났다는 신호」 대신 애니메이션의 끝(finished)을 기다린다(이미 끝났으면 바로 걷힌다)
+  const intro = $('#intro');
+  const dropIntro = () => { intro.remove(); root.classList.remove('intro-on'); };
+  const out = getComputedStyle(intro).display !== 'none' && intro.getAnimations ? intro.getAnimations().find((a) => a.animationName === 'introOut') : null;   // 못 찾으면 표지 없이 바로
+  if (!out) dropIntro();
+  else {
+    out.finished.then(dropIntro, () => {});
+    intro.addEventListener('click', () => intro.animate({ opacity: [1, 0] }, { duration: 250, easing: 'ease' }).finished.then(dropIntro));
+  }
+
   initForm();
   initEar();
 
@@ -141,6 +152,12 @@
     else label.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   });
 
+  /* ---------- 휴대폰: 스크롤에 묶인 스크립트를 쓰지 않는다 ----------
+     손가락 스크롤은 브라우저가 GPU 로 굴리는데, 스크롤 위치를 읽어 매 프레임 다시 그리는 스크립트(화면 붙잡기·스크럽)는
+     한 박자씩 늦게 따라와 덜덜 떨렸다. 휴대폰은 「화면에 들어오면 .in 을 붙이고, 움직임은 CSS(시간 기준)가」 맡는다(initPhone). */
+  if (phone.matches) initPhone();
+  else phone.addEventListener('change', (e) => { if (e.matches) initPhone(); }, { once: true });
+
   if (!motion) { flatBook(); return; }
 
   /* ================= 아래는 움직임이 켜진 경우만 ================= */
@@ -149,13 +166,8 @@
   const mm = gsap.matchMedia();
   const hero = $('#top');
 
-  /* 1. 첫 화면 — PC: 책 → 종이비행기 → 하늘 / 휴대폰: 책 없이 종이비행기가 뾰옹 날아오르며 하늘이 열린다 */
-  mm.add({ m: PHONE_MQ, d: WIDE_MQ }, (ctx) => {
-    if (!ctx.conditions.m) { buildBook(); return; }
-    root.classList.add('m-hero');
-    const undo = buildTakeoff();
-    return () => { undo(); root.classList.remove('m-hero'); };
-  });
+  /* 1. 첫 화면(PC): 책 → 종이비행기 → 하늘. 휴대폰은 initPhone + CSS */
+  mm.add(WIDE_MQ, buildBook);
 
   function buildBook() {
     const book = $('#book'), copy = $('#heroCopy');
@@ -215,32 +227,6 @@
       .to({}, { duration: 0.6 });
   }
 
-  // 휴대폰: 버튼 아래에 떠 있던 종이비행기가 스크롤하면 오른쪽 위로 뾰옹 날아가고, 하늘이 투명도로 열린다.
-  // 화면 전체를 매 프레임 다시 그리는 원형 자르기·구름 확대는 쓰지 않는다. 고정 구간은 화면 1.4장.
-  function buildTakeoff() {
-    const copy = $('#heroCopy'), cta = $('.hero-cta', copy), plane = $('#plane');
-    const sky = $('#sky'), skyCopy = $('#skyCopy'), clouds = $$('.cloud', sky);
-    const restY = () => (cta.offsetTop + cta.offsetHeight + hero.offsetHeight) / 2 - hero.offsetHeight / 2;   // 버튼 아래 빈자리 가운데
-    // 이륙 전 둥실(안쪽 그림만 움직여서 스크롤 움직임과 겹치지 않게)
-    const bob = gsap.to($('svg', plane), { y: -10, rotation: 4, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
-    const tl = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        trigger: hero, start: 'top top', end: () => '+=' + Math.round(innerHeight * 1.4), pin: true, scrub: 0.5, anticipatePin: 1, invalidateOnRefresh: true,
-        onToggle: (self) => (self.isActive ? bob.play() : bob.pause()),
-        onUpdate: (self) => { if (self.isActive) setHead((self.progress < 0.4 ? hero : sky).dataset.chapter); },
-      },
-    });
-    tl.fromTo(plane, { autoAlpha: 1, x: 0, y: restY, scale: 1, rotation: -8 },
-      { x: () => innerWidth * 0.75, y: () => -innerHeight * 0.85, scale: 1.9, rotation: -24, duration: 1, ease: 'power2.in' }, 0.1)
-      .to(copy, { autoAlpha: 0, y: -40, duration: 0.45, ease: 'power1.in' }, 0)
-      .fromTo(sky, { clipPath: 'none', autoAlpha: 0 }, { autoAlpha: 1, duration: 0.7, ease: 'power1.inOut' }, 0.35)
-      .fromTo(clouds, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6, stagger: 0.06 }, 0.45)
-      .fromTo(skyCopy, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power2.out' }, 0.85)
-      .to({}, { duration: 0.35 });
-    return () => bob.kill();
-  }
-
   /* 1-1. 표지의 빨간 펜: 고민 단어를 긋고 다음 단어로 */
   (() => {
     const rot = $('#rot'), word = $('.rot-word', rot), strike = $('.rot-strike', rot);
@@ -258,49 +244,27 @@
     ScrollTrigger.create({ trigger: hero, start: 'top top', end: () => '+=' + innerHeight * 0.4, onLeave: () => tl.pause(), onEnterBack: () => tl.play() });
   })();
 
-  /* 2. 여행지 장면 — 장면이 아래에서 올라와 겹친다(CSS sticky), 사막에는 발자국이 하나씩 찍힌다.
-     PC: 들어올 때 사진이 천천히 당겨진다.
-     휴대폰: 한 장면을 「들어옴 → 머묾 → 떠남」 한 흐름으로 — 사진은 옆으로 천천히 흐르고, 작은 종이비행기가 가로질러 날고,
-            다음 장면이 올라올 때 스르르 사라진다. 사진 크기는 고정하고 위치·투명도만 바꿔 화면을 다시 그리지 않게 한다. */
-  mm.add({ d: WIDE_MQ, m: PHONE_MQ }, (ctx) => {
+  /* 2. 여행지 장면(PC) — 장면이 아래에서 올라와 겹친다(CSS sticky). 들어올 때 사진이 천천히 당겨지고, 사막에는 발자국이 하나씩 찍힌다.
+     휴대폰은 initPhone + CSS */
+  mm.add(WIDE_MQ, () => {
     const journey = $('#journey'), scenes = $$('.scene', journey);
     // 장면 k 가 문서에서 놓인 자리 = k × (장면 높이 + 머무는 간격). 간격은 CSS --dwell 한 곳에서 정한다
     const H = () => scenes[1].offsetHeight + parseFloat(getComputedStyle(scenes[1]).marginTop);
     const at = (k, edge) => () => `top+=${k * H()} ${edge}`;   // 장면 k 의 윗변이 화면 edge 에 닿는 자리
-    const added = [];
     scenes.forEach((sc, k) => {
-      const img = $('.scene-img', sc), copy = $('.scene-copy', sc);
-      if (ctx.conditions.d) {
-        gsap.timeline({ scrollTrigger: { trigger: journey, start: at(k, 'bottom'), end: at(k, 'top'), scrub: 0.6, invalidateOnRefresh: true } })
-          .fromTo(img, { scale: 1.18 }, { scale: 1, ease: 'none', duration: 1 }, 0)
-          .fromTo(copy, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.5 }, 0.45);
-        return;
-      }
-      // 휴대폰: 들어옴(E) → 머묾(D) → 다음 장면이 올라오며 떠남(E). 마지막 장면은 여행 구간이 끝나며 떠난다(같은 길이)
-      const E = sc.offsetHeight, D = H() - E;
-      const kite = $('#plane svg').cloneNode(true);
-      kite.removeAttribute('style');
-      kite.classList.add('scene-plane');
-      sc.appendChild(kite);
-      added.push(kite);
-      gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: journey, start: at(k, 'bottom'), end: at(k + 1, 'top'), scrub: 0.6, invalidateOnRefresh: true } })
-        .fromTo(img, { scale: 1.12, xPercent: 5 }, { xPercent: -5, duration: 2 * E + D }, 0)
-        .fromTo(copy, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: E * 0.5 }, E * 0.45)
-        .fromTo(kite, { x: -70, y: () => innerHeight * 0.62, rotation: -8 },
-          { x: () => innerWidth + 70, y: () => innerHeight * 0.14, rotation: -18, ease: 'power1.inOut', duration: D + E * 0.7 }, E * 0.6)
-        .to(copy, { autoAlpha: 0, y: -30, duration: E * 0.6 }, E + D)
-        .to(img, { autoAlpha: 0, duration: E * 0.8 }, E + D);
+      gsap.timeline({ scrollTrigger: { trigger: journey, start: at(k, 'bottom'), end: at(k, 'top'), scrub: 0.6, invalidateOnRefresh: true } })
+        .fromTo($('.scene-img', sc), { scale: 1.18 }, { scale: 1, ease: 'none', duration: 1 }, 0)
+        .fromTo($('.scene-copy', sc), { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.5 }, 0.45);
     });
     gsap.fromTo($$('#sceneDesert .fp'), { autoAlpha: 0 }, {
       autoAlpha: 1, stagger: 0.1, ease: 'none',
       scrollTrigger: { trigger: journey, start: 'top 30%', end: () => `top+=${H() * 0.75} top`, scrub: 0.6, invalidateOnRefresh: true },
     });
-    return () => added.forEach((n) => n.remove());
   });
 
-  /* 3. 여행 지도: 큰 지구본이 빙그르르 돌다가, 그 속으로 들어가듯 커지며 사라지고 지도 화면이 나타난다.
-     이어서 경로가 그려지고 비행기가 도시를 따라 난다. PC·휴대폰 모두 화면을 붙잡는다(휴대폰은 짧게). */
-  mm.add({ d: WIDE_MQ, m: PHONE_MQ }, (ctx) => {
+  /* 3. 여행 지도(PC): 큰 지구본이 빙그르르 돌다가, 그 속으로 들어가듯 커지며 사라지고 지도 화면이 나타난다.
+     이어서 경로가 그려지고 비행기가 도시를 따라 난다. 화면을 붙잡고 스크롤에 맞춘다. 휴대폰은 initPhone + CSS */
+  mm.add(WIDE_MQ, () => {
     const stage = $('#mapStage'), content = $('.wrap', stage), globe = $('#globe'), spin = $('#globeSpin'), kite = $('.globe-plane', globe);
     const box = $('#mapBox'), masks = $$('.route-mask', box), routes = $$('.route', box), pins = $$('.pin', box), plane = $('#mapPlane');
     globe.hidden = false;
@@ -317,7 +281,7 @@
     const G = 1.6;   // 지구본 구간(스크롤 길이 비율). 그 뒤 경로 하나당 1
     const tl = gsap.timeline({
       defaults: { ease: 'none' },
-      scrollTrigger: { trigger: stage, start: 'top top', end: ctx.conditions.d ? '+=230%' : '+=150%', pin: true, scrub: 0.6, anticipatePin: 1 },
+      scrollTrigger: { trigger: stage, start: 'top top', end: '+=230%', pin: true, scrub: 0.6, anticipatePin: 1 },
     });
     tl.fromTo(spin, { xPercent: 0 }, { xPercent: -100 / 3, duration: G, ease: 'power1.in' }, 0)                         // 한 바퀴 더, 점점 빠르게
       .fromTo(globe, { scale: 1, autoAlpha: 1 }, { scale: 3.2, autoAlpha: 0, duration: 0.7, ease: 'power2.in' }, G - 0.7)   // 지구본 속으로
@@ -331,16 +295,14 @@
     return () => { orbit.kill(); globe.classList.remove('on'); globe.hidden = true; };
   });
 
-  /* 4. 2:1 — 빨간 펜 동그라미와 메모가 차례로 */
-  mm.add({ d: WIDE_MQ, m: PHONE_MQ }, (ctx) => {
+  /* 4. 2:1(PC) — 빨간 펜 동그라미와 메모가 차례로. 휴대폰은 initPhone + CSS */
+  mm.add(WIDE_MQ, () => {
     const ring = $('#two .ring');
     gsap.set(ring, { '--a': '0deg' });
     gsap.set(['#ann2', '#ann1', '#ratioCopy'], { autoAlpha: 0, y: 16 });
     gsap.timeline({
       defaults: { ease: 'power2.out' },
-      scrollTrigger: ctx.conditions.d
-        ? { trigger: '#ratioStage', start: 'top top', end: '+=110%', pin: true, scrub: 0.6, anticipatePin: 1 }
-        : { trigger: '#ratioStage', start: 'top 70%', toggleActions: 'play none none none' },   // 휴대폰: 들어올 때 한 번
+      scrollTrigger: { trigger: '#ratioStage', start: 'top top', end: '+=110%', pin: true, scrub: 0.6, anticipatePin: 1 },
     })
       .to(ring, { '--a': '360deg', duration: 1, ease: 'power1.inOut' })
       .to('#ann2', { autoAlpha: 1, y: 0, duration: 0.5 }, '-=0.3')
@@ -363,26 +325,7 @@
     return () => wrap.classList.remove('pan');
   });
 
-  /* 5-1. 휴대폰 「그다음은 이렇게 성장합니다」: 우상향 선이 그려지고, 종이비행기가 선을 타고 오르며, 단계 점·이름이 차례로(들어올 때 한 번).
-     움직임이 꺼지면 다 그려진 그래프가 그대로 보인다(CSS 기본값). */
-  mm.add(PHONE_MQ, () => {
-    const box = $('#growChart'), line = $('.gc-line', box), plane = $('.gc-plane', box);
-    const ride = (end) => ({ path: line, align: line, alignOrigin: [0.5, 0.5], autoRotate: true, start: 0, end });
-    gsap.set(plane, { motionPath: ride(0) });   // 출발 전엔 선의 시작점에서 기다린다
-    gsap.timeline({ scrollTrigger: { trigger: box, start: 'top 75%', toggleActions: 'play none none none' } })
-      .fromTo(line, { strokeDashoffset: 1 }, { strokeDashoffset: 0, autoRound: false, duration: 1.8, ease: 'power1.inOut' }, 0)
-      .to(plane, { motionPath: ride(1), duration: 1.8, ease: 'power1.inOut' }, 0)
-      .fromTo($('.gc-area', box), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9 }, 0.7)
-      .fromTo($$('.gc-dot', box), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.35, stagger: 0.55, ease: 'back.out(2.2)' }, 0.05)
-      .fromTo($$('.gc-tag', box), { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.55 }, 0.6);
-  });
-
   /* 6. 나머지: 진행 띠 · 쪽제목 · 나타나기 · 숫자 · 잉크 글씨 · 교정 칸 · 휴대폰 아래 버튼 */
-  gsap.to('#progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } });
-
-  $$('[data-chapter]').filter((s) => !hero.contains(s) && s !== hero).forEach((sec) => {
-    ScrollTrigger.create({ trigger: sec, start: 'top center', end: 'bottom center', onToggle: (s) => s.isActive && setHead(sec.dataset.chapter) });
-  });
 
   const ink = $('#inkText');   // 잉크 글씨: 단어마다 감싸 두고(한 번), 번지는 움직임은 아래 PC 블록에서
   ink.replaceChildren(...ink.textContent.trim().split(/\s+/).flatMap((w, i) => {
@@ -392,8 +335,12 @@
     return i ? [' ', s] : [s];
   }));
 
-  // 나타나기·숫자 올라가기·잉크 글씨는 PC 만. 휴대폰은 스크롤 중에 다시 그릴 일이 없도록 처음부터 다 보인다(CSS 도 같은 기준)
+  // 진행 띠·쪽제목·나타나기·숫자 올라가기·잉크 글씨는 PC 만. 휴대폰 진행 띠는 CSS 스크롤 타임라인, 나머지는 처음부터 보인다
   mm.add(WIDE_MQ, () => {
+    gsap.to('#progress', { scaleX: 1, ease: 'none', scrollTrigger: { start: 0, end: 'max', scrub: true } });
+    $$('[data-chapter]').filter((s) => !hero.contains(s) && s !== hero).forEach((sec) => {
+      ScrollTrigger.create({ trigger: sec, start: 'top center', end: 'bottom center', onToggle: (s) => s.isActive && setHead(sec.dataset.chapter) });
+    });
     ScrollTrigger.batch('[data-reveal]', {
       start: 'top 88%', once: true,
       // 한 번에 건너뛴 경우(앵커·새로고침) 지나친 것은 바로 보이고, 화면 안의 것만 짧게 차례로 나온다
@@ -441,6 +388,54 @@
   document.fonts && document.fonts.ready.then(() => ScrollTrigger.refresh());
 
   /* ================= 도우미 ================= */
+  /* 휴대폰 연출 — 화면에 들어오면 클래스만 붙이고, 움직임·순서·시간은 CSS(style.css 「휴대폰 전용」)가 정한다.
+     스크롤 위치를 미리 재지 않으므로(IntersectionObserver) 주소창이 접히거나 글꼴이 늦게 와도 어긋나지 않는다. */
+  function initPhone() {
+    const watch = (els, opts, fn) => { const io = new IntersectionObserver((es) => es.forEach((e) => fn(e, io)), opts); els.forEach((el) => io.observe(el)); };
+    const once = (e, io) => { if (!e.isIntersecting) return; io.unobserve(e.target); e.target.classList.add('in'); };
+
+    // 첫 화면: 버튼 아래 종이비행기가 떠 있다가, 조금 내리면 뾰옹 날아간다(다시 올리면 돌아온다)
+    watch([$('#heroCopy')], { threshold: 0.9 }, (e) => $('#stage').classList.toggle('lift', e.intersectionRatio < 0.9));   // 문구가 10% 밀려 올라가면(약 40px)
+    // 하늘 문구 · 2:1 동그라미와 두 선생님 메모: 들어오면 한 번
+    watch([$('#sky'), $('#ratioStage')], { threshold: 0.4 }, once);
+
+    // 여행 장면: 들어오면 .in(글이 떠오르고 사진이 천천히 흐르고 종이비행기가 가로지른다), 다음 장면이 올라오면 앞 장면 .past(스르르 사라짐)
+    const scenes = $$('#journey .scene');
+    scenes.forEach((sc) => { const kite = $('#plane svg').cloneNode(true); kite.classList.add('scene-plane'); sc.appendChild(kite); });
+    $$('#sceneDesert .fp').forEach((fp, i) => fp.style.setProperty('--i', i));
+    watch(scenes, { threshold: 0.3 }, (e) => {
+      e.target.classList.toggle('in', e.isIntersecting);
+      const k = scenes.indexOf(e.target);
+      if (k > 0) scenes[k - 1].classList.toggle('past', e.isIntersecting);
+    });
+
+    // 여행 지도: 지구본이 화면에 보이면 #mapStage.in — 빙그르르 → 지구본 속으로 → 지도 → 경로(순서는 CSS 지연 시간)
+    const stage = $('#mapStage'), globe = $('#globe');
+    if (motion) {
+      globe.hidden = false;
+      gsap.registerPlugin(MotionPathPlugin);
+      const kite = $('.globe-plane', globe);
+      const ride = (start, end) => ({ path: '#orbitPath', align: '#orbitPath', alignOrigin: [0.5, 0.5], autoRotate: true, start, end });
+      gsap.set(kite, { motionPath: ride(0.85, 0.85) });
+      const fly = gsap.to(kite, { motionPath: ride(0.85, 1.3), duration: 2.2, ease: 'power1.in', paused: true });   // 지구본 앞쪽을 가로질러(시간 기준, 한 번)
+      watch([globe], { threshold: 0.6 }, (e, io) => { if (!e.isIntersecting) return; io.unobserve(globe); stage.classList.add('in'); fly.play(); });
+    } else watch([stage], { threshold: 0.3 }, once);
+
+    // 성장 그래프: 들어오면 한 번 — 선이 그려지며 종이비행기가 선을 타고 오르고, 단계 점·이름이 차례로(시간 기준)
+    if (motion) {
+      const box = $('#growChart'), line = $('.gc-line', box), plane = $('.gc-plane', box);
+      const ride = (end) => ({ path: line, align: line, alignOrigin: [0.5, 0.5], autoRotate: true, start: 0, end });
+      gsap.set(plane, { motionPath: ride(0) });   // 출발 전엔 선의 시작점에서 기다린다
+      const tl = gsap.timeline({ paused: true })
+        .fromTo(line, { strokeDashoffset: 1 }, { strokeDashoffset: 0, autoRound: false, duration: 1.8, ease: 'power1.inOut' }, 0)   // autoRound:false — 0~1 사이 값이 정수로 반올림돼 한 번에 튀지 않게
+        .to(plane, { motionPath: ride(1), duration: 1.8, ease: 'power1.inOut' }, 0)
+        .fromTo($('.gc-area', box), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9 }, 0.7)
+        .fromTo($$('.gc-dot', box), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.35, stagger: 0.55, ease: 'back.out(2.2)' }, 0.05)
+        .fromTo($$('.gc-tag', box), { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.4, stagger: 0.55 }, 0.6);
+      watch([box], { threshold: 0.5 }, (e, io) => { if (!e.isIntersecting) return; io.unobserve(box); tl.play(); });
+    }
+  }
+
   function flatBook() {
     $('#top').classList.add('is-flat');
     $('#book').classList.add('book--flat');
