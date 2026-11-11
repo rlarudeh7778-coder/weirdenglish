@@ -289,6 +289,59 @@ h1,h2,h3,h4,p,figure{margin:0}
 .route-steps .rs-text{color:var(--ink-2);font-size:15px}
 .yt-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:36px}
 
+/* ---------- 귀 테스트(이 소리, 들리시나요?) ---------- */
+.ear{margin-top:56px;padding:clamp(22px,3.4vw,40px);background:var(--sheet);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:0 24px 60px -36px rgb(var(--shadow-rgb) / .45);display:grid;gap:24px}
+.ear-head{display:grid;gap:10px}
+@media (min-width:860px){.ear-head{grid-template-columns:1fr auto;align-items:end;column-gap:40px}.ear-steps{grid-column:2;grid-row:1 / span 2;align-self:end}}
+.ear-title{font-family:var(--f-serif);font-weight:800;font-size:clamp(28px,3.6vw,44px);line-height:1.2;letter-spacing:-.035em}
+.ear-text{color:var(--ink-2);max-width:52ch}
+.ear-steps{list-style:none;margin:0;padding:0;display:flex;gap:8px}
+.ear-steps li{height:34px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:14px;color:var(--ink-3)}
+.ear-steps li::before{content:"";width:7px;height:7px;border-radius:999px;background:currentColor;opacity:.35}
+.ear-steps li[aria-current="step"]{border-color:var(--ink);color:var(--ink)}
+.ear-steps li.ok{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.ear-steps li.miss{border-color:var(--pen);color:var(--pen-ink)}
+.ear-steps li:is(.ok,.miss)::before{opacity:1}
+.ear-q{border:0;margin:0;padding:0;min-width:0;display:grid;gap:18px}
+@media (min-width:860px){.ear-q{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px 40px;align-items:start}.ear-answer{grid-column:2}}
+.js .ear-q:not(.on){display:none}
+.ear-player{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 16px;align-items:center;padding:18px;border-radius:var(--r);background:var(--ink);color:var(--bg)}
+.ear-play{grid-row:1 / span 2;width:64px;height:64px;border-radius:999px;border:0;background:var(--pen);color:#fff;display:grid;place-items:center;font-size:26px;cursor:pointer;transition:transform .25s var(--ease)}
+.ear-play:hover{transform:scale(1.05)}
+.ear-play:active{transform:scale(.96)}
+.ear-play:focus-visible{outline:2px solid var(--bg);outline-offset:3px}
+.ear-wave{display:flex;align-items:center;gap:3px;height:36px}
+.ear-wave i{flex:1;height:calc(var(--h) * 100%);border-radius:2px;background:color-mix(in srgb,var(--bg) 45%,transparent)}
+.ear-player.playing .ear-wave i{background:var(--bg);animation:earWave .8s ease-in-out infinite alternate;animation-delay:calc(var(--d) * -1s)}
+@keyframes earWave{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+.ear-meta{font-size:14px;line-height:1.45;color:color-mix(in srgb,var(--bg) 78%,transparent)}
+.ear-meta b{color:var(--bg);margin-right:8px}
+.ear audio{grid-column:1 / -1;width:100%}
+.js .ear audio{display:none}
+.ear-opts{display:grid;gap:10px}
+.ear-opt{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;font-weight:600;line-height:1.45;transition:border-color .2s,background-color .2s}
+.ear-opt:hover{border-color:var(--ink)}
+.ear-opt input{appearance:none;-webkit-appearance:none;flex:0 0 auto;width:20px;height:20px;margin:0;border-radius:999px;border:1.5px solid var(--ink-3)}
+.ear-opt input:checked{border-color:var(--ink);background:radial-gradient(circle,var(--ink) 0 4px,transparent 5px)}
+.ear-opt input:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
+.ear-opt.right{border-color:var(--ink);background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.ear-opt.wrong{border-color:var(--pen);color:var(--pen-ink)}
+.ear-opt:has(input:disabled){cursor:default}
+.ear-answer{padding:16px 18px;border-left:3px solid var(--pen);background:var(--sheet-2);border-radius:0 var(--r) var(--r) 0}
+.no-js .ear-answer[hidden]{display:block}
+.ear-mean{font-weight:700}
+.ear-tip{color:var(--ink-2);font-size:15px;margin-top:4px}
+.ear-tip b{color:var(--ink)}
+.ear-nav{display:flex;justify-content:flex-end}
+.ear-nav[hidden],.ear-result[hidden]{display:none}
+.ear-result{display:grid;gap:6px;padding-top:24px;border-top:1px dashed var(--line)}
+.ear-score{font-weight:700;color:var(--ink-2)}
+.ear-score b{font-family:var(--f-serif);font-size:56px;line-height:1;color:var(--pen-ink);margin-right:4px}
+.ear-verdict{font-family:var(--f-serif);font-weight:700;font-size:clamp(22px,2.6vw,30px);line-height:1.35;letter-spacing:-.02em}
+.ear-bridge{color:var(--ink-2)}
+.ear-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+
 /* ---------- 6. 2:1 ---------- */
 .ratio-stage{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:calc(var(--header) + 24px) 16px 48px}
 .ratio-big{position:relative;font-family:var(--f-serif);font-weight:800;font-size:clamp(150px,30vw,440px);line-height:.9;letter-spacing:-.06em;display:flex;align-items:center}

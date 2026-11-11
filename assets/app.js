@@ -102,6 +102,7 @@
   });
 
   initForm();
+  initEar();
 
   if (!motion) { flatBook(); return; }
 
@@ -148,6 +149,7 @@
         trigger: hero, start: 'top top', pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true,
         end: () => '+=' + Math.round(tl.duration() * innerHeight * 0.7),
         onUpdate: (self) => {
+          if (!self.isActive) return;   // 다시 재기(refresh) 때 책 구간 밖이면 다른 장의 쪽제목을 덮지 않는다
           const t = self.progress * tl.duration();
           setHead((t < T.open + 0.5 ? hero : t < T.fly + 0.3 ? book : sky).dataset.chapter);
         },
@@ -332,6 +334,106 @@
     $('#top').classList.add('is-flat');
     $('#book').classList.add('book--flat');
     $$('[data-reveal]').forEach((el) => { el.style.opacity = 1; el.style.transform = 'none'; });
+  }
+
+  /* ---------- 귀 테스트: 소리 세 개 → 들린 문장 고르기 → 맞힌 개수로 레벨 ----------
+     레벨 이름은 신청서 레벨 칸(#f-level)의 보기를 그대로 읽는다(맞힌 개수 0~3 = 보기 순서). */
+  function initEar() {
+    const EAR_VERDICT = [
+      '왕초보 귀예요. 소리부터 차근차근 열어 가면 됩니다.',
+      '초급 귀예요. 또박또박한 영어는 들립니다.',
+      '초중급 귀예요. 연음까지 잡혔으니 이제 속도만 남았습니다.',
+      '중급 귀예요. 원어민 속도도 들리는 귀입니다.',
+    ];
+    const ear = $('#ear');
+    if (!ear) return;
+    const qs = $$('.ear-q', ear), steps = $$('.ear-steps li', ear);
+    const nav = $('#earNav'), result = $('#earResult'), live = $('#earLive');
+    const levels = $$('#f-level option').map((o) => o.value).filter(Boolean);
+    const relayout = () => motion && ScrollTrigger.refresh();   // 카드 높이가 바뀌면 아래 고정 구간 위치를 다시 잰다
+    let cur = 0, score = 0, playing = null;
+
+    $$('.ear-wave', ear).forEach((w) => {   // 소리 막대: 정해진 모양(무작위 없음)
+      for (let i = 0; i < 28; i++) {
+        const b = document.createElement('i');
+        b.style.setProperty('--h', (0.3 + 0.7 * Math.abs(Math.sin(i * 0.55) * Math.cos(i * 0.21))).toFixed(2));
+        b.style.setProperty('--d', ((i % 7) / 7).toFixed(2));
+        w.appendChild(b);
+      }
+    });
+    const stop = () => { if (playing && !playing.paused) playing.pause(); };
+
+    qs.forEach((q) => {
+      const audio = $('audio', q), player = $('.ear-player', q), btn = $('.ear-play', q), icon = $('i', btn);
+      const set = (on) => { player.classList.toggle('playing', on); icon.className = on ? 'ph ph-pause' : 'ph ph-play'; };
+      btn.addEventListener('click', () => {
+        if (!audio.paused) { audio.pause(); return; }
+        stop();
+        playing = audio;
+        audio.currentTime = 0;
+        audio.play().catch(() => { live.textContent = '소리를 재생하지 못했어요. 한 번 더 눌러 주세요.'; });
+      });
+      audio.addEventListener('play', () => set(true));
+      audio.addEventListener('pause', () => set(false));
+      audio.addEventListener('error', () => { set(false); live.textContent = '소리를 불러오지 못했어요. 새로고침 뒤 다시 눌러 주세요.'; });
+
+      $$('input', q).forEach((inp) => inp.addEventListener('change', () => {
+        const ok = inp.value === q.dataset.answer;
+        if (ok) score++;
+        $$('.ear-opt', q).forEach((opt) => {
+          const v = $('input', opt).value;
+          $('input', opt).disabled = true;
+          opt.classList.toggle('right', v === q.dataset.answer);
+          opt.classList.toggle('wrong', v === inp.value && !ok);
+        });
+        steps[cur].classList.add(ok ? 'ok' : 'miss');
+        $('.ear-answer', q).hidden = false;
+        live.textContent = (ok ? '정답이에요. ' : '아쉬워요. 정답은 ') + $('.ear-mean', q).textContent;
+        if (cur < qs.length - 1) { nav.hidden = false; $('#earNext').focus({ preventScroll: true }); }
+        else finish();
+        relayout();
+      }));
+    });
+
+    function show(i) {
+      stop();
+      cur = i;
+      qs.forEach((q, k) => q.classList.toggle('on', k === i));
+      steps.forEach((s, k) => (k === i ? s.setAttribute('aria-current', 'step') : s.removeAttribute('aria-current')));
+      nav.hidden = true;
+    }
+    function finish() {
+      $('#earScore').textContent = score;
+      $('#earVerdict').textContent = EAR_VERDICT[score];
+      result.dataset.level = levels[score];
+      result.hidden = false;
+      live.textContent = `3문장 중 ${score}문장이 들렸어요. ${EAR_VERDICT[score]}`;
+    }
+
+    $('#earNext').addEventListener('click', () => {
+      show(cur + 1);
+      $('.ear-play', qs[cur]).focus({ preventScroll: true });
+      relayout();
+    });
+    $('#earRetry').addEventListener('click', () => {
+      score = 0;
+      result.hidden = true;
+      qs.forEach((q) => {
+        $$('input', q).forEach((inp) => { inp.checked = false; inp.disabled = false; });
+        $$('.ear-opt', q).forEach((o) => o.classList.remove('right', 'wrong'));
+        $('.ear-answer', q).hidden = true;
+      });
+      steps.forEach((s) => s.classList.remove('ok', 'miss'));
+      show(0);
+      $('.ear-play', qs[0]).focus({ preventScroll: true });
+      relayout();
+    });
+    $('#earApply').addEventListener('click', () => {   // 화면 이동은 공통 #앵커 처리(Lenis)가 맡는다
+      const sel = $('#f-level');
+      sel.value = result.dataset.level;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    show(0);
   }
 
   function initForm() {
