@@ -652,7 +652,7 @@ h1,h2,h3,h4,p,figure{margin:0}
 .mbar .btn-ghost{flex:0 0 48px;padding:0}
 @media (min-width:1024px){.mbar{display:none}.float-kakao{bottom:24px}}
 
-.js [data-reveal]{opacity:0;transform:translateY(28px)}
+@media (min-width:768px){.js [data-reveal]{opacity:0;transform:translateY(28px)}}   /* 나타나기는 PC 만(app.js 와 같은 기준) */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
   .js [data-reveal]{opacity:1;transform:none}
@@ -660,4 +660,38 @@ h1,h2,h3,h4,p,figure{margin:0}
   .mq-row{animation:none;flex-wrap:wrap;width:auto}
   .marquee{overflow-x:auto;mask-image:none;-webkit-mask-image:none}
   .mq-row [aria-hidden="true"]{display:none}
+}
+
+/* ================= 휴대폰 전용(767px 이하) — PC 는 위 규칙 그대로 =================
+   1) 부드럽게: 스크롤할 때마다 뒤를 다시 흐리게 그리는 유리 효과(backdrop-filter)를 빼고 거의 불투명한 바탕으로.
+      움직이지 않는 사진은 늘 따로 띄워 둘 필요가 없다(will-change 해제). 구간 사이 빈자리도 줄인다.
+   2) 글은 짧게: 제목·후킹 한 줄·숫자·사진·버튼만 남기고 설명 문단은 숨긴다(내용은 PC 에 그대로 있다). */
+@media (max-width:767px){
+  .top,.mbar,.scene-say{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .top{background:color-mix(in srgb,var(--bg) 96%,transparent)}
+  .mbar{background:color-mix(in srgb,var(--bg) 97%,transparent)}
+  .scene-say{background:rgb(10 22 40 / .72)}
+  .scene-img{will-change:auto}
+  .journey{--dwell:28svh}
+  .section{padding-block:64px}
+
+  .hero-sub,.sky-sub,
+  .pass-desc,
+  #youtube .lead,.yt-cap small,.ear-text,.buffer-text,.rs-text,
+  .ratio-copy p,.cell-text,
+  .story-grid .body,.qa-p,
+  #books .lead,.vol-text,
+  #curriculum .lead,.step-text,.grow-text,.margin-note,
+  .rv-text,
+  #column .lead,
+  .scenes,.scenes-note,
+  .manifesto{display:none}
+  .yt-grid figure:nth-child(n+3),
+  .phrases .phrase:nth-child(n+4){display:none}
+
+  /* 커리큘럼: 설명을 뺀 만큼 카드도 한 줄로(주차 | 단계 이름) */
+  .step{min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:18px;padding:18px 22px}
+  .step .wk{font-size:48px}
+  .step h3{margin-top:0;padding-top:0;font-size:20px}
+  .step > :not(.wk):not(h3){grid-column:1 / -1}
 }
