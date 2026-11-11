@@ -432,10 +432,17 @@
     const once = (e, io) => { if (!e.isIntersecting) return; io.unobserve(e.target); e.target.classList.add('in'); };
     const kitePic = () => $('#plane svg').cloneNode(true);
 
-    // 첫 화면: 버튼 아래 종이비행기가 떠 있다가, 조금 내리면 뾰옹 날아간다(다시 올리면 돌아온다)
-    watch([$('#heroCopy')], { threshold: 0.9 }, (e) => $('#stage').classList.toggle('lift', e.intersectionRatio < 0.9));   // 문구가 10% 밀려 올라가면(약 40px)
-    watch([$('#sky')], { threshold: 0.4 }, once);
+    const scenes = $$('#journey .scene');
+    scenes.forEach((sc) => { const kite = kitePic(); kite.classList.add('scene-plane'); sc.appendChild(kite); });   // 사진마다 그 속을 가로지르는 종이비행기
     $$('#sceneDesert .fp').forEach((fp, i) => fp.style.setProperty('--i', i));
+    if (sd) {
+      // 필름(고정 배경 사진)은 화면 1.5장 거리 안의 구간만 켠다 — 큰 사진 다섯 장을 한꺼번에 그래픽 메모리에 올려 두지 않게
+      watch([$('#sky'), ...scenes], { rootMargin: '150% 0px' }, (e) => e.target.classList.toggle('near', e.isIntersecting));
+    } else {
+      // 첫 화면: 버튼 아래 종이비행기가 떠 있다가, 조금 내리면 뾰옹 날아간다(다시 올리면 돌아온다)
+      watch([$('#heroCopy')], { threshold: 0.9 }, (e) => $('#stage').classList.toggle('lift', e.intersectionRatio < 0.9));   // 문구가 10% 밀려 올라가면(약 40px)
+      watch([$('#sky')], { threshold: 0.4 }, once);
+    }
 
     // 지도: 보이는 동안만 도시가 깜박이고 지구본 둘레 종이비행기가 돈다(시간 기준, 작은 그림 하나)
     const stage = $('#mapStage'), globe = $('#globe');
@@ -455,8 +462,6 @@
       // 2:1 동그라미와 두 선생님 메모: 들어오면 한 번
       watch([$('#ratioStage')], { threshold: 0.4 }, once);
       // 여행 장면: 들어오면 .in(글이 떠오르고 사진이 천천히 흐르고 종이비행기가 가로지른다), 다음 장면이 올라오면 앞 장면 .past(스르르 사라짐)
-      const scenes = $$('#journey .scene');
-      scenes.forEach((sc) => { const kite = kitePic(); kite.classList.add('scene-plane'); sc.appendChild(kite); });
       watch(scenes, { threshold: 0.3 }, (e) => {
         e.target.classList.toggle('in', e.isIntersecting);
         const k = scenes.indexOf(e.target);
