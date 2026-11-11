@@ -266,17 +266,17 @@
      이어서 경로가 그려지고 비행기가 도시를 따라 난다. 화면을 붙잡고 스크롤에 맞춘다. 휴대폰은 initPhone + CSS */
   mm.add(WIDE_MQ, () => {
     const stage = $('#mapStage'), content = $('.wrap', stage), globe = $('#globe'), spin = $('#globeSpin'), kite = $('.globe-plane', globe);
-    const box = $('#mapBox'), masks = $$('.route-mask', box), routes = $$('.route', box), pins = $$('.pin', box), plane = $('#mapPlane');
+    const box = $('#mapBox'), masks = $$('.route-mask', box), routes = $$('.route', box), stops = $$('.city.stop', box), plane = $('#mapPlane');
     globe.hidden = false;
     gsap.set(masks, { strokeDashoffset: 1 });
-    gsap.set(pins.slice(1), { autoAlpha: 0, y: 8 });
+    gsap.set(stops.slice(1), { autoAlpha: 0.3, scale: 0.5 });
     // 지구본 둘레를 도는 종이비행기: 앞쪽(아래 반)은 또렷하게, 뒤쪽(위 반)은 작고 흐리게. 화면에 있을 때만 돈다
     const orbit = gsap.timeline({ repeat: -1, paused: true, defaults: { ease: 'none' } })
       .to(kite, { motionPath: { path: '#orbitPath', align: '#orbitPath', alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 10 }, 0)
       .to(kite, { autoAlpha: 0.15, scale: 0.7, duration: 0.6 }, 2.2)
       .to(kite, { autoAlpha: 1, scale: 1, duration: 0.6 }, 7.2);
     ScrollTrigger.create({ trigger: stage, start: 'top bottom', end: 'bottom top',
-      onToggle: (s) => { globe.classList.toggle('on', s.isActive); if (s.isActive) orbit.play(); else orbit.pause(); } });
+      onToggle: (s) => { globe.classList.toggle('on', s.isActive); stage.classList.toggle('live', s.isActive); if (s.isActive) orbit.play(); else orbit.pause(); } });
 
     const G = 1.6;   // 지구본 구간(스크롤 길이 비율). 그 뒤 경로 하나당 1
     const tl = gsap.timeline({
@@ -286,10 +286,11 @@
     tl.fromTo(spin, { xPercent: 0 }, { xPercent: -100 / 3, duration: G, ease: 'power1.in' }, 0)                         // 한 바퀴 더, 점점 빠르게
       .fromTo(globe, { scale: 1, autoAlpha: 1 }, { scale: 3.2, autoAlpha: 0, duration: 0.7, ease: 'power2.in' }, G - 0.7)   // 지구본 속으로
       .fromTo(content, { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'power2.out' }, G - 0.45);
+    const L = 0.6;   // 경로 하나의 길이(도시가 많아 짧게). 경로를 다 그리면 그 도시 불이 켜진다
     routes.forEach((r, i) => {
-      tl.to(masks[i], { strokeDashoffset: 0, autoRound: false, duration: 1 }, G + i)   // autoRound:false — 0~1 사이 값이 정수로 반올림돼 한 번에 튀어나오지 않게
-        .to(plane, { motionPath: { path: r, align: r, alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 1 }, G + i)
-        .to(pins[i + 1], { autoAlpha: 1, y: 0, duration: 0.25 }, G + i + 0.85);
+      tl.to(masks[i], { strokeDashoffset: 0, autoRound: false, duration: L }, G + i * L)   // autoRound:false — 0~1 사이 값이 정수로 반올림돼 한 번에 튀어나오지 않게
+        .to(plane, { motionPath: { path: r, align: r, alignOrigin: [0.5, 0.5], autoRotate: true }, duration: L }, G + i * L)
+        .to(stops[i + 1], { autoAlpha: 1, scale: 1, duration: 0.2, ease: 'back.out(2)' }, G + i * L + L * 0.85);
     });
     tl.to({}, { duration: 0.3 });
     return () => { orbit.kill(); globe.classList.remove('on'); globe.hidden = true; };
@@ -411,6 +412,7 @@
 
     // 여행 지도: 지구본이 화면에 보이면 #mapStage.in — 빙그르르 → 지구본 속으로 → 지도 → 경로(순서는 CSS 지연 시간)
     const stage = $('#mapStage'), globe = $('#globe');
+    watch([stage], { threshold: 0 }, (e) => stage.classList.toggle('live', e.isIntersecting));   // 도시 깜박임은 보일 때만
     if (motion) {
       globe.hidden = false;
       gsap.registerPlugin(MotionPathPlugin);
@@ -598,7 +600,7 @@
         $('#doneName').textContent = name;
         $('#formSheet').classList.add('done');
       } catch (err) {
-        msg.textContent = '전송 중 문제가 생겼습니다. 카카오 채널이나 010-7418-0705로 연락 주세요.';
+        msg.textContent = '전송 중 문제가 생겼습니다. 오른쪽 아래 카카오 채팅으로 남겨 주세요.';
         btn.disabled = false;
         btn.firstChild.textContent = '무료 체험 신청 ';
       } finally {
