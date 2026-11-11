@@ -532,33 +532,41 @@ h1,h2,h3,h4,p,figure{margin:0}
 .margin-note{margin-top:40px;display:grid;gap:10px;padding:28px 32px;border-radius:var(--r);background:var(--sheet);border:1px dashed color-mix(in srgb,var(--pen) 55%,transparent);max-width:820px}
 .margin-note .pen{font-size:32px}
 .margin-note .note-text{color:var(--ink-2)}
-/* 전체 과정맵(가운데 정렬): 그림 타일 10개(5×2) → 누르면 그 과정의 큰 그림·한 줄 설명·하는 일 3가지(그림 → 그림 → 그림) */
-.cmap{margin-top:clamp(80px,12vh,120px);text-align:center}
-.cmap .lead{margin-inline:auto}
-.cmap-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:760px;margin:28px auto 0}
-.cmap-tile{display:grid;justify-items:center;align-content:start;gap:8px;padding:14px 4px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--sheet);color:var(--ink);cursor:pointer;
-  transition:transform .25s var(--ease),border-color .2s ease,background-color .2s ease}
+/* 전체 과정맵: 다른 구간과 같은 틀(제목 왼쪽, 카드 왼쪽 정렬, 고른 것은 잉크색 · 빨강은 큰 그림에만)
+   휴대폰: 그림 타일 5×2 꽉 채움 → 설명 칸(큰 그림 | 이름·설명, 아래 하는 일 3가지 그림 흐름)
+   PC: 타일 10개 한 줄 → 설명 칸(왼쪽 그림·설명 | 오른쪽 그림 흐름) */
+.cmap{margin-top:clamp(80px,12vh,120px)}
+.cmap-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:24px}
+.cmap-tile{display:grid;justify-items:center;align-content:start;gap:7px;padding:12px 4px 10px;border-radius:var(--r);border:1px solid var(--line);background:var(--sheet);color:var(--ink);cursor:pointer;
+  transition:transform .25s var(--ease),border-color .2s ease,background-color .2s ease,color .2s ease}
 .cmap-tile:hover{transform:translateY(-2px);border-color:var(--ink)}
 .cmap-tile:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
-.cmap-ic{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:var(--bg-2);color:var(--ink);
-  transition:background-color .25s ease,color .25s ease,transform .4s cubic-bezier(.34,1.56,.64,1)}
-.cmap-nm{font-size:13px;font-weight:700;line-height:1.25;word-break:keep-all}
-.cmap-tile[aria-selected="true"]{border-color:var(--pen);background:color-mix(in srgb,var(--pen) 7%,var(--sheet))}
-.cmap-tile[aria-selected="true"] .cmap-ic{background:var(--pen);color:#fff;transform:scale(1.08)}
-.cmap-panel{margin:16px auto 0;max-width:760px;padding:26px 18px 22px;border-radius:var(--r);background:var(--sheet);border:1px solid var(--line);display:grid;justify-items:center;gap:10px;
-  animation:cmapIn .45s var(--ease) both}
+.cmap-ic{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:23px;background:var(--bg-2);color:var(--ink);transition:background-color .2s ease,color .2s ease}
+.cmap-nm{font-size:12.5px;font-weight:700;line-height:1.25;word-break:keep-all;text-align:center}
+.cmap-tile[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.cmap-tile[aria-selected="true"] .cmap-ic{background:color-mix(in srgb,var(--bg) 16%,transparent);color:var(--bg)}
+.cmap-panel{margin-top:12px;padding:22px 20px 20px;border-radius:var(--r);background:var(--sheet);border:1px solid var(--line);
+  display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ic name" "ic text" "steps steps" "link link";column-gap:16px;row-gap:4px;align-items:start;
+  animation:cmapIn .4s var(--ease) both}
 .cmap-panel[hidden]{display:none}
-.cmap-big{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;font-size:40px;color:#fff;background:var(--pen);box-shadow:0 14px 30px -14px rgb(226 70 58 / .7)}
-.cmap-panel h4{font-size:22px;font-weight:800;letter-spacing:-.02em}
-.cmap-panel .cmap-text{color:var(--ink-2);font-size:15.5px;max-width:46ch}
-.cmap-steps{list-style:none;margin:8px 0 2px;padding:0;display:flex;justify-content:center;align-items:flex-start;gap:14px}
-.cmap-steps li{position:relative;display:grid;justify-items:center;gap:7px;width:88px;font-size:13px;font-weight:700;line-height:1.3;color:var(--ink);word-break:keep-all}
-.cmap-steps li + li::before{content:"→";position:absolute;left:-15px;top:12px;color:var(--pen);font-weight:700}
-.cmap-sic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:23px;background:var(--bg-2);color:var(--pen-ink)}
-.cmap-panel a{font-weight:700;font-size:15px;margin-top:6px}
-@keyframes cmapIn{from{opacity:0;transform:translateY(10px)}}
-@media (max-width:767px){.cmap-grid{gap:6px}.cmap-tile{padding:11px 2px 9px;gap:6px}.cmap-ic{width:40px;height:40px;font-size:21px}.cmap-nm{font-size:12px}
-  .cmap-steps{gap:10px}.cmap-steps li{width:80px;font-size:12.5px}.cmap-steps li + li::before{left:-12px}}
+.cmap-big{grid-area:ic;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:30px;color:#fff;background:var(--pen)}
+.cmap-panel h4{grid-area:name;font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.3;align-self:end}
+.cmap-panel .cmap-text{grid-area:text;color:var(--ink-2);font-size:15px;line-height:1.6}
+.cmap-steps{grid-area:steps;list-style:none;margin:16px 0 0;padding:16px 0 0;border-top:1px dashed var(--line);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.cmap-steps li{position:relative;display:grid;justify-items:center;gap:7px;font-size:13px;font-weight:700;line-height:1.3;color:var(--ink);text-align:center;word-break:keep-all}
+.cmap-steps li + li::before{content:"→";position:absolute;left:-12px;top:12px;color:var(--pen);font-weight:700}
+.cmap-sic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;background:var(--bg-2);color:var(--pen-ink)}
+.cmap-panel a{grid-area:link;justify-self:start;margin-top:14px;font-weight:700;font-size:15px}
+@keyframes cmapIn{from{opacity:0;transform:translateY(8px)}}
+@media (min-width:960px){
+  .cmap-grid{grid-template-columns:repeat(10,minmax(0,1fr));gap:10px}
+  .cmap-ic{width:48px;height:48px;font-size:25px}
+  .cmap-nm{font-size:13px}
+  .cmap-panel{grid-template-columns:auto minmax(0,1fr) minmax(0,1.1fr);grid-template-areas:"ic name steps" "ic text steps" "ic link steps";column-gap:24px;padding:28px 32px}
+  .cmap-big{width:72px;height:72px;font-size:38px}
+  .cmap-panel h4{font-size:22px}
+  .cmap-steps{margin:0;padding:0 0 0 28px;border-top:0;border-left:1px dashed var(--line);align-self:center}
+}
 
 /* ---------- 9. 후기 ---------- */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:44px}
