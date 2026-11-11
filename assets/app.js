@@ -104,6 +104,15 @@
   initForm();
   initEar();
 
+  /* ---------- 맨 아래 수강료·환불 규정: 여닫기는 CSS(:checked), 여기선 열린 칸으로 데려가기만 ---------- */
+  $('#feeOpen').addEventListener('change', (e) => {
+    if (motion) ScrollTrigger.refresh();   // 문서 길이가 바뀌므로 진행 띠 끝을 다시 잰다
+    if (!e.target.checked) return;
+    const label = $('label[for="feeOpen"]');
+    if (lenis) { lenis.resize(); lenis.scrollTo(label, { offset: -HEADER() - 16 }); }   // 늘어난 길이를 먼저 알려야 끝에서 막히지 않는다
+    else label.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  });
+
   if (!motion) { flatBook(); return; }
 
   /* ================= 아래는 움직임이 켜진 경우만 ================= */
