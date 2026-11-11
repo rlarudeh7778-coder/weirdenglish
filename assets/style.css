@@ -12,6 +12,8 @@
 /* @@글꼴 끝 */
 
 :root{
+  /* 물건 색(밝은/어두운 화면 같음): 책 가죽·로고 배지 검정, 금박 4색 — 로고 금박(#aGold)·아이콘(_build/brand.py)도 여기서 읽는다 */
+  --leather:#0A0A0C; --gold-1:#F4E4B8; --gold-2:#CFA95E; --gold-3:#8E6B2F; --gold-4:#EAD39C;
   --sky-top:#9CCBF2; --sky-mid:#CFE6FA; --bg:#EEF6FD; --bg-2:#E1EEFA; --sheet:#FBFDFF; --sheet-2:#F1F6FB;
   --ink:#0F2238; --ink-2:#3A4E66; --ink-3:#5D7088; --line:rgba(15,34,56,.12);
   --pen:#E2463A; --pen-ink:#C0352A;
@@ -84,8 +86,12 @@ h1,h2,h3,h4,p,figure{margin:0}
 .top{position:fixed;inset:0 0 auto;height:var(--header);z-index:50;display:flex;align-items:center;gap:20px;padding:0 16px;
   background:color-mix(in srgb,var(--bg) 78%,transparent);backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);border-bottom:1px solid var(--line)}
 @media (min-width:768px){.top{padding:0 40px}}
-.brand{font-family:var(--f-sans);font-weight:800;font-size:21px;letter-spacing:-.03em;position:relative;white-space:nowrap;display:inline-block}
-.brand::after{content:"";position:absolute;left:-2px;right:-4px;bottom:2px;height:6px;border-radius:6px;background:var(--pen);opacity:.28;transform:rotate(-1.5deg)}
+/* 로고 = 유튜브 채널의 A(검은 배지, index.html 스프라이트 #aMark) + 「이상한영어」(빨간 펜 밑줄) */
+.brand{font-family:var(--f-sans);font-weight:800;font-size:21px;letter-spacing:-.03em;white-space:nowrap;display:inline-flex;align-items:center;gap:.42em}
+.brand .mark{flex:none;width:1.5em;height:1.5em;border-radius:.34em;background:var(--leather);display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgb(255 255 255 / .12)}
+.brand .mark svg{width:68%;height:68%;fill:#fff}
+.brand .word{position:relative}
+.brand .word::after{content:"";position:absolute;left:-2px;right:-4px;bottom:2px;height:6px;border-radius:6px;background:var(--pen);opacity:.28;transform:rotate(-1.5deg)}
 .runhead{flex:1;text-align:center;font-size:13px;color:var(--ink-3);display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .runhead b{font-family:var(--f-sans);font-weight:600;color:var(--ink-2);margin-right:8px}
 .nav{display:none;gap:24px;font-size:15px;font-weight:500;color:var(--ink-2);margin-left:auto}
@@ -154,15 +160,16 @@ h1,h2,h3,h4,p,figure{margin:0}
 .book{position:relative;width:calc(var(--pw) * 2);height:var(--ph);transform-style:preserve-3d;pointer-events:auto;will-change:transform;grid-area:1/1;
   --thick:calc(var(--pw) * .1);--in:calc(var(--ph) * .014)}
 .sheaf{position:absolute;inset:0;perspective:2600px}
-.board{position:absolute;top:0;left:50%;width:50%;height:100%;border-radius:2px 7px 7px 2px;background:radial-gradient(130% 100% at 70% 85%,#1E1F25,#0A0A0C);
+.board{position:absolute;top:0;left:50%;width:50%;height:100%;border-radius:2px 7px 7px 2px;background:radial-gradient(130% 100% at 70% 85%,#1E1F25,var(--leather));
   box-shadow:24px 34px 60px -18px rgb(var(--shadow-rgb) / .5)}
 /* 책등: 표지 왼쪽 모서리에서 뒤로 두께만큼 — 첫 화면에서 책이 제목 쪽으로 돌아앉으면 보인다 */
 .book-spine{position:absolute;top:0;left:calc(50% - var(--thick));width:var(--thick);height:100%;transform-origin:100% 50%;transform:rotateY(-90deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;
   display:grid;place-items:center;border-radius:3px;background:linear-gradient(90deg,#060607,#26272D 38%,#17181C 70%,#050506)}
-.book-spine::before,.book-spine::after{content:"";position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,#8E6B2F,#F4E4B8,#8E6B2F)}
+.book-spine::before,.book-spine::after{content:"";position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,var(--gold-3),var(--gold-1),var(--gold-3))}
+.spine-mark{position:absolute;left:22%;bottom:11%;width:56%;height:calc(var(--thick) * .56);fill:url(#aGold)}
 .book-spine::before{top:7%}.book-spine::after{bottom:7%}
 .book-spine b{writing-mode:vertical-rl;text-orientation:upright;font-size:calc(var(--thick) * .4);font-weight:900;letter-spacing:.06em;
-  background:linear-gradient(180deg,#F4E4B8,#CFA95E 45%,#8E6B2F 75%,#EAD39C);-webkit-background-clip:text;background-clip:text;color:transparent}
+  background:linear-gradient(180deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3) 75%,var(--gold-4));-webkit-background-clip:text;background-clip:text;color:transparent}
 .leaf,.base{position:absolute;top:0;left:50%;width:50%;height:100%}
 .leaf + .leaf,.base{top:var(--in);height:calc(100% - var(--in) * 2);width:calc(50% - var(--in))}
 /* 스르르 넘어가는 속지: 한 장 = 세 마디(.seg 안에 .seg). 넘길 때 바깥 마디가 먼저 들리고 내려앉을 땐 늦게 따라와 종이처럼 휜다(app.js RIFFLE) */
@@ -201,14 +208,15 @@ h1,h2,h3,h4,p,figure{margin:0}
 .cover{border-radius:2px 7px 7px 2px;background:radial-gradient(120% 90% at 30% 18%,#2B2C33,#141519 55%,#09090B);color:#E9D5A1}
 .inside{border-radius:7px 2px 2px 7px}
 .cover .pg::before{content:"";position:absolute;inset:4.5%;border:1px solid rgb(207 169 94 / .45);border-radius:2px;pointer-events:none}
-.cover :is(.cover-top,.cover-title,.cover-foot){background:linear-gradient(135deg,#F4E4B8,#CFA95E 45%,#8E6B2F 72%,#EAD39C);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cover-mark{position:absolute;top:8cqi;right:10cqi;width:12cqi;height:12cqi;fill:url(#aGold)}
+.cover :is(.cover-top,.cover-title,.cover-foot){background:linear-gradient(135deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3) 72%,var(--gold-4));-webkit-background-clip:text;background-clip:text;color:transparent}
 /* 가죽 결 + 책등 옆 접힘 홈(양장본 이음매) */
 .cover::before{background:linear-gradient(90deg,transparent 4%,rgb(0 0 0 / .6) 4.5%,rgb(255 255 255 / .08) 5.1%,transparent 5.7%),repeating-linear-gradient(90deg,rgb(255 255 255 / .025) 0 1px,transparent 1px 3px),linear-gradient(var(--spine),rgb(0 0 0 / .35),transparent 7%)}
 .cover .pg{justify-content:space-between}
 .cover-top{font-size:clamp(10px,2.8cqi,13px);letter-spacing:.18em;opacity:.72}
 .cover-title{font-family:var(--f-sans);font-weight:900;font-size:clamp(40px,min(15.5cqi,11.5cqb),96px);line-height:1.08;letter-spacing:-.05em}
 .cover-title span{position:relative;display:inline-block}
-.cover-title span::after{content:"";position:absolute;left:0;right:0;bottom:-.14em;height:.05em;background:linear-gradient(90deg,#CFA95E,#F4E4B8 60%,#8E6B2F)}
+.cover-title span::after{content:"";position:absolute;left:0;right:0;bottom:-.14em;height:.05em;background:linear-gradient(90deg,var(--gold-2),var(--gold-1) 60%,var(--gold-3))}
 .cover-line{margin-top:min(5cqi,4cqb);display:flex;flex-direction:column;gap:2px}
 .cover-line s{font-family:var(--f-sans);font-size:clamp(13px,min(4.2cqi,3.6cqb),20px);color:#CDBB8F;opacity:.75;text-decoration-color:var(--pen);text-decoration-thickness:2px}
 .cover-line .pen{font-size:clamp(22px,min(7.4cqi,6cqb),38px);color:#FF8A7F}
@@ -998,7 +1006,8 @@ button.spine:focus-visible{outline:2px solid var(--pen);outline-offset:3px}
   .intro-front,.intro-back{position:absolute;inset:0;border-radius:2px 6px 6px 2px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .intro-front{display:flex;flex-direction:column;padding:12% 11%;background:radial-gradient(120% 90% at 30% 18%,#2B2C33,#141519 55%,#09090B);
     box-shadow:inset 7px 0 0 rgb(255 255 255 / .05),inset 12px 0 18px -8px rgb(0 0 0 / .9),0 34px 60px -22px rgb(0 0 0 / .85)}
-  .intro-front p{background:linear-gradient(135deg,#F4E4B8,#CFA95E 45%,#8E6B2F 72%,#EAD39C);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .intro-mark{position:absolute;top:10%;right:11%;width:15%;aspect-ratio:1;fill:url(#aGold)}
+  .intro-front p{background:linear-gradient(135deg,var(--gold-1),var(--gold-2) 45%,var(--gold-3) 72%,var(--gold-4));-webkit-background-clip:text;background-clip:text;color:transparent}
   .intro-series{font-size:11px;font-weight:700;letter-spacing:.18em}
   .intro-title{margin-top:auto;font-family:var(--f-sans);font-weight:800;font-size:clamp(48px,15vw,64px);line-height:1.04;letter-spacing:-.05em}
   .intro-sub{margin-top:14px;font-size:13px;font-weight:600}
