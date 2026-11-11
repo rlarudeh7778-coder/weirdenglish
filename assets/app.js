@@ -58,13 +58,33 @@
   $('#tocClose').addEventListener('click', closeToc);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeToc(); });
 
-  /* ---------- 과정맵 칩 ---------- */
-  const chips = $$('#cmapChips .chip');
-  chips.forEach((chip) => chip.addEventListener('click', () => {
-    chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
-    $('#cmapName').textContent = chip.textContent;
-    $('#cmapDesc').textContent = chip.dataset.desc;
-  }));
+  /* ---------- 전체 과정맵(그림 타일) ---------- */
+  // 그림 타일을 누르면 그 과정의 설명 칸이 바뀐다(탭: 화살표로도 이동). 설명 칸이 가리면 보이는 데까지
+  const tiles = $$('#cmapGrid .cmap-tile');
+  const pick = (tile) => {
+    tiles.forEach((t) => { const on = t === tile; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; $('#' + t.getAttribute('aria-controls')).hidden = !on; });
+    keepInView($('#' + tile.getAttribute('aria-controls')));
+  };
+  tiles.forEach((tile) => tile.addEventListener('click', () => pick(tile)));
+  $('#cmapGrid').addEventListener('keydown', (e) => {
+    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key], i = tiles.indexOf(document.activeElement);
+    if (!d || i < 0) return;
+    e.preventDefault();
+    const next = tiles[(i + d + tiles.length) % tiles.length];
+    next.focus();
+    pick(next);
+  });
+
+  /* ---------- 화면 안으로 데려오기(공용): 새로 나타난 것이 휴대폰 아래 고정 바(#mbar)에 가리거나 머리글 밑에 숨으면 보이는 데까지 부드럽게.
+     (듣기 테스트의 가려진 「다음 소리 듣기」 대신 바의 「무료 체험 신청」이 눌려 신청서까지 날아갔던 원인) ---------- */
+  function keepInView(el) {
+    const bar = $('#mbar'), r = el.getBoundingClientRect();
+    const floor = innerHeight - (bar.classList.contains('show') ? bar.offsetHeight : 0) - 16, ceil = HEADER() + 12;
+    const dy = r.bottom > floor ? Math.min(r.bottom - floor, r.top - ceil) : r.top < ceil ? r.top - ceil : 0;
+    if (dy === 0) return;
+    if (lenis) lenis.scrollTo(scrollY + dy);
+    else scrollBy({ top: dy, behavior: reduce ? 'auto' : 'smooth' });
+  }
 
   /* ---------- 칼럼 읽기 창(책장의 책 · 여행 영어 링크가 같은 창을 연다) ---------- */
   const reader = $('#reader');
@@ -468,17 +488,6 @@
     const nav = $('#earNav'), result = $('#earResult'), live = $('#earLive');
     const levels = $$('#f-level option').map((o) => o.value).filter(Boolean);
     const relayout = () => motion && ScrollTrigger.refresh();   // 카드 높이가 바뀌면 아래 고정 구간 위치를 다시 잰다
-    // 새로 나타난 버튼·재생 칸이 휴대폰 아래 고정 바(#mbar)에 가리거나 머리글 밑에 숨으면 보이는 데까지 부드럽게 옮긴다.
-    // (가려진 「다음 소리 듣기」 대신 바의 「무료 체험 신청」이 눌려 신청서까지 날아갔다가 다시 올라와야 했던 원인)
-    const bar = $('#mbar');
-    const keepInView = (el) => {
-      const r = el.getBoundingClientRect();
-      const floor = innerHeight - (bar.classList.contains('show') ? bar.offsetHeight : 0) - 16, ceil = HEADER() + 12;
-      const dy = r.bottom > floor ? Math.min(r.bottom - floor, r.top - ceil) : r.top < ceil ? r.top - ceil : 0;
-      if (dy === 0) return;
-      if (lenis) lenis.scrollTo(scrollY + dy);
-      else scrollBy({ top: dy, behavior: reduce ? 'auto' : 'smooth' });
-    };
     let cur = 0, score = 0, playing = null;
 
     $$('.ear-wave', ear).forEach((w) => {   // 소리 막대: 정해진 모양(무작위 없음)
